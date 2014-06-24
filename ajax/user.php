@@ -12,6 +12,10 @@ if(!FlipSession::is_logged_in())
 
 function get_single_value_from_array($array)
 {
+    if(!is_array($array))
+    {
+        return $array;
+    }
     if(isset($array[0]))
     {
         return $array[0];
@@ -37,5 +41,6 @@ $user_copy->st = get_single_value_from_array($user_copy->st);
 $user_copy->l = get_single_value_from_array($user_copy->l);
 $user_copy->sn = get_single_value_from_array($user_copy->sn);
 $user_copy->cn = get_single_value_from_array($user_copy->cn);
+$user_copy->postalCode = get_single_value_from_array($user_copy->postalCode);
 echo json_encode($user_copy);
 ?>
