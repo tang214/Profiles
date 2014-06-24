@@ -4,12 +4,21 @@ function validate_zip(value, element)
 {
     if(value.length > 0)
     {
-        var val = $.ajax('http://zip.getziptastic.com/v2/US/'+value, {async: false});
-        var city = val.responseJSON.city;
-        var state = val.responseJSON.state_short;
-        $("#l").val(city);
-        $("#st").val(state);
-        return this.optional(element) || /^\d{5}(?:-\d{4})?$/.test(value);
+        //Make sure this is either a 5 or 5+4 zip code
+	if(/^\d{5}(?:-\d{4})?$/.test(value) == false)
+	{
+            return this.optional(element);
+	}
+	try{
+            var val = $.ajax('https://zip.getziptastic.com/v2/US/'+value, {async: false});
+            var city = val.responseJSON.city;
+            var state = val.responseJSON.state_short;
+            $("#l").val(city);
+            $("#st").val(state);
+            return this.optional(element);
+	} catch(err) {
+            return this.optional(element);
+        }
     }
     else
     {
