@@ -10,7 +10,7 @@ function validate_zip(value, element)
             return this.optional(element);
         }
         try{
-            var val = $.ajax('https://zip.getziptastic.com/v2/US/'+value, {async: false});
+            var val = $.ajax('/ajax/zip_proxy.php?zip='+value, {async: false});
             var city = val.responseJSON.city;
             var state = val.responseJSON.state_short;
             $("#l").val(city);
