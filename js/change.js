@@ -1,3 +1,5 @@
+var tooltip;
+
 function form_submit_done(data, textStatus, jqXHR)
 {
     var json = eval(data);
@@ -53,7 +55,7 @@ function validate_pass(value, element, params)
     var label_elem = $("[for='password']");
     label_elem.html(msg);
     label_elem.css("color", color);
-    $("[for='password']").tooltip("option", "content", "Estimated password crack time is "+res.crack_time+"s");
+    tooltip.tooltip("option", "content", "Estimated password crack time is "+res.crack_time+"s");
     if(res.score < 1)
     {
         return false;
@@ -89,7 +91,7 @@ function init_register_page()
         submitHandler: forget_submit
     });
     
-    $("[for='password']").tooltip();
+    tooltip = $("[for='password']").tooltip();
 }
 
 $(init_register_page);
