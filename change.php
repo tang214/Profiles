@@ -1,6 +1,9 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
+if(strtoupper($_SERVER['REQUEST_METHOD']) != 'POST')
+{
+    ini_set('display_errors', 1);
+    error_reporting(E_ALL);
+}
 //Redirect users to https
 if($_SERVER["HTTPS"] != "on")
 {
@@ -11,7 +14,7 @@ require_once("class.FlipsideLDAPServer.php");
 require_once('class.ProfilesPage.php');
 require_once("class.FlipsideMail.php");
 $require_current_pass = true;
-$user = FlipSession::get_user();
+$user = FlipSession::get_user(TRUE);
 if($user == FALSE)
 {
     //We might be reseting a user's forgotten password...
@@ -34,6 +37,15 @@ if(strtoupper($_SERVER['REQUEST_METHOD']) == 'POST')
         die();
     }
     /*This is a post*/
+    if(isset($_POST['current']))
+    {
+        $server = new FlipsideLDAPServer();
+        if($server->testLogin($user->uid[0],$_POST['current']) == FALSE)
+        {
+            echo json_encode(array('status'=>-1,'msg'=>'Current password incorrect!'));
+            die();
+        }
+    }
     if(!isset($_POST['password']) || !isset($_POST['password2']))
     {
         echo json_encode(array('status'=>-1,'msg'=>'Invalid Submission. Please fillout all fields!'));
