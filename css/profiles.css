@@ -27,3 +27,7 @@
     color: #222222;
     font-weight: bold;
 }
+
+@media screen and (max-width: 40.5em) {
+    #content { margin: 20px 20px 0 20px }
+}
