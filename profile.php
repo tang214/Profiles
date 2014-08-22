@@ -38,10 +38,11 @@ $page->body = '
     <fieldset>
     <legend>Main Profile:</legend>
     <form action="profile.php" method="post" name="profile" id="profile">
+        <input type="hidden" name="uid" id="uid" />
         <table>
             <tr>
                 <td>Username:</td>
-                <td id="uid"></td>
+                <td id="uid_label"></td>
             </tr>
             <tr>
                 <td>First Name:</td>

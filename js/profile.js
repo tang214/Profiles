@@ -31,18 +31,22 @@ function finish_populate_form(data, textStatus, jqXHR)
     if(textStatus === 'success')
     {
         var json = eval('('+data+')');
-        $('#uid').html(json.uid);
+        $('#uid_label').html(json.uid);
+        $('#uid').val(json.uid);
         $('#givenName').val(json.givenName);
         $('#sn').val(json.sn);
         $('#displayName').val(json.displayName);
         $('#mail').val(json.mail);
         $('#mobile').val(json.mobile);
-        $('#street').val(json.street);
+        $('#street').val(json.postalAddress);
         $('#zip').val(json.postalCode);
         $('#l').val(json.l);
         $('#st').val(json.st);
         cropper.reset();
-        cropper.obj.append('<img src="data:image/jpeg;base64,'+json.jpegPhoto+'">');
+        if(json.jpegPhoto.length > 0)
+        {
+            cropper.obj.append('<img src="data:image/jpeg;base64,'+json.jpegPhoto+'">');
+        }
         //window.console.error(json);
     }
     else
@@ -54,6 +58,30 @@ function finish_populate_form(data, textStatus, jqXHR)
 function start_populate_form()
 {
     $.ajax('./ajax/user.php').done(finish_populate_form);
+}
+
+function profile_submit_done(data)
+{
+    if(data.error)
+    {
+         alert(data.error);
+         console.log(data.error);
+    }
+    else
+    {
+        console.log(data.unset);
+        location.reload();
+    }
+}
+
+function profile_data_submitted(form)
+{
+    $.ajax({
+        url: '/ajax/user.php',
+        data: $(form).serialize(),
+        type: 'post',
+        dataType: 'json',
+        success:profile_submit_done});
 }
 
 function do_init()
@@ -71,7 +99,8 @@ function do_init()
         rules: {
             email: { required: true, email: true},
             zip: "zip"
-        }
+        },
+        submitHandler: profile_data_submitted
     });
     $("#reset").click(start_populate_form);
 }
