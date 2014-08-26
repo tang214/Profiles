@@ -59,7 +59,6 @@ function tableDrawComplete()
     if(pendingTable.api().data().length == 0)
     {
         $("#pending_set").empty();
-        $("#pending_set").append("<legend>Pending Registrations</legend>");
         $("#pending_set").append("No Pending Registrations at this time.");
     }
 }
