@@ -23,6 +23,8 @@ class ProfilesAdminPage extends FlipPage
     {
         $css_tag = $this->create_open_tag('link', array('rel'=>'stylesheet', 'href'=>'/css/profiles.css', 'type'=>'text/css'), true);
         $this->add_head_tag($css_tag);
+        $css_tag = $this->create_open_tag('link', array('rel'=>'stylesheet', 'href'=>'/css/jquery-ui.css', 'type'=>'text/css'), true);
+        $this->add_head_tag($css_tag);
         $css_tag = $this->create_open_tag('link', array('rel'=>'stylesheet', 'href'=>'css/jquery.dataTables.css', 'type'=>'text/css'), true);
         $this->add_head_tag($css_tag);
     }
@@ -37,7 +39,11 @@ class ProfilesAdminPage extends FlipPage
 
     function add_links()
     {
-        $this->add_link('Admin', 'https://profiles.burningflipside.com/_admin/index.php');
+        $admin_menu = array(
+            'Edit Groups'=>'group_edit.php',
+            'Edit Users'=>'user_edit.php'
+        );
+        $this->add_link('Admin', 'https://profiles.burningflipside.com/_admin/index.php', $admin_menu);
         $this->add_link('Logout', 'https://profiles.burningflipside.com/logout.php');
     }
 
@@ -54,6 +60,9 @@ class ProfilesAdminPage extends FlipPage
         $this->add_head_tag($script_start_tag.$script_close_tag);
 
         $script_start_tag = $this->create_open_tag('script', array('src'=>'js/groups.js'));
+        $this->add_head_tag($script_start_tag.$script_close_tag);
+
+        $script_start_tag = $this->create_open_tag('script', array('src'=>'js/sessions.js'));
         $this->add_head_tag($script_start_tag.$script_close_tag);
     }
 }
