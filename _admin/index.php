@@ -40,7 +40,7 @@ $page->body .= '
         </div>
         <h3>Groups</h3>
         <div>
-            <select name="group_action" id="session_action">
+            <select name="group_action" id="group_action">
                 <option value="none">Action...</option>
                 <option value="del">Delete Group</option>
                 <option value="new">Add New Group...</option>

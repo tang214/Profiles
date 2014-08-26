@@ -2,7 +2,7 @@ function groupExecute()
 {
     var action;
     var selected = [];
-    switch($("#session_action")[0].value)
+    switch($("#group_action")[0].value)
     {
         case "none":
             return;
