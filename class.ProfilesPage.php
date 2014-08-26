@@ -53,8 +53,11 @@ class ProfilesPage extends FlipPage
 
     function add_script()
     {
-        $script_start_tag = $this->create_open_tag('script', array('src'=>'js/login.js'));
+        $script_start_tag = $this->create_open_tag('script', array('src'=>'js/jquery.validate.js'));
         $script_close_tag = $this->create_close_tag('script');
+        $this->add_head_tag($script_start_tag.$script_close_tag);
+
+        $script_start_tag = $this->create_open_tag('script', array('src'=>'js/login.js'));
         $this->add_head_tag($script_start_tag.$script_close_tag);
     }
 
@@ -62,7 +65,7 @@ class ProfilesPage extends FlipPage
     {
         $this->body .= '<div id="login-form" title="Login" style="display: none;">
                             <fieldset>
-                                <form action="/login.php" method="post" name="form">
+                                <form id="login_dialog_form">
                                     <table>
                                         <tr><td>Username or email:</td><td><input type="text" name="username"/></td></tr>
                                         <tr><td>Password:</td><td><input type="password" name="password"/></td></tr>
