@@ -35,14 +35,43 @@ function groupToArray($group)
     return $res;
 }
 
-$server = new FlipsideLDAPServer();
-$groups = $server->getGroups();
-$data = array();
-for($i = 0; $i < count($groups); $i++)
+if(strtoupper($_SERVER['REQUEST_METHOD']) == 'POST')
 {
-    $group_data = groupToArray($groups[$i]);
-    array_push($data, $group_data);
+    echo json_encode($_POST);
 }
+else if(strtoupper($_SERVER['REQUEST_METHOD']) == 'GET')
+{
+    $server = new FlipsideLDAPServer();
+    if(!isset($_GET['gid']))
+    {
+        $groups = $server->getGroups();
+        $data = array();
+        for($i = 0; $i < count($groups); $i++)
+        {
+            $group_data = groupToArray($groups[$i]);
+            array_push($data, $group_data);
+        }
 
-echo json_encode(array('data'=>$data));
+        echo json_encode(array('data'=>$data));
+    }
+    else
+    {
+        $groups = $server->getGroups("(cn=".$_GET['gid'].")");
+        if($groups == FALSE || !isset($groups[0]))
+        {
+            echo json_encode(array('error' => "Group not found!"));
+            die();
+        }
+        $group = $groups[0];
+        $group->cn = get_single_value_from_array($group->cn);
+        $group->description = get_single_value_from_array($group->description);
+        echo json_encode($group);
+    }
+}
+else
+{
+    echo json_encode(array('error' => "Unrecognized Operation ".$_SERVER['REQUEST_METHOD']));
+    die();
+}
+/* vim: set tabstop=4 shiftwidth=4 expandtab: */
 ?>
