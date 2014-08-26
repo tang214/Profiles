@@ -2,7 +2,7 @@ function session_exec_done(data)
 {
     if(data.error === undefined)
     {
-        console.log(data);
+        $("#sessions").dataTable().api().ajax.reload();
     }
     else
     {
