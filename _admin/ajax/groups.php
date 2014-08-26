@@ -35,9 +35,101 @@ function groupToArray($group)
     return $res;
 }
 
+function make_new_group($gid, $desc, $members, &$error)
+{
+    $server = new FlipsideLDAPServer();
+    //Make sure gid is available
+    $groups = $server->getGroups("(cn=".$gid.")");
+    if($groups != FALSE && count($groups) > 0)
+    {
+        $error = "Group name already in use!";
+        return FALSE;
+    }
+    //Convert members to rdns
+    $member_dns = array();
+    for($i = 0; $i < count($members); $i++)
+    {
+        $rdn = FALSE;
+        if(strncmp($members[$i], "group->", 7) == 0)
+        {
+            //Lookup group name
+            $groups = $server->getGroups("(cn=".substr($members[$i], 7).")");
+            if($groups != FALSE && isset($groups[0]))
+            {
+                $rdn = $groups[0]->dn; 
+            }
+        }
+        else
+        {
+            //Lookup user name
+            $users = $server->getUsers("(uid=".substr($members[$i], 5).")");
+            if($users != FALSE && isset($users[0]))
+            {
+                $rdn = $users[0]->dn;
+            }
+        }
+        if($rdn == FALSE)
+        {
+            if(strncmp($members[$i], "group->", 7) == 0)
+            {
+                $error = "Failed to locate group ".substr($members[$i], 7);
+            }
+            else
+            {
+                $error = "Failed to locate user ".$members[$i];
+            }
+            return FALSE;
+        }
+        array_push($member_dns, $rdn);
+    }
+    $group = FlipsideUserGroup::newGroup($gid, $desc, $member_dns);
+    return $server->writeObject($group);
+}
+
 if(strtoupper($_SERVER['REQUEST_METHOD']) == 'POST')
 {
-    echo json_encode($_POST);
+    if(!isset($_POST['action']))
+    {
+        echo json_encode(array('error' => "Invalid Parameter! Expected action to be set"));
+        die();
+    }
+    if(!isset($_POST['gid']))
+    {
+        echo json_encode(array('error' => "Invalid Parameter! Expected gid to be set"));
+        die();
+    }
+    else if(strpos($_POST['gid'], ' ') != FALSE || strpos($_POST['gid'], ',') != FALSE)
+    {
+        echo json_encode(array('error' => "Invalid Parameter! Invalid Group Name!", 'invalid' => 'gid'));
+        die();
+    }
+    $error = FALSE;
+    switch($_POST['action'])
+    {
+        case 'new':
+            if(!isset($_POST['members']) || !is_array($_POST['members']))
+            {
+                echo json_encode(array('error' => "Invalid Parameter! A group requires at least one member", 'invalid' => 'members'));
+                die();
+            }
+            $result = make_new_group($_POST['gid'], $_POST['description'], $_POST['members'], $error);
+            if($result == FALSE && $error == FALSE)
+            {
+                $error = "Failed to create new group!";
+            }
+            break;
+        default:
+            $error = 'Unknown action '.$_POST['action'];
+            break;
+    }
+    if($error)
+    {
+        echo json_encode(array('error' => $error));
+    }
+    else
+    {
+        echo json_encode(array('success' => 0));
+    }
 }
 else if(strtoupper($_SERVER['REQUEST_METHOD']) == 'GET')
 {

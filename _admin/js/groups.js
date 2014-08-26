@@ -1,3 +1,35 @@
+function groupExecute()
+{
+    var action;
+    var selected = [];
+    switch($("#session_action")[0].value)
+    {
+        case "none":
+            return;
+        case "del":
+            action = "delete";
+            break;
+        case "new":
+            window.location = "group_new.php";
+            break;
+    }
+    var selected_rows = $('#group_table tr.selected');
+    if(selected_rows.length < 1)
+    {
+        return;
+    }
+    for(i = 0; i < selected_rows.length; i++)
+    {
+        selected.push(selected_rows[i].childNodes[0].innerHTML);
+    }
+    $.ajax({
+        url: 'ajax/sessions.php',
+        data: {'sids':selected,'action':action},
+        type: 'post',
+        dataType: 'json',
+        success: session_exec_done});
+}
+
 function renderGroupName(data, type, row)
 {
     return '<a href="group_edit.php?gid='+data+'">'+data+'</a>';
