@@ -42,9 +42,7 @@ function do_login_init()
 {
     init_dialog();
     var login_link = $(".links a[href*='login']");
-    login_link
-        .button()
-        .click(open_dialog);
+    login_link.click(open_dialog);
     if($('#login_main_form').length > 0)
     {
         $("#login_main_form").validate({

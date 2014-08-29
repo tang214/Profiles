@@ -102,7 +102,7 @@ $page->body = '
         <table>
             <tr><td>Email:</td><td><input type="text" name="email" id="email"/></td><td><label class="error" for="email" style="color:red"/></td></tr>
             <tr><td>Username:</td><td><input type="text" name="uid" id="uid"/></td><td><label class="error" for="uid" style="color:red"/></td></tr>
-            <tr><td>Password:</td><td><input type="password" name="password" id="password"/></td><td><label for="password" title=""/></td></tr>
+            <tr><td>Password:</td><td><input type="password" name="password" id="password" class="pass"/></td><td><label class="error" for="password" title=""/></td></tr>
             <tr><td>Confirm Password:</td><td><input type="password" name="password2"/></td><td><label class="error" for="password2" style="color:red"/></td></tr>
             <tr><td colspan="3">'.$captcha->draw_captcha(true, true).'</td></tr>
             '.$return.'

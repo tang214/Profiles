@@ -15,6 +15,9 @@ class ProfilesPage extends FlipPage
 
     function add_css()
     {
+        $css_tag = $this->create_open_tag('link', array('rel'=>'stylesheet', 'href'=>'css/jquery-ui.css', 'type'=>'text/css'), true);
+        $this->add_head_tag($css_tag);
+
         $css_tag = $this->create_open_tag('link', array('rel'=>'stylesheet', 'href'=>'css/profiles.css', 'type'=>'text/css'), true);
         $this->add_head_tag($css_tag);
     }
