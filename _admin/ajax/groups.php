@@ -35,17 +35,8 @@ function groupToArray($group)
     return $res;
 }
 
-function make_new_group($gid, $desc, $members, &$error)
+function get_rds_from_post_value($members, $server, &$error)
 {
-    $server = new FlipsideLDAPServer();
-    //Make sure gid is available
-    $groups = $server->getGroups("(cn=".$gid.")");
-    if($groups != FALSE && count($groups) > 0)
-    {
-        $error = "Group name already in use!";
-        return FALSE;
-    }
-    //Convert members to rdns
     $member_dns = array();
     for($i = 0; $i < count($members); $i++)
     {
@@ -56,7 +47,7 @@ function make_new_group($gid, $desc, $members, &$error)
             $groups = $server->getGroups("(cn=".substr($members[$i], 7).")");
             if($groups != FALSE && isset($groups[0]))
             {
-                $rdn = $groups[0]->dn; 
+                $rdn = $groups[0]->dn;
             }
         }
         else
@@ -82,8 +73,112 @@ function make_new_group($gid, $desc, $members, &$error)
         }
         array_push($member_dns, $rdn);
     }
+    return $member_dns;
+}
+
+function make_new_group($gid, $desc, $members, &$error)
+{
+    $server = new FlipsideLDAPServer();
+    //Make sure gid is available
+    $groups = $server->getGroups("(cn=".$gid.")");
+    if($groups != FALSE && count($groups) > 0)
+    {
+        $error = "Group name already in use!";
+        return FALSE;
+    }
+    //Convert members to rdns
+    $member_dns = get_rds_from_post_value($members, $server, $error);
+    if($member_dns == FALSE)
+    {
+        return FALSE;
+    }
     $group = FlipsideUserGroup::newGroup($gid, $desc, $member_dns);
     return $server->writeObject($group);
+}
+
+function get_group_class($group)
+{
+    for($i = 0; $i < count($group->objectClass); $i++)
+    {
+        if(strcasecmp($group->objectClass[$i],"groupOfUniqueNames") == 0)
+        {
+            return "groupOfUniqueNames";
+        }
+    }
+    return "unknown";
+}
+
+function populate_members($group, &$change, $members)
+{
+    $class = get_group_class($group);
+    if($class == "unknown")
+    {
+        echo json_encode(array('error' => "Internal Error! Unknown Group Class! ".print_r($group->objectClass, TRUE)));
+        die();
+    }
+    switch($class)
+    {
+        case "groupOfUniqueNames":
+            $change['uniqueMember'] = $members;
+            break;
+        default:
+            echo json_encode(array('error' => "Internal Error! Don't know how to handle class ".$class));
+            die();
+    }
+}
+
+function edit_existing_group($gid, $desc, $members, &$error)
+{
+    if(!isset($_POST['old_gid']))
+    {
+        //Assume it's the same...
+        $_POST['old_gid'] = $gid;
+    }
+    if($_POST['old_gid'] != $gid)
+    {
+        $error = "Not Implemented! Haven't added gid change support yet!";
+        return FALSE;
+    }
+    else
+    {
+        unset($_POST['old_gid']);
+    }
+    $server = new FlipsideLDAPServer();
+    //Make sure gid is available
+    $groups = $server->getGroups("(cn=".$gid.")");
+    if($groups == FALSE || count($groups) == 0)
+    {
+        $error = "Group does not exist!";
+        return FALSE;
+    }
+    //Convert members to rdns
+    $member_dns = get_rds_from_post_value($members, $server, $error);
+    if($member_dns == FALSE)
+    {
+        return FALSE;
+    }
+    $change = array();
+    unset($_POST['gid']);
+    unset($_POST['members']);
+    if(isset($_POST['description']))
+    {
+        if(strlen($_POST['description']) > 0)
+        {
+            $change['description'] = $_POST['description'];
+        }
+        unset($_POST['description']);
+    }
+    populate_members($groups[0], $change, $member_dns);
+    if($groups[0]->setAttribs($change))
+    {
+        echo json_encode(array('success' => 0, 'changes'=>$change, 'unset'=>$_POST));
+        die();
+    }
+    else
+    {
+        $error = "Failed to set prop!";
+        return FALSE;
+    }
 }
 
 if(strtoupper($_SERVER['REQUEST_METHOD']) == 'POST')
@@ -116,6 +211,18 @@ if(strtoupper($_SERVER['REQUEST_METHOD']) == 'POST')
             if($result == FALSE && $error == FALSE)
             {
                 $error = "Failed to create new group!";
+            }
+            break;
+        case 'edit':
+            if(!isset($_POST['members']) || !is_array($_POST['members']))
+            {
+                echo json_encode(array('error' => "Invalid Parameter! A group requires at least one member", 'invalid' => 'members'));
+                die();
+            }
+            $result = edit_existing_group($_POST['gid'], $_POST['description'], $_POST['members'], $error);
+            if($result == FALSE && $error == FALSE)
+            {
+                $error = "Failed to edit group!";
             }
             break;
         default:

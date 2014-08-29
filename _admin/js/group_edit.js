@@ -135,7 +135,7 @@ function group_to_html(gid)
     div.append('<br/>');
     div.append(gid);
     div.dblclick(gid, group_open);
-    div.attr("id", "group="+gid);
+    div.attr("id", "group->"+gid);
     $.ajax({
         url: 'ajax/groups.php?gid='+gid,
         type: 'get',
@@ -391,7 +391,7 @@ function group_data_submitted(form)
     } 
     $.ajax({
         url: 'ajax/groups.php',
-        data: $(form).serialize()+members_str,
+        data: $(form).serialize()+members_str+"&action=edit",
         type: 'post',
         dataType: 'json',
         success: group_submit_done});
