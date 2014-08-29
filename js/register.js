@@ -71,22 +71,25 @@ function validate_pass2(value, element, params)
 
 function form_submit_done(data, textStatus, jqXHR)
 {
-    var json = eval(data);
-    if(json.status == 0)
+    if(data.error === undefined)
     {
-        window.location.replace('index.php');
+        window.location.replace('thanks.php');
     }
     else
     {
-        alert(json.msg);
-        console.log(json);
+        alert(data.error);
+        console.log(data);
     }
 }
 
-function submit_registration_form()
+function submit_registration_form(form)
 {
-    var form = $('#form');
-    $.post('register.php', form.serializeArray(), form_submit_done, 'json');
+    $.ajax({
+        url: '/ajax/register.php',
+        data: $(form).serialize(),
+        type: 'post',
+        dataType: 'json',
+        success: form_submit_done});
 }
 
 function init_register_page()
