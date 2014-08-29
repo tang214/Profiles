@@ -4,7 +4,7 @@ function pending_submit_done(data)
 {
     if(data.overall == true)
     {
-        pendingTable.ajax.reload();
+        $("#pending_table").dataTable().api().ajax.reload();
     }
     else
     {
