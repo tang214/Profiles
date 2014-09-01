@@ -35,10 +35,11 @@ function login_submit_done(data)
 function login_submitted(form)
 {
     $.ajax({
-        url: '/ajax/login.php',
+        url: 'https://profiles.burningflipside.com/ajax/login.php',
         data: $(form).serialize(),
         type: 'post',
         dataType: 'json',
+        xhrFields: {withCredentials: true},
         success: login_submit_done});
 }
 
