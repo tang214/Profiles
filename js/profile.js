@@ -90,8 +90,8 @@ function do_init()
 
     cropper = new Croppic('jpegPhoto', {
          modal: true,
-         uploadUrl: 'upload.php',
-         cropUrl: 'save.php'
+         uploadUrl: '/ajax/upload.php',
+         cropUrl: '/ajax/save.php'
     });
     start_populate_form();
     $("#profile").validate({
