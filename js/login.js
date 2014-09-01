@@ -3,13 +3,17 @@ function init_dialog()
     $("#login-form").dialog({
         autoOpen: false,
         modal: true,
+        width: '25em'
     });
 }
 
-function open_dialog()
+function open_dialog(event)
 {
     $("#login-form").dialog("open");
-    event.preventDefault();
+    if(event != undefined && event != null)
+    {
+        event.preventDefault();
+    }
 }
 
 function login_submit_done(data)
@@ -43,6 +47,8 @@ function do_login_init()
     init_dialog();
     var login_link = $(".links a[href*='login']");
     login_link.click(open_dialog);
+    login_link.removeAttr('href');
+    login_link.css('cursor', 'pointer');
     if($('#login_main_form').length > 0)
     {
         $("#login_main_form").validate({
