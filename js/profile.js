@@ -76,9 +76,14 @@ function profile_submit_done(data)
 
 function profile_data_submitted(form)
 {
+    var jpegPhoto = '';
+    if($('#jpegPhoto img').length > 0)
+    {
+        jpegPhoto = '&jpegPhoto='+encodeURIComponent($('#jpegPhoto img').attr('src').substring(23));
+    }
     $.ajax({
         url: '/ajax/user.php',
-        data: $(form).serialize(),
+        data: $(form).serialize()+jpegPhoto,
         type: 'post',
         dataType: 'json',
         success:profile_submit_done});

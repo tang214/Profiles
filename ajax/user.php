@@ -147,6 +147,14 @@ if(strtoupper($_SERVER['REQUEST_METHOD']) == 'POST')
         }
         unset($_POST['st']);
     }
+    if(isset($_POST['jpegPhoto']))
+    {
+        if(strlen($_POST['jpegPhoto']) > 0)
+        {
+            $change['jpegPhoto'] = base64_decode($_POST['jpegPhoto']);
+        }
+        unset($_POST['jpegPhoto']);
+    }
     if($user_copy->setAttribs($change))
     {
         echo json_encode(array('success' => 0, 'changes'=>$change, 'unset'=>$_POST));
