@@ -104,8 +104,43 @@ function get_group_class($group)
         {
             return "groupOfUniqueNames";
         }
+        if(strcasecmp($group->objectClass[$i],"groupOfNames") == 0)
+        {
+            return "groupOfNames";
+        }
+        if(strcasecmp($group->objectClass[$i],"posixGroup") == 0)
+        {
+            return "posixGroup";
+        }
     }
     return "unknown";
+}
+
+function members_to_uid_array($members)
+{
+    $res = array();
+    for($i = 0; $i < count($members); $i++)
+    {
+        if(strncmp($members[$i], "uid=", 4) != 0)
+        {
+            if(strncmp($members[$i], "cn=", 3) != 0)
+            {
+                echo json_encode(array('error' => "Invalid Parameter! Cannot add a group to a posixGroup!"));
+                die();
+            }
+            else
+            {
+                echo json_encode(array('error' => "Internal Error! Cannot process member ".$members[$i]));
+                die();
+            }
+        }
+        else
+        {
+            $member_bits = explode(',', $members[$i]);
+            array_push($res, substr($member_bits[0], 4));
+        }
+    }
+    return $res;
 }
 
 function populate_members($group, &$change, $members)
@@ -120,6 +155,12 @@ function populate_members($group, &$change, $members)
     {
         case "groupOfUniqueNames":
             $change['uniqueMember'] = $members;
+            break;
+        case "groupOfNames":
+            $change['member'] = $members;
+            break;
+        case "posixGroup":
+            $change['memberUID'] = members_to_uid_array($members);
             break;
         default:
             echo json_encode(array('error' => "Internal Error! Don't know how to handle class ".$class));
