@@ -41,7 +41,8 @@ class ProfilesAdminPage extends FlipPage
     {
         $admin_menu = array(
             'Edit Groups'=>'group_edit.php',
-            'Edit Users'=>'user_edit.php'
+            'Edit Users'=>'user_edit.php',
+            'Edit CAPTCHAs'=>'capthca_edit.php'
         );
         $this->add_link('Admin', 'https://profiles.burningflipside.com/_admin/index.php', $admin_menu);
         $this->add_link('Logout', 'https://profiles.burningflipside.com/logout.php');
