@@ -1,6 +1,7 @@
 #content
 {
     margin: 20px 15% 0 15%; 
+    width: 70%
 }
 
 #content h1 
@@ -28,6 +29,15 @@
     font-weight: bold;
 }
 
+.login-container {
+    max-width: 330px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
 @media screen and (max-width: 40.5em) {
-    #content { margin: 20px 20px 0 20px }
+    #content { margin: 10px 10px 0 10px }
+    .login-container { position: absolute }
+    .imgCropper { display: none }
 }

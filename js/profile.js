@@ -4,20 +4,23 @@ function validate_zip(value, element)
 {
     if(value.length > 0)
     {
-        //Make sure this is either a 5 or 5+4 zip code
-        if(/^\d{5}(?:-\d{4})?$/.test(value) == false)
+        if($('#c').val() == 'US')
         {
-            return this.optional(element);
-        }
-        try{
-            var val = $.ajax('/ajax/zip_proxy.php?zip='+value, {async: false});
-            var city = val.responseJSON.city;
-            var state = val.responseJSON.state_short;
-            $("#l").val(city);
-            $("#st").val(state);
-            return true;
-        } catch(err) {
-            return this.optional(element);
+            //Make sure this is either a 5 or 5+4 zip code
+            if(/^\d{5}(?:-\d{4})?$/.test(value) == false)
+            {
+                return this.optional(element);
+            }
+            try{
+                var val = $.ajax('/ajax/zip_proxy.php?zip='+value, {async: false});
+                var city = val.responseJSON.city;
+                var state = val.responseJSON.state_short;
+                $("#l").val(city);
+                $("#st").val(state);
+                return true;
+            } catch(err) {
+                return this.optional(element);
+            }
         }
     }
     else
@@ -41,12 +44,21 @@ function finish_populate_form(data, textStatus, jqXHR)
         $('#street').val(json.postalAddress);
         $('#zip').val(json.postalCode);
         $('#l').val(json.l);
-        $('#st').val(json.st);
         cropper.reset();
-        if(json.jpegPhoto.length > 0)
+        if(json.jpegPhoto != undefined && json.jpegPhoto.length > 0)
         {
             cropper.obj.append('<img src="data:image/jpeg;base64,'+json.jpegPhoto+'">');
         }
+        if(json.c != undefined && json.c.length > 0)
+        {
+            $('#c').val(json.c);
+        }
+        else
+        {
+            //Default to the US
+            $('#c').val('US');
+        }
+        $('#st').val(json.st);
         //window.console.error(json);
     }
     else
@@ -55,9 +67,71 @@ function finish_populate_form(data, textStatus, jqXHR)
     }
 }
 
-function start_populate_form()
+function country_value_changed()
+{
+    var country = $(this).val();
+    $.ajax({
+            url: '/ajax/states.php?c='+country,
+            type: 'get',
+            dataType: 'json',
+            success: populate_states});
+}
+
+function populate_countries(data)
+{
+    var countries = data.countries;
+    var dropdown = $('#c');
+    for(var propertyName in countries)
+    {
+        $('<option\>', {value: propertyName, text: countries[propertyName]}).appendTo(dropdown);
+    }
+    dropdown.on('change', country_value_changed);
+}
+
+function populate_states(data)
+{
+    if(data.states == undefined)
+    {
+        //We don't know how to handle this country. Just let the user input the state freeform
+        $('#st').replaceWith($('<input/>', {id: 'st', name: 'st', type: 'text'}));
+    }
+    else
+    {
+        var states = data.states;
+        $('[for=st]').html(states.states_label+':');
+        $('#st').replaceWith($('<select/>', {id: 'st', name: 'st'}));
+        var dropdown = $('#st');
+        for(var state in states.states)
+        {
+            $('<option/>', {value: state, text: states.states[state]}).appendTo(dropdown);
+        }
+    }
+}
+
+function start_user_population()
 {
     $.ajax('./ajax/user.php').done(finish_populate_form);
+}
+
+function populate_user_data()
+{
+    setTimeout(start_user_population, 300);
+}
+
+function start_populate_form()
+{
+    $.when(
+        $.ajax({
+            url: '/ajax/countries.php',
+            type: 'get',
+            dataType: 'json',
+            success: populate_countries}),
+        $.ajax({
+            url: '/ajax/states.php?c=US',
+            type: 'get',
+            dataType: 'json',
+            success: populate_states})
+    ).done(populate_user_data);
 }
 
 function profile_submit_done(data)
