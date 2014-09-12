@@ -27,15 +27,16 @@ else
 }
 
 $page->body = '
-<div id="content">
+<div id="content" class="container">
+    <div class="login-container">
     <h3>Burning Flipside Profile Login</h3>
-    <form id="login_main_form">
-        <table>
-            <tr><td>Username or email:</td><td><input type="text" name="username"/></td></tr>
-            <tr><td>Password:</td><td><input type="password" name="password"/></td></tr>'.$return.'
-            <tr><td>&nbsp;</td><td><input type="submit" name="submit" value="Login"/></td></tr>
-        </table>
+    <form id="login_main_form" role="form">
+        <input class="form-control" type="text" name="username" placeholder="Username or Email" required autofocus/>
+        <input class="form-control" type="password" name="password" placeholder="Password" required/>
+        '.$return.'
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Login</button>
     </form>
+    </div>
 </div>';
 
 $page->print_page();
