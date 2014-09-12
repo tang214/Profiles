@@ -18,6 +18,12 @@ class ProfilesPage extends FlipPage
         $css_tag = $this->create_open_tag('link', array('rel'=>'stylesheet', 'href'=>'css/jquery-ui.css', 'type'=>'text/css'), true);
         $this->add_head_tag($css_tag);
 
+        $css_tag = $this->create_open_tag('link', array('rel'=>'stylesheet', 'href'=>'css/bootstrap.min.css', 'type'=>'text/css'), true);
+        $this->add_head_tag($css_tag);
+
+        $css_tag = $this->create_open_tag('link', array('rel'=>'stylesheet', 'href'=>'css/bootstrap-theme.min.css', 'type'=>'text/css'), true);
+        $this->add_head_tag($css_tag);
+
         $css_tag = $this->create_open_tag('link', array('rel'=>'stylesheet', 'href'=>'css/profiles.css', 'type'=>'text/css'), true);
         $this->add_head_tag($css_tag);
     }
@@ -60,22 +66,34 @@ class ProfilesPage extends FlipPage
         $script_close_tag = $this->create_close_tag('script');
         $this->add_head_tag($script_start_tag.$script_close_tag);
 
+        $script_start_tag = $this->create_open_tag('script', array('src'=>'js/bootstrap.min.js'));
+        $this->add_head_tag($script_start_tag.$script_close_tag);
+
         $script_start_tag = $this->create_open_tag('script', array('src'=>'js/login.js'));
         $this->add_head_tag($script_start_tag.$script_close_tag);
     }
 
     function add_login_form()
     {
-        $this->body .= '<div id="login-form" title="Login" style="display: none;">
-                            <fieldset>
-                                <form id="login_dialog_form">
-                                    <table>
-                                        <tr><td>Username or email:</td><td><input type="text" name="username"/></td></tr>
-                                        <tr><td>Password:</td><td><input type="password" name="password"/></td></tr>
-                                        <tr><td>&nbsp;</td><td><input type="submit" name="submit" value="Login"/></td></tr>
-                                    </table>
-                                </form>
-                            </fieldset>
+        $this->body .= '<div class="modal fade" role="dialog" id="login-dialog" title="Login" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal">
+                                            <span aria-hidden="true">&times;</span>
+                                            <span class="sr-only">Close</span>
+                                        </button>
+                                        <h4 class="modal-title">Login</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="login_dialog_form" role="form">
+                                            <input class="form-control" type="text" name="username" placeholder="Username or Email" required autofocus/>
+                                            <input class="form-control" type="password" name="password" placeholder="Password" required/>
+                                            <button class="btn btn-lg btn-primary btn-block" type="submit">Login</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                         </div>';
     }
 }
