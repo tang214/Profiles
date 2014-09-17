@@ -1,13 +1,16 @@
 <?php
 require_once("static.countries.php");
-if(strtoupper($_SERVER['REQUEST_METHOD']) == 'GET')
+require_once("class.FlipJax.php");
+class CountryAjax extends FlipJax
 {
-    echo json_encode(array('success'=>0, 'countries'=>$countries));
+    function get($params)
+    {
+        global $countries;
+        return array('countries'=>$countries);
+    }
 }
-else
-{
-    echo json_encode(array('error' => "Unrecognized Operation ".$_SERVER['REQUEST_METHOD']));
-    die();
-}
+
+$ajax = new CountryAjax();
+$ajax->run();
 /* vim: set tabstop=4 shiftwidth=4 expandtab: */
 ?>
