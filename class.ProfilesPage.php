@@ -62,15 +62,9 @@ class ProfilesPage extends FlipPage
 
     function add_script()
     {
-        $script_start_tag = $this->create_open_tag('script', array('src'=>'js/jquery.validate.js'));
-        $script_close_tag = $this->create_close_tag('script');
-        $this->add_head_tag($script_start_tag.$script_close_tag);
-
-        $script_start_tag = $this->create_open_tag('script', array('src'=>'js/bootstrap.min.js'));
-        $this->add_head_tag($script_start_tag.$script_close_tag);
-
-        $script_start_tag = $this->create_open_tag('script', array('src'=>'js/login.js'));
-        $this->add_head_tag($script_start_tag.$script_close_tag);
+        $this->add_js_from_src('/js/jquery.validate.js');
+        $this->add_js_from_src('/js/bootstrap.min.js');
+        $this->add_js_from_src('/js/login.js');
     }
 
     function add_login_form()
