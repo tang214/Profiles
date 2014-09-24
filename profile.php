@@ -33,6 +33,8 @@ $page->add_head_tag($script_start_tag.$script_close_tag);
 $script_start_tag = $page->create_open_tag('script', array('src'=>'js/profile.js'));
 $page->add_head_tag($script_start_tag.$script_close_tag);
 
+$page->add_notification('All the information on this page is optional. However, it will make the process of signing up for Ticket Requests, Theme Camp Registrations, Art Project Registrations, and Volunteer Signup faster and easier. If you have any concerns with providing this information we suggest your read our <a href="http://www.burningflipside.com/about/privacy" class="alert-link" target="_new">Privacy Policy</a> or contact the <a href="http://www.burningflipside.com/contact/Website%20Feedback" class="alert-link" target="_new">Technology Team</a> or the <a href="http://www.burningflipside.com/contact/AAR-LLC" class="alert-link" target="_new">AAR Board of Directors</a> with your concerns.', $page::NOTIFICATION_INFO);
+
 $page->body = '
 <div id="content">
     <fieldset>
