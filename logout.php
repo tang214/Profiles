@@ -4,7 +4,7 @@ FlipSession::end();
 require_once('class.ProfilesPage.php');
 $page = new ProfilesPage('Burning Flipside Profiles');
 
-$page->body = '
+$page->body .= '
 <div id="content">
     You have been logged out. Click <a href="login.php">here</a> to log back in.
 </div>';
