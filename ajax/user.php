@@ -155,9 +155,18 @@ if(strtoupper($_SERVER['REQUEST_METHOD']) == 'POST')
         }
         unset($_POST['jpegPhoto']);
     }
+    if(isset($_POST['c']))
+    {
+        if(strlen($_POST['c']) > 0)
+        {
+            $change['c'] = $_POST['c'];
+        }
+        unset($_POST['c']);
+    }
     if($user_copy->setAttribs($change))
     {
         echo json_encode(array('success' => 0, 'changes'=>$change, 'unset'=>$_POST));
+        FlipSession::refresh_user();
     }
     else
     {
