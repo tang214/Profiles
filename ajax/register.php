@@ -27,6 +27,19 @@ if(strtoupper($_SERVER['REQUEST_METHOD']) == 'POST')
         echo json_encode(array('error' => "Invalid Parameter! Expected uid to be set"));
         die();
     }
+    else
+    {
+        if(strpos($_POST["uid"], ',') !== FALSE)
+        {
+            echo json_encode(array('error' => "Invalid Parameter! uid cannot contain ,"));
+            die();
+        }
+        else if(strpos($_POST["uid"], '=') !== FALSE)
+        {
+            echo json_encode(array('error' => "Invalid Parameter! uid cannot contain ="));
+            die();
+        }
+    }
     if(!isset($_POST["password"]))
     {
         echo json_encode(array('error' => "Invalid Parameter! Expected password to be set"));
