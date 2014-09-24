@@ -25,6 +25,10 @@ else
 {
     $return = '';
 }
+if(isset($_GET['failed']))
+{
+    $page->add_notification('Login Failed! <a href="/reset.php" class="alert-link">Click here to reset your password.</a>', $page::NOTIFICATION_FAILED);
+}
 
 $page->body = '
 <div id="content" class="container">
