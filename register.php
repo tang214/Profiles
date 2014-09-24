@@ -32,19 +32,46 @@ else
     $return = '';
 }
 
+if(FlipSession::is_logged_in())
+{
+    $page->add_notification('You are currently logged in to the system. Are you sure you want to register another account?');
+}
+
 $page->body = '
 <div id="content">
-    <h3>Burning Flipside Profile Registration</h3>
-    <form action="register.php" method="post" name="form" id="form">
-        <table>
-            <tr><td>Email:</td><td><input type="text" name="email" id="email"/></td><td><label class="error" for="email" style="color:red"/></td></tr>
-            <tr><td>Username:</td><td><input type="text" name="uid" id="uid"/></td><td><label class="error" for="uid" style="color:red"/></td></tr>
-            <tr><td>Password:</td><td><input type="password" name="password" id="password" class="pass"/></td><td><label class="error" for="password" title=""/></td></tr>
-            <tr><td>Confirm Password:</td><td><input type="password" name="password2"/></td><td><label class="error" for="password2" style="color:red"/></td></tr>
-            <tr><td colspan="3">'.$captcha->draw_captcha(true, true).'</td></tr>
-            '.$return.'
-            <tr><td>&nbsp;</td><td><input type="submit" name="submit" value="Register"/></td></tr>
-        </table>
+    <form action="register.php" method="post" name="form" id="form" role="form">
+        <fieldset>
+            <legend>Burning Flipside Profile Registration</legend>
+        </fieldset>
+        <div class="form-group">
+            <label for="email" class="col-sm-2 control-label">Email:</label>
+            <div class="col-sm-10">
+                <input class="form-control" type="text" name="email" id="email" data-toggle="tooltip" data-placement="top" title="The email to use for this account. NOTE: You must be able to verify you own this email address by responding to an email." required/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="uid" class="col-sm-2 control-label">Username:</label>
+            <div class="col-sm-10">
+                <input class="form-control" type="text" name="uid" id="uid" required/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="password" class="col-sm-2 control-label">Password:</label>
+            <div class="col-sm-10">
+                <input type="password" name="password" id="password" class="pass form-control" data-toggle="tooltip" data-placement="top" title="Your password must be at least 4 characters long, contain a lower case letter, uppercase letter, and a number." required/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="password2" class="col-sm-2 control-label">Confirm Password:</label>
+            <div class="col-sm-10">
+                <input class="form-control" type="password" name="password2" required/>
+            </div>
+        </div>
+        <div class="form-group">
+            '.$captcha->draw_captcha(true, true).'
+        </div>
+        '.$return.'
+        <button id="submit" type="submit" name="submit" class="btn btn-default">Register</button>
     </form>
 </div>';
 
