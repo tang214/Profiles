@@ -78,7 +78,7 @@ else if(strtoupper($_SERVER['REQUEST_METHOD']) == 'POST')
     for($i = 0; $i < count($_POST['sids']); $i++)
     {
         $temp = FALSE;
-        $mg = '';
+        $msg = '';
         switch($_POST['action'])
         {
             case 'delete':
