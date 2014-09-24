@@ -51,7 +51,7 @@ function validate_complexity(value, element, params)
            msg = "Very strong password";
            break;
     }
-    $("#password").tooltip("option", "content", msg+". Estimated password crack time is "+res.crack_time+"s");
+    $("#password").tooltip({"title": msg+". Estimated password crack time is "+res.crack_time+"s"});
     return true;
 }
 
