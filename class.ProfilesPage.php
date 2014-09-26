@@ -21,6 +21,9 @@ class ProfilesPage extends FlipPage
         $css_tag = $this->create_open_tag('link', array('rel'=>'stylesheet', 'href'=>'css/bootstrap.min.css', 'type'=>'text/css'), true);
         $this->add_head_tag($css_tag);
 
+        $css_tag = $this->create_open_tag('link', array('rel'=>'stylesheet', 'href'=>'/css/bootstrap-formhelpers.min.css', 'type'=>'text/css'), true);
+        $this->add_head_tag($css_tag);
+
         $css_tag = $this->create_open_tag('link', array('rel'=>'stylesheet', 'href'=>'css/bootstrap-theme.min.css', 'type'=>'text/css'), true);
         $this->add_head_tag($css_tag);
 
@@ -64,6 +67,7 @@ class ProfilesPage extends FlipPage
     {
         $this->add_js_from_src('/js/jquery.validate.js');
         $this->add_js_from_src('/js/bootstrap.min.js');
+        $this->add_js_from_src('/js/bootstrap-formhelpers.min.js');
         $this->add_js_from_src('/js/login.js');
     }
 
