@@ -1,5 +1,17 @@
 var cropper;
 
+function update_city_state(data)
+{
+    if(data.city !== undefined && $("#l").val() == '')
+    {
+        $("#l").val(data.city);
+    }
+    if(data.state_short !== undefined && $("#st").val() == '')
+    {
+        $("#st").val(data.state_short);
+    }
+}
+
 function validate_zip(value, element)
 {
     if(value.length > 0)
@@ -12,15 +24,21 @@ function validate_zip(value, element)
                 return this.optional(element);
             }
             try{
-                var val = $.ajax('/ajax/zip_proxy.php?zip='+value, {async: false});
-                var city = val.responseJSON.city;
-                var state = val.responseJSON.state_short;
-                $("#l").val(city);
-                $("#st").val(state);
-                return true;
+                $.ajax({
+                    url: '/ajax/zip_proxy.php',
+                    data: 'zip='+value,
+                    type: 'get',
+                    dataType: 'json',
+                    async: false,
+                    success: function(data){is_valid = (data.city !== undefined); update_city_state(data)}});
+                return is_valid;
             } catch(err) {
-                return this.optional(element);
+                return true;
             }
+        }
+        else
+        {
+            return true;
         }
     }
     else
@@ -67,47 +85,6 @@ function finish_populate_form(data, textStatus, jqXHR)
     }
 }
 
-function country_value_changed()
-{
-    var country = $(this).val();
-    $.ajax({
-            url: '/ajax/states.php?c='+country,
-            type: 'get',
-            dataType: 'json',
-            success: populate_states});
-}
-
-function populate_countries(data)
-{
-    var countries = data.countries;
-    var dropdown = $('#c');
-    for(var propertyName in countries)
-    {
-        $('<option\>', {value: propertyName, text: countries[propertyName]}).appendTo(dropdown);
-    }
-    dropdown.on('change', country_value_changed);
-}
-
-function populate_states(data)
-{
-    if(data.states == undefined)
-    {
-        //We don't know how to handle this country. Just let the user input the state freeform
-        $('#st').replaceWith($('<input/>', {id: 'st', name: 'st', type: 'text'}));
-    }
-    else
-    {
-        var states = data.states;
-        $('[for=st]').html(states.states_label+':');
-        $('#st').replaceWith($('<select/>', {id: 'st', name: 'st'}));
-        var dropdown = $('#st');
-        for(var state in states.states)
-        {
-            $('<option/>', {value: state, text: states.states[state]}).appendTo(dropdown);
-        }
-    }
-}
-
 function start_user_population()
 {
     $.ajax('./ajax/user.php').done(finish_populate_form);
@@ -120,18 +97,7 @@ function populate_user_data()
 
 function start_populate_form()
 {
-    $.when(
-        $.ajax({
-            url: '/ajax/countries.php',
-            type: 'get',
-            dataType: 'json',
-            success: populate_countries}),
-        $.ajax({
-            url: '/ajax/states.php?c=US',
-            type: 'get',
-            dataType: 'json',
-            success: populate_states})
-    ).done(populate_user_data);
+    populate_user_data();
 }
 
 function profile_submit_done(data)
@@ -143,9 +109,17 @@ function profile_submit_done(data)
     }
     else
     {
-        console.log(data.unset);
-        location.reload();
+        if($('#content .alert').length == 0)
+        {
+            add_notification($('#content'), 'Successfully applied changes', NOTIFICATION_SUCCESS);
+        }
+        else
+        {
+            add_notification($('#content'), 'Successfully applied changes yet again!', NOTIFICATION_SUCCESS);
+        }
+        window.scrollTo(0, 0);
     }
+    return false;
 }
 
 function profile_data_submitted(form)
@@ -161,6 +135,11 @@ function profile_data_submitted(form)
         type: 'post',
         dataType: 'json',
         success:profile_submit_done});
+}
+
+function delete_user()
+{
+    location = '/delete.php';
 }
 
 function do_init()
@@ -181,7 +160,6 @@ function do_init()
         },
         submitHandler: profile_data_submitted
     });
-    $("#reset").click(start_populate_form);
 }
 
 $(do_init);

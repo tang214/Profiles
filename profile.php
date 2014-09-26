@@ -44,71 +44,77 @@ $page->body = '
         <div class="form-group">
             <label class="col-sm-2 control-label">Username:</label>
             <div class="col-sm-10">
-                <label id="uid_label"></label>
+                <label class="form-control" id="uid_label" disabled></label>
             </div>
         </div>
         <div class="form-group">
             <label for="givenName" class="col-sm-2 control-label">First Name:</label>
             <div class="col-sm-10">
-                <input id="givenName" name="givenName" type="text" required/>
+                <input class="form-control" id="givenName" name="givenName" type="text"/>
             </div>
         </div>
+        <div class="clearfix visible-sm visible-md visible-lg"></div>
         <div class="form-group">
             <label for="sn" class="col-sm-2 control-label">Last Name:</label>
             <div class="col-sm-10">
-                <input id="sn" name="sn" type="text" required/>
+                <input class="form-control" id="sn" name="sn" type="text" required/>
             </div>
         </div>
+        <div class="clearfix visible-sm visible-md visible-lg"></div>
         <div class="form-group">
             <label for="displayName" class="col-sm-2 control-label">Burner Name:</label>
             <div class="col-sm-10">
-                <input id="displayName" name="displayName" type="text" />
+                <input class="form-control" id="displayName" name="displayName" type="text" />
             </div>
         </div>
+        <div class="clearfix visible-sm visible-md visible-lg"></div>
         <div class="form-group">
             <label for="mail" class="col-sm-2 control-label">Email:</label>
             <div class="col-sm-10">
-                <input id="mail" name="mail" type="text" required/>
+                <input class="form-control" id="mail" name="mail" type="text" required/>
+            </div>
+        </div>
+        <div class="clearfix visible-sm visible-md visible-lg"></div>
+        <div class="form-group">
+            <label for="c" class="col-sm-2 control-label">Country:</label>
+            <div class="col-sm-10">
+                <select class="form-control bfh-countries" id="c" name="c" data-country="US"></select>
             </div>
         </div>
         <div class="form-group">
             <label for="mobile" class="col-sm-2 control-label">Cell Number:</label>
             <div class="col-sm-10">
-                <input id="mobile" name="mobile" type="text"/>
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="c" class="col-sm-2 control-label">Country:</label>
-            <div class="col-sm-10">
-                <select id="c" name="c"></select>
+                <input class="form-control bfh-phone" data-country="c" id="mobile" name="mobile" type="text"/>
             </div>
         </div>
         <div class="clearfix visible-md visible-lg"></div>
         <div class="form-group">
             <label for="street" class="col-sm-2 control-label">Street Address:</label>
             <div class="col-sm-10">
-                <input id="street" name="street" type="text"/>
+                <textarea class="form-control" id="street" rows="2" name="street" type="text"></textarea>
             </div>
-        </div> 
+        </div>
+        <div class="clearfix visible-sm visible-md visible-lg"></div>
         <div class="form-group">
             <label for="zip" class="col-sm-2 control-label">Postal/Zip Code:</label>
             <div class="col-sm-10">
-                <input id="zip" name="zip" type="text"/>
+                <input class="form-control" id="zip" name="zip" type="text"/>
             </div>
         </div>
+        <div class="clearfix visible-sm visible-md visible-lg"></div>
         <div class="form-group">
             <label for="l" class="col-sm-2 control-label">City:</label>
             <div class="col-sm-10">
-                <input id="l" name="l" type="text"/>
+                <input class="form-control" id="l" name="l" type="text"/>
             </div>
         </div>
         <div class="form-group">
             <label for="st" class="col-sm-2 control-label">State:</label>
             <div class="col-sm-10">
-                <select id="st" name="st" type="text"></select>
+                <select class="form-control bfh-states" data-country="c" id="st" name="st" type="text"></select>
             </div>
         </div>
-        <div class="clearfix visible-md visible-lg"></div>
+        <div class="clearfix visible-sm visible-md visible-lg"></div>
         <div class="form-group imgCropper">
             <label for="jpegPhoto" class="col-sm-2 control-label">Profile Photo:</label>
             <div class="col-sm-10">
@@ -117,12 +123,13 @@ $page->body = '
         </div>
         <div class="clearfix visible-md visible-lg"></div>
         <div class="col-sm-2">
-            <input type="reset" value="Discard Changes" id="reset"/>
-        </div>
-        <div class="col-sm-2">
-            <input type="submit" value="Save Changes" id="submit"/>
+            <input class="btn btn-default" type="submit" value="Save Changes" id="submit"/>
         </div>
     </form>
+    </fieldset>
+    <fieldset>
+        <legend>Other Options:</legend>
+        <button class="btn btn-default" onclick="delete_user()">Delete My Account&hellip;</button>
     </fieldset>
 </div>';
 
