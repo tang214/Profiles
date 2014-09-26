@@ -1,18 +1,4 @@
 <?php
-if($_SERVER["HTTPS"] != "on")
-{
-    header("Location: https://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"]);
-    exit();
-}
-require_once("class.FlipSession.php");
-$user = FlipSession::get_user(TRUE);
-if($user == FALSE)
-{
-    echo json_encode(array('error' => "Not Logged In!"));
-    die();
-}
-$is_admin = $user->isInGroupNamed("LDAPAdmins");
-
 function get_single_value_from_array($array)
 {
     if(!is_array($array))
@@ -29,201 +15,220 @@ function get_single_value_from_array($array)
     }
 }
 
-$uid = '';
-if(strtoupper($_SERVER['REQUEST_METHOD']) == 'POST')
+require_once("class.FlipsideLDAPServer.php");
+require_once("class.FlipJax.php");
+class UserAjax extends FlipJaxSecure
 {
-    if(!isset($_POST['uid']) || !is_string($_POST['uid']))
+    function validate_user_can_read_uid($uid)
     {
-        echo json_encode(array('error' => "Invalid Parameter! Expected uid as a string"));
-        die();
-    }
-    $uid = $_POST['uid'];
-    unset($_POST['uid']);
-    if(!isset($_POST['old_uid']))
-    {
-        //Assume it's the same...
-        $_POST['old_uid'] = $uid;
-    }
-    if($_POST['old_uid'] != $uid)
-    {
-        echo json_encode(array('error' => "Not Implemented! Haven't added uid change support yet!"));
-        die();
-    }
-    else
-    {
-        unset($_POST['old_uid']);
-    }
-    $server = new FlipsideLDAPServer();
-    $users = $server->getUsers("(uid=".$uid.")");
-    if($users == FALSE || !isset($users[0]))
-    {
-        echo json_encode(array('error' => "User not found!"));
-        die();
-    }
-    $user_copy = $users[0];
-    $change = array();
-    if(isset($_POST['givenName']))
-    {
-        if(strlen($_POST['givenName']) > 0)
+        if($this->user_in_group("LDAPAdmins"))
         {
-            $change['givenName'] = $_POST['givenName'];
+            return self::SUCCESS;
         }
-        unset($_POST['givenName']);
-    }
-    if(isset($_POST['sn']))
-    {
-        if(strlen($_POST['sn']) > 0)
+        $my_uid = $this->user->uid[0];
+        if($my_uid == FALSE)
         {
-            $change['sn'] = $_POST['sn'];
+            return array('err_code' => self::INTERNAL_ERROR, 'reason' => "Failed to obtain UID for user!");
         }
-        unset($_POST['sn']);
-    }
-    if(isset($_POST['displayName']))
-    {
-        if(strlen($_POST['displayName']) > 0)
+        if($my_uid != $uid)
         {
-            $change['displayName'] = $_POST['displayName'];
+            return array('err_code' => self::ACCESS_DENIED, 'reason' => "User must be a member of LDAPAdmins to access someone else's user!");
         }
-        unset($_POST['displayName']);
+        return self::SUCCESS;
     }
-    if(isset($_POST['mail']) && strlen($_POST['mail']) > 0)
-    {
-        $change['mail'] = $_POST['mail'];
-        unset($_POST['mail']);
-    }
-    if(isset($_POST['mobile']))
-    {
-        if(strlen($_POST['mobile']) > 0)
-        {
-            $change['mobile'] = $_POST['mobile'];
-        }
-        unset($_POST['mobile']);
-    }
-    if(isset($_POST['postalAddress']))
-    {
-        if(strlen($_POST['postalAddress']) > 0)
-        {
-            $change['postalAddress'] = $_POST['postalAddress'];
-        }
-        unset($_POST['postalAddress']);
-    }
-    else if(isset($_POST['street']))
-    {
-        if(strlen($_POST['street']) > 0)
-        {
-            $change['postalAddress'] = $_POST['street'];
-        }
-        unset($_POST['street']);
-    }
-    if(isset($_POST['postalCode']))
-    {
-        if(strlen($_POST['postalCode']) > 0)
-        {
-            $change['postalCode'] = $_POST['postalCode'];
-        }
-        unset($_POST['postalCode']);
-    }
-    else if(isset($_POST['zip']))
-    {
-        if(strlen($_POST['zip']) > 0)
-        {
-            $change['postalCode'] = $_POST['zip'];
-        }
-        unset($_POST['zip']);
-    }
-    if(isset($_POST['l']))
-    {
-        if(strlen($_POST['l']) > 0)
-        {
-            $change['l'] = $_POST['l'];
-        }
-        unset($_POST['l']);
-    }
-    if(isset($_POST['st']))
-    {
-        if(strlen($_POST['st']) > 0)
-        {
-            $change['st'] = $_POST['st'];
-        }
-        unset($_POST['st']);
-    }
-    if(isset($_POST['jpegPhoto']))
-    {
-        if(strlen($_POST['jpegPhoto']) > 0)
-        {
-            $change['jpegPhoto'] = base64_decode($_POST['jpegPhoto']);
-        }
-        unset($_POST['jpegPhoto']);
-    }
-    if(isset($_POST['c']))
-    {
-        if(strlen($_POST['c']) > 0)
-        {
-            $change['c'] = $_POST['c'];
-        }
-        unset($_POST['c']);
-    }
-    if($user_copy->setAttribs($change))
-    {
-        echo json_encode(array('success' => 0, 'changes'=>$change, 'unset'=>$_POST));
-        FlipSession::refresh_user();
-    }
-    else
-    {
-        echo json_encode(array('error' => "Failed to set prop!"));
-    }
-}
-else if(strtoupper($_SERVER['REQUEST_METHOD']) == 'GET')
-{
-    if(!isset($_GET['uid']))
-    {
-        $user_copy = $user;
-    }
-    else
-    {
-        $uid = $_GET['uid'];
-        if(!$is_admin && $uid != $user->uid[0])
-        {
-            echo json_encode(array('error' => "Unauthorized Access!"));
-            die();
-        }
-        $server = new FlipsideLDAPServer();
-        $users = $server->getUsers("(uid=".$uid.")");
-        if($users == FALSE || !isset($users[0]))
-        {
-            die('User not found!');
-        }
 
-        $user_copy = $users[0];
-        unset($users);
+    function get($params)
+    {
+        $user_copy = FALSE;
+        if(!isset($params['uid']))
+        {
+            $user_copy = FlipSession::get_user();
+        }
+        else
+        {
+            $uid = $params['uid'];
+            $res = $this->validate_user_can_read_uid($uid);
+            if($res != self::SUCCESS)
+            {
+                return $res;
+            }
+            $server = new FlipsideLDAPServer();
+            $users = $server->getUsers("(uid=".$uid.")");
+            if($users == FALSE || !isset($users[0]))
+            {
+                die('User not found!');
+            }
+
+            $user_copy = $users[0];
+            unset($users);
+        }
+        //Strip out password
+        $user_copy->userPassword = null;
+        //Flatten some arrays
+        $out = array();
+        $out['displayName'] = get_single_value_from_array($user_copy->displayName);
+        $out['givenName'] = get_single_value_from_array($user_copy->givenName);
+        $out['jpegPhoto'] = base64_encode(get_single_value_from_array($user_copy->jpegPhoto));
+        $out['mail'] = get_single_value_from_array($user_copy->mail);
+        $out['mobile'] = get_single_value_from_array($user_copy->mobile);
+        $out['uid'] = get_single_value_from_array($user_copy->uid);
+        $out['o'] = get_single_value_from_array($user_copy->o);
+        $out['title'] = get_single_value_from_array($user_copy->title);
+        $out['st'] = get_single_value_from_array($user_copy->st);
+        $out['l'] = get_single_value_from_array($user_copy->l);
+        $out['sn'] = get_single_value_from_array($user_copy->sn);
+        $out['cn'] = get_single_value_from_array($user_copy->cn);
+        $out['postalAddress'] = get_single_value_from_array($user_copy->postalAddress);
+        $out['postalCode'] = get_single_value_from_array($user_copy->postalCode);
+        $out['c'] = get_single_value_from_array($user_copy->c);
+        $out['dn'] = $user_copy->dn;
+        unset($user_copy);
+        return $out;
     }
-    //Strip out password
-    $user_copy->userPassword = null;
-    //Flatten some arrays
-    $out = array();
-    $out['displayName'] = get_single_value_from_array($user_copy->displayName);
-    $out['givenName'] = get_single_value_from_array($user_copy->givenName);
-    $out['jpegPhoto'] = base64_encode(get_single_value_from_array($user_copy->jpegPhoto));
-    $out['mail'] = get_single_value_from_array($user_copy->mail);
-    $out['mobile'] = get_single_value_from_array($user_copy->mobile);
-    $out['uid'] = get_single_value_from_array($user_copy->uid);
-    $out['o'] = get_single_value_from_array($user_copy->o);
-    $out['title'] = get_single_value_from_array($user_copy->title);
-    $out['st'] = get_single_value_from_array($user_copy->st);
-    $out['l'] = get_single_value_from_array($user_copy->l);
-    $out['sn'] = get_single_value_from_array($user_copy->sn);
-    $out['cn'] = get_single_value_from_array($user_copy->cn);
-    $out['postalAddress'] = get_single_value_from_array($user_copy->postalAddress);
-    $out['postalCode'] = get_single_value_from_array($user_copy->postalCode);
-    $out['c'] = get_single_value_from_array($user_copy->c);
-    $out['dn'] = $user_copy->dn;
-    unset($user_copy);
-    echo json_encode($out);
+
+    function do_post_rename($new_uid, $old_uid)
+    {
+        return array('err_code' => self::INVALID_PARAM, 'action_name' => 'rename');
+    }
+
+    function do_post_delete($uid)
+    {
+        $server = new FlipsideLDAPServer();
+        $user_copy = FALSE;
+        if($uid != null)
+        {
+            $res = $this->validate_user_can_read_uid($uid);
+            if($res != self::SUCCESS)
+            {
+                return $res;
+            }
+            $users = $server->getUsers("(uid=".$uid.")");
+            if($users == FALSE || !isset($users[0]))
+            {
+                return array('err_code' => self::INTERNAL_ERROR, 'reason' => "User not found!");
+            }
+            $user_copy = $users[0];
+        }
+        else
+        {
+            $user_copy = FlipSession::get_user();
+        }
+        if($server->delete_dn($user_copy->dn))
+        {
+            return self::SUCCESS;
+        }
+        return array('err_code' => self::INTERNAL_ERROR, 'reason' => $server->lastError());
+    }
+
+    function do_post_action($params)
+    {
+        switch($params['action'])
+        {
+            case 'rename':
+                return $this->do_post_rename($params['uid'], $params['old_uid']);
+            case 'delete':
+                if(!isset($params['uid']))
+                {
+                    $params['uid'] = null;
+                }
+                return $this->do_post_delete($params['uid']);
+            default:
+                return array('err_code' => self::INVALID_PARAM, 'action_name' => $params['action']);
+        }
+    }
+
+    function do_post_user_edit($params)
+    {
+        $uid = $params['uid'];
+        unset($params['uid']);
+        if(!isset($params['old_uid']))
+        {
+            //Assume it's the same...
+            $params['old_uid'] = $uid;
+        }
+        if($params['old_uid'] != $uid)
+        {
+            return $this->post_rename($uid, $params['old_uid']);
+        }
+        else
+        {
+            unset($params['old_uid']);
+        }
+        $res = $this->validate_user_can_read_uid($uid);
+        if($res != self::SUCCESS)
+        {
+            return $res;
+        }
+        $user_copy = $this->user;
+        if($this->user->uid[0] != $uid)
+        {
+            $server = FlipsideLDAPServer();
+            $users = $server->getUsers("(uid=".$uid.")");
+            if($users == FALSE || !isset($users[0]))
+            {
+                return array('err_code' => self::INTERNAL_ERROR, 'reason' => "User not found!");
+            }
+            $user_copy = $users[0]; 
+        }
+        $change = array();
+        $valid_params = array('givenName', 'sn', 'displayName', 'mail', 'mobile', 'postalAddress', 'postalCode', 'l', 'st', 'jpegPhoto', 'c');
+        for($i = 0; $i < count($valid_params); $i++)
+        {
+            if(isset($params[$valid_params[$i]]))
+            {
+                if(strlen($params[$valid_params[$i]]) > 0)
+                {
+                    $change[$valid_params[$i]] = $params[$valid_params[$i]];
+                }
+                unset($params[$valid_params[$i]]);
+            }
+        }
+        $valid_transforms = array('street' => 'postalAddress', 'zip' => 'postalCode');
+        foreach($values as $from => $to)
+        {
+            if(isset($params[$from]))
+            {
+                if(strlen($params[$from]) > 0)
+                {
+                    $change[$to] = $params[$from];
+                }
+                unset($params[$from]);
+            }
+        }
+        if($user_copy->setAttribs($change))
+        {
+            FlipSession::refresh_user();
+            return array('changes'=>$change, 'unset'=>$params);
+        }
+        else
+        {
+            return array('err_code' => self::INTERNAL_ERROR, 'reason' => "Failed to set user properties!");
+        }
+    }
+
+    function post($params)
+    {
+        if(!$this->is_logged_in())
+        {
+            return array('err_code' => self::ACCESS_DENIED, 'reason' => "Not Logged In!");
+        }
+        if(isset($params['action']))
+        {
+            return $this->do_post_action($params);
+        }
+        else
+        {
+            $res = $this->validate_params($params, array('uid'=>'string'));
+            if($res == self::SUCCESS)
+            {
+                $res = $this->do_post_user_edit($params);
+            }
+            return $res;
+        }
+    }
 }
-else
-{
-    echo json_encode(array('error' => "Unrecognized Operation ".$_SERVER['REQUEST_METHOD']));
-    die();
-}
+
+$ajax = new UserAjax();
+$ajax->run();
 /* vim: set tabstop=4 shiftwidth=4 expandtab: */
 ?>
