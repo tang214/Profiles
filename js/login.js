@@ -56,6 +56,10 @@ function do_login_init()
             submitHandler: login_submitted
         });
     }
+    if($(window).width() <= 340)
+    {
+        $('.login-container').css('max-width', $(window).width()-50);
+    }
 }
 
 $(do_login_init);
