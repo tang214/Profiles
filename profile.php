@@ -48,6 +48,12 @@ $page->body = '
             </div>
         </div>
         <div class="form-group">
+            <label for="mail" class="col-sm-2 control-label">Email:</label>
+            <div class="col-sm-10">
+                <input class="form-control" id="mail" name="mail" type="text" readonly/>
+            </div>
+        </div>
+        <div class="form-group">
             <label for="givenName" class="col-sm-2 control-label">First Name:</label>
             <div class="col-sm-10">
                 <input class="form-control" id="givenName" name="givenName" type="text"/>
@@ -65,13 +71,6 @@ $page->body = '
             <label for="displayName" class="col-sm-2 control-label">Burner Name:</label>
             <div class="col-sm-10">
                 <input class="form-control" id="displayName" name="displayName" type="text" />
-            </div>
-        </div>
-        <div class="clearfix visible-sm visible-md visible-lg"></div>
-        <div class="form-group">
-            <label for="mail" class="col-sm-2 control-label">Email:</label>
-            <div class="col-sm-10">
-                <input class="form-control" id="mail" name="mail" type="text" required/>
             </div>
         </div>
         <div class="clearfix visible-sm visible-md visible-lg"></div>
