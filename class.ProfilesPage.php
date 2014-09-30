@@ -66,7 +66,6 @@ class ProfilesPage extends FlipPage
     function add_script()
     {
         $this->add_js_from_src('/js/jquery.validate.js');
-        $this->add_js_from_src('/js/bootstrap.min.js');
         $this->add_js_from_src('/js/bootstrap-formhelpers.min.js');
         $this->add_js_from_src('/js/login.js');
     }
