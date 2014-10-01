@@ -9,7 +9,14 @@ class ProfilesAdminPage extends FlipPage
     function __construct($title)
     {
         $this->user = FlipSession::get_user(TRUE);
-        $this->is_admin = $this->user->isInGroupNamed("ProfileAdmins");
+        if($this->user == FALSE)
+        {
+            $this->is_admin = FALSE;
+        }
+        else
+        {
+            $this->is_admin = $this->user->isInGroupNamed("LDAPAdmins");
+        }
         parent::__construct($title);
         $this->add_css();
         $this->add_sites();
@@ -51,7 +58,7 @@ class ProfilesAdminPage extends FlipPage
         }
         else
         {
-            if($this->is_admin)
+            if($this->is_admin == TRUE)
             {
                 $this->add_link('Admin', 'https://profiles.burningflipside.com/_admin/');
             }
@@ -140,7 +147,7 @@ class ProfilesAdminPage extends FlipPage
     {
         if(!$this->is_admin)
         {
-            $page->body = '
+            $this->body = '
         <div class="row">
             <div class="col-lg-12">
                 <h1 class="page-header">You must log in to access the Burning Flipside Profile Admin system!</h1>
