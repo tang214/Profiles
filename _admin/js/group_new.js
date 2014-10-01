@@ -28,7 +28,8 @@ function user_tooltip_data_done(data)
     $(this).tooltip({content: data.displayName});
     if(data.jpegPhoto.length > 0)
     {
-        alert("TODO: Implement real photo");
+        var img = $("img", this);
+        img.attr('src', 'data:image/jpeg;base64,'+data.jpegPhoto);
     }
 }
 
