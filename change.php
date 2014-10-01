@@ -119,7 +119,7 @@ else
         <form action="/change.php" method="post" name="form" id="form">
         <table>
         '.$current.'
-        <tr><td>Password:</td><td><input type="password" name="password" id="password"/></td><td><label for="password" title=""/></td></tr>
+        <tr><td>Password:</td><td><input type="password" name="password" class="pass" id="password"/></td><td><label for="password" title=""/></td></tr>
         <tr><td>Confirm Password:</td><td><input type="password" name="password2"/></td><td><label class="error" for="password2" style="color:red"/></td></tr>
         <tr><td>&nbsp;</td><td><input type="submit" name="submit" value="Change"/></td></tr>
         </table>
