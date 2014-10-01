@@ -74,13 +74,13 @@ if(strtoupper($_SERVER['REQUEST_METHOD']) == 'POST')
             $mail_data = array(
                 'to'       => $_POST['email'],
                 'subject'  => 'Burning Flipside Username Recovery',
-                'body'     => 'Someone (quiet possibly you) has requested a reminder of your Flipside username.<br/>
+                'body'     => 'Someone (quite possibly you) has requested a reminder of your Flipside username.<br/>
                                Your Flipside username is '.$users[0]->uid[0].'<br/>
                                If you did not request this reminder don\'t worry. This email was sent only to you.<br/>
                                If you receive many of these requests you can notify the technology team (technology@burningflipside.com).<br/>
                                Thank you,<br/>
                                Burning Flipside Technology Team',
-                'alt_body' => 'Someone (quiet possibly you) has requested a reminder of your Flipside username.
+                'alt_body' => 'Someone (quite possibly you) has requested a reminder of your Flipside username.
                                Your Flipside username is '.$users[0]->uid[0].'
                                If you did not request this reminder don\'t worry. This email was sent only to you.
                                If you receive many of these requests you can notify the technology team (technology@burningflipside.com).
