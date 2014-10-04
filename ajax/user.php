@@ -81,6 +81,8 @@ class UserAjax extends FlipJaxSecure
         $out['postalAddress'] = get_single_value_from_array($user_copy->postalAddress);
         $out['postalCode'] = get_single_value_from_array($user_copy->postalCode);
         $out['c'] = get_single_value_from_array($user_copy->c);
+        $out['ou'] = get_single_value_from_array($user_copy->ou);
+        $out['title'] = get_single_value_from_array($user_copy->title);
         $out['dn'] = $user_copy->dn;
         unset($user_copy);
         return $out;
@@ -162,7 +164,7 @@ class UserAjax extends FlipJaxSecure
         $user_copy = $this->user;
         if($this->user->uid[0] != $uid)
         {
-            $server = FlipsideLDAPServer();
+            $server = new FlipsideLDAPServer();
             $users = $server->getUsers("(uid=".$uid.")");
             if($users == FALSE || !isset($users[0]))
             {
@@ -172,6 +174,11 @@ class UserAjax extends FlipJaxSecure
         }
         $change = array();
         $valid_params = array('givenName', 'sn', 'displayName', 'mail', 'mobile', 'postalAddress', 'postalCode', 'l', 'st', 'jpegPhoto', 'c');
+        if($this->user_in_group("LDAPAdmins"))
+        {
+            array_push($valid_params, 'ou');
+            array_push($valid_params, 'title');
+        }
         for($i = 0; $i < count($valid_params); $i++)
         {
             if(isset($params[$valid_params[$i]]))
