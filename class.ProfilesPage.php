@@ -52,6 +52,10 @@ class ProfilesPage extends FlipPage
             {
                 $this->add_link('Admin', 'https://profiles.burningflipside.com/_admin/index.php');
             }
+            if($this->user != FALSE && $this->user->isInGroupNamed("Leads"))
+            {
+                $this->add_link('Leads', 'https://profiles.burningflipside.com/lead/index.php');
+            }
             $this->add_link('My Profile', 'https://profiles.burningflipside.com/profile.php');
             $this->add_link('Logout', 'https://profiles.burningflipside.com/logout.php');
         }
