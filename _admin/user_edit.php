@@ -24,116 +24,96 @@ if(!isset($_GET['uid']))
     <form method="post" id="form">
     <fieldset id="user_data" '.$hidden.'>
         <legend id="uid"></legend>
-        <table>
-            <tr>
-                <th>Username:</th>
-                <td><input type="text" name="uid" id="uid_edit"/><input type="hidden" name="old_uid" id="old_uid"/></td>
-                <td><label id="dn"></label></td>
-            </tr>
-            <tr>
-                <th>First Name:</th>
-                <td><input type="text" name="givenName" id="givenName"/></td>
-            </tr>
-            <tr>
-                <th>Last Name:</th>
-                <td><input type="text" name="sn" id="sn"/></td>
-            </tr>
-            <tr>
-                <th>Burner Name:</th>
-                <td><input type="text" name="displayName" id="displayName"/></td>
-            </tr>
-            <tr>
-                <th>Email:</th>
-                <td><input type="text" name="mail" id="mail"/></td>
-            </tr>
-            <tr>
-                <th>Mobile Number:</th>
-                <td><input type="text" name="mobile" id="mobile"/></td>
-            </tr>
-            <tr>
-                <th>Street Address:</th>
-                <td><input type="text" name="postalAddress" id="postalAddress"/></td>
-            </tr>
-            <tr>
-                <th>Zip Code:</th>
-                <td><input type="text" name="postalCode" id="postalCode"/></td>
-            </tr>
-            <tr>
-                <th>City:</th>
-                <td><input type="text" name="l" id="l"/></td>
-            </tr>
-            <tr>
-                <th>State:</th>
-                <td>
-                    <select name="st" id="st">
-                    <option value=""></option>
-                    <option value="AL">Alabama</option>
-                    <option value="AK">Alaska</option>
-                    <option value="AS">American Samoa</option>
-                    <option value="AZ">Arizona</option>
-                    <option value="AR">Arkansas</option>
-                    <option value="AA">Armed Forces Americas</option>
-                    <option value="AP">Armed Forces Pacific</option>
-                    <option value="AE">Armed Forces Others</option>
-                    <option value="CA">California</option>
-                    <option value="CO">Colorado</option>
-                    <option value="CT">Connecticut</option>
-                    <option value="DE">Delaware</option>
-                    <option value="DC">District Of Columbia</option>
-                    <option value="FL">Florida</option>
-                    <option value="GU">Guam</option>
-                    <option value="GA">Georgia</option>
-                    <option value="HI">Hawaii</option>
-                    <option value="ID">Idaho</option>
-                    <option value="IL">Illinois</option>
-                    <option value="IN">Indiana</option>
-                    <option value="IA">Iowa</option>
-                    <option value="KS">Kansas</option>
-                    <option value="KY">Kentucky</option>
-                    <option value="LA">Louisiana</option>
-                    <option value="ME">Maine</option>
-                    <option value="MD">Maryland</option>
-                    <option value="MA">Massachusetts</option>
-                    <option value="MI">Michigan</option>
-                    <option value="MN">Minnesota</option>
-                    <option value="MS">Mississippi</option>
-                    <option value="MO">Missouri</option>
-                    <option value="MT">Montana</option>
-                    <option value="NE">Nebraska</option>
-                    <option value="NV">Nevada</option>
-                    <option value="NH">New Hampshire</option>
-                    <option value="NJ">New Jersey</option>
-                    <option value="NM">New Mexico</option>
-                    <option value="NY">New York</option>
-                    <option value="NC">North Carolina</option>
-                    <option value="ND">North Dakota</option>
-                    <option value="MP">Northern Mariana Islands</option>
-                    <option value="OH">Ohio</option>
-                    <option value="OK">Oklahoma</option>
-                    <option value="OR">Oregon</option>
-                    <option value="PA">Pennsylvania</option>
-                    <option value="PR">Puerto Rico</option>
-                    <option value="RI">Rhode Island</option>
-                    <option value="SC">South Carolina</option>
-                    <option value="SD">South Dakota</option>
-                    <option value="TN">Tennessee</option>
-                    <option value="TX">Texas</option>
-                    <option value="UM">United States Minor Outlying Islands</option>
-                    <option value="UT">Utah</option>
-                    <option value="VT">Vermont</option>
-                    <option value="VI">Virgin Islands</option>
-                    <option value="VA">Virginia</option>
-                    <option value="WA">Washington</option>
-                    <option value="WV">West Virginia</option>
-                    <option value="WI">Wisconsin</option>
-                    <option value="WY">Wyoming</option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td><input type="submit" value="Submit Changes" id="submit"/></td>
-            </tr>
-        </table>
+        <div class="form-group">
+            <label for="uid" class="col-sm-2 control-label">Username:</label>
+            <div class="col-sm-10">
+                <input class="form-control" id="uid_x" name="uid" type="text" readonly/>
+                <input type="hidden" name="old_uid" id="old_uid"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="givenName" class="col-sm-2 control-label">First Name:</label>
+            <div class="col-sm-10">
+                <input class="form-control" id="givenName" name="givenName" type="text">
+            </div>
+        </div>
+        <div class="clearfix visible-sm visible-md visible-lg"></div>
+        <div class="form-group">
+            <label for="sn" class="col-sm-2 control-label">Last Name:</label>
+            <div class="col-sm-10">
+                <input class="form-control" id="sn" name="sn" type="text" required="" aria-required="true">
+            </div>
+        </div>
+        <div class="clearfix visible-sm visible-md visible-lg"></div>
+        <div class="form-group">
+            <label for="displayName" class="col-sm-2 control-label">Burner Name:</label>
+            <div class="col-sm-10">
+                <input class="form-control" id="displayName" name="displayName" type="text">
+            </div>
+        </div>
+        <div class="clearfix visible-sm visible-md visible-lg"></div>
+        <div class="form-group">
+            <label for="mail" class="col-sm-2 control-label">Email:</label>
+            <div class="col-sm-10">
+                <input class="form-control" id="mail" name="mail" type="text" readonly="">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="c" class="col-sm-2 control-label">Country:</label>
+            <div class="col-sm-10">
+                <select class="form-control bfh-countries" id="c" name="c" data-country="US"></select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="mobile" class="col-sm-2 control-label">Cell Number:</label>
+            <div class="col-sm-10">
+                <input class="form-control bfh-phone" data-country="c" id="mobile" name="mobile" type="text">
+            </div>
+        </div>
+        <div class="clearfix visible-md visible-lg"></div>
+        <div class="form-group">
+            <label for="street" class="col-sm-2 control-label">Street Address:</label>
+            <div class="col-sm-10">
+                <textarea class="form-control" id="postalAddress" rows="2" name="postalAddress" type="text"></textarea>
+            </div>
+        </div>
+        <div class="clearfix visible-sm visible-md visible-lg"></div>
+        <div class="form-group">
+            <label for="zip" class="col-sm-2 control-label">Postal/Zip Code:</label>
+            <div class="col-sm-10">
+                <input class="form-control" id="postalCode" name="postalCode" type="text">
+            </div>
+        </div>
+        <div class="clearfix visible-sm visible-md visible-lg"></div>
+        <div class="form-group">
+            <label for="l" class="col-sm-2 control-label">City:</label>
+            <div class="col-sm-10">
+                <input class="form-control" id="l" name="l" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="st" class="col-sm-2 control-label">State:</label>
+            <div class="col-sm-10">
+                <select class="form-control bfh-states" data-country="c" id="st" name="st" type="text"></select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="st" class="col-sm-2 control-label">Area:</label>
+            <div class="col-sm-10">
+                <select class="form-control" id="ou" name="ou" onchange="area_change(this)">
+                    <option></option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="st" class="col-sm-2 control-label">Position:</label>
+            <div class="col-sm-10">
+                <select class="form-control" id="title" name="title">
+                    <option></option>
+                </select>
+            </div>
+        </div>
+        <button class="btn btn-default" type="submit" id="submit">Submit Changes</button>
     </fieldset>
     </form>
 </div>';

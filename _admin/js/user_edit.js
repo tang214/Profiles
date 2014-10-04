@@ -33,10 +33,54 @@ function users_done(data)
     }
 }
 
+var leads = null;
+var user = null;
+
+function areas_done(data)
+{
+    var areas = data.areas;
+    for(i = 0; i < areas.length; i++)
+    {
+        $('#ou').append('<option value="'+areas[i].short_name+'">'+areas[i].name+'</option>');
+    }
+    if(user != null)
+    {
+        $('#ou').val(user.ou);
+        area_change($('#ou'));
+    }
+}
+
+function leads_done(data)
+{
+    leads = data.leads;
+    area_change($('#ou'));
+}
+
+function area_change(control)
+{
+    var val = $(control).val();
+    if(val == '')
+    {
+        return;
+    }
+    if(leads != null)
+    {
+        $('#title').html('<option></option>');
+        for(i = 0; i < leads.length; i++)
+        {
+            if(leads[i].area == val)
+            {
+                $('#title').append('<option value="'+leads[i].short_name+'">'+leads[i].name+'</option>');
+            }
+        }
+    }
+}
+
 function user_data_done(data)
 {
+    user = data;
     $('#uid').html(data.uid);
-    $('#uid_edit').val(data.uid);
+    $('#uid_x').val(data.uid);
     $('#old_uid').val(data.uid);
     $('#dn').html(data.dn);
     $('#givenName').val(data.givenName);
@@ -48,6 +92,9 @@ function user_data_done(data)
     $('#postalCode').val(data.postalCode);
     $('#l').val(data.l);
     $('#st').val(data.st);
+    $('#ou').val(data.ou);
+    area_change($('#ou'));
+    $('#title').val(data.title);
     $('#user_data').show(); 
 }
 
@@ -62,6 +109,22 @@ function populate_user_dropdown()
         success: users_done});
     //Enable events on the dropdown
     $('#user_select').change(userSelectChange);
+}
+
+function populate_area_dropdown()
+{
+    $.when(
+        $.ajax({
+            url: 'ajax/areas.php',
+            type: 'get',
+            dataType: 'json',
+            success: areas_done}),
+        $.ajax({
+            url: 'ajax/leads.php',
+            type: 'get',
+            dataType: 'json',
+            success: leads_done})
+    ).done(populate_user_data);
 }
 
 function populate_user_data()
@@ -109,7 +172,7 @@ function user_data_submitted(form)
 function do_user_edit_init()
 {
     populate_user_dropdown();
-    populate_user_data();
+    populate_area_dropdown();
     $("#form").validate({
         debug: true,
         submitHandler: user_data_submitted
