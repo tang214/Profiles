@@ -293,7 +293,14 @@ function groupAlreadyMember(gid)
 function userAlreadyMember(uid)
 {
     var divs = $("#group_members tbody tr td div:contains('"+uid+"')");
-    return divs.length >= 1;
+    if(divs.length >= 1)
+    {
+        return divs.attr('id') == 'user='+uid;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 function non_member_groups_done(data)
