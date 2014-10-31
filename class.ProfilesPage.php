@@ -52,7 +52,7 @@ class ProfilesPage extends FlipPage
             {
                 $this->add_link('Admin', 'https://profiles.burningflipside.com/_admin/index.php');
             }
-            if($this->user != FALSE && $this->user->isInGroupNamed("Leads"))
+            if($this->user != FALSE && ($this->user->isInGroupNamed("Leads") || $this->user->isInGroupNamed("CC")))
             {
                 $this->add_link('Leads', 'https://profiles.burningflipside.com/lead/index.php');
             }

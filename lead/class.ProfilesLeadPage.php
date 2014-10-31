@@ -16,6 +16,10 @@ class ProfilesLeadPage extends FlipPage
         else
         {
             $this->is_lead = $this->user->isInGroupNamed("Leads");
+            if(!$this->is_lead)
+            {
+                $this->is_lead = $this->user->isInGroupNamed("CC");
+            }
         }
         parent::__construct($title);
         $this->add_css();

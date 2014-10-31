@@ -44,6 +44,12 @@ class DirectoryAjax extends FlipJaxSecure
                 return array('err_code' => self::INTERNAL_ERROR, 'reason' => "Unable to locate Leads Group!");
             }
             $members = $groups[0]->getMembers();
+            $groups = $server->getGroups("(cn=CC)");
+            if($groups != FALSE && isset($groups[0]))
+            {
+                $cc_members = $groups[0]->getMembers();
+                $members = array_merge($members, $cc_members);
+            }
         }
         else if($filter == 'lead')
         {
@@ -79,6 +85,10 @@ class DirectoryAjax extends FlipJaxSecure
             $user = $server->getUserByDN($member);
             if($user != FALSE)
             {
+                if((!is_array($user->title) || !isset($user->title[0])) && $user->isInGroupNamed('CC'))
+                {
+                    $user->title[0] = 'CC Member';
+                }
                 array_push($res, array('legalName' => $user->givenName[0].' '.$user->sn[0], 
                                      'burnerName' => $user->displayName[0], 
                                      'title'=>$this->title_to_string($user->title[0]),
@@ -92,9 +102,9 @@ class DirectoryAjax extends FlipJaxSecure
 
     function get($params)
     {
-        if(!$this->user_in_group('Leads'))
+        if(!$this->user_in_group('Leads') || !$this->user_in_group('CC'))
         {
-            return array('err_code' => self::ACCESS_DENIED, 'reason' => "Must be a lead to access the directory!");
+            return array('err_code' => self::ACCESS_DENIED, 'reason' => "Must be a lead or CC to access the directory!");
         }
         if(isset($params['filter']))
         {
