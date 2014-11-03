@@ -29,7 +29,7 @@ if(strtoupper($_SERVER['REQUEST_METHOD']) == 'POST')
         $user = FlipSession::get_user();
         $filename = $_FILES["img"]["tmp_name"];
         list($width, $height) = getimagesize($filename);
-        $newname = "./tmp/".$user->uid.$_FILES["img"]["name"];
+        $newname = "./tmp/".$user->uid[0].$_FILES["img"]["name"];
         move_uploaded_file($filename,  '.'.$newname);
 
         $response["status"] = 'success';
