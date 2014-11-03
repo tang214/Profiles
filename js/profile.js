@@ -59,8 +59,8 @@ function finish_populate_form(data, textStatus, jqXHR)
         $('#displayName').val(json.displayName);
         $('#mail').val(json.mail);
         $('#mobile').val(json.mobile);
-        $('#street').val(json.postalAddress);
-        $('#zip').val(json.postalCode);
+        $('#postalAddress').val(json.postalAddress);
+        $('#postalCode').val(json.postalCode);
         $('#l').val(json.l);
         cropper.reset();
         if(json.jpegPhoto != undefined && json.jpegPhoto.length > 0)
@@ -156,7 +156,7 @@ function do_init()
         debug: true,
         rules: {
             email: { required: true, email: true},
-            zip: "zip"
+            postalCode: "zip"
         },
         submitHandler: profile_data_submitted
     });

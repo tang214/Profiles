@@ -88,16 +88,16 @@ $page->body = '
         </div>
         <div class="clearfix visible-md visible-lg"></div>
         <div class="form-group">
-            <label for="street" class="col-sm-2 control-label">Street Address:</label>
+            <label for="postalAddress" class="col-sm-2 control-label">Street Address:</label>
             <div class="col-sm-10">
-                <textarea class="form-control" id="street" rows="2" name="street" type="text"></textarea>
+                <textarea class="form-control" id="postalAddress" rows="2" name="postalAddress" type="text"></textarea>
             </div>
         </div>
         <div class="clearfix visible-sm visible-md visible-lg"></div>
         <div class="form-group">
-            <label for="zip" class="col-sm-2 control-label">Postal/Zip Code:</label>
+            <label for="postalCode" class="col-sm-2 control-label">Postal/Zip Code:</label>
             <div class="col-sm-10">
-                <input class="form-control" id="zip" name="zip" type="text"/>
+                <input class="form-control" id="postalCode" name="postalCode" type="text"/>
             </div>
         </div>
         <div class="clearfix visible-sm visible-md visible-lg"></div>
