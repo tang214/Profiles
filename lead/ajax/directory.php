@@ -102,7 +102,7 @@ class DirectoryAjax extends FlipJaxSecure
 
     function get($params)
     {
-        if(!$this->user_in_group('Leads') || !$this->user_in_group('CC'))
+        if(!$this->user_in_group('Leads') && !$this->user_in_group('CC'))
         {
             return array('err_code' => self::ACCESS_DENIED, 'reason' => "Must be a lead or CC to access the directory!");
         }

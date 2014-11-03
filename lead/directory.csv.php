@@ -7,7 +7,7 @@ require_once('class.FlipSession.php');
 require_once('class.FlipsideLDAPServer.php');
 require_once("_admin/class.FlipsideLead.php");
 $user = FlipSession::get_user(TRUE);
-if($user == FALSE || !$user->isInGroupNamed("Leads"))
+if($user == FALSE || (!$user->isInGroupNamed("Leads") && !$user->isInGroupNamed("CC")))
 {
     die("Authentication failure");
 }
