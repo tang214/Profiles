@@ -76,14 +76,14 @@ if(strtoupper($_SERVER['REQUEST_METHOD']) == 'POST')
                 'subject'  => 'Burning Flipside Username Recovery',
                 'body'     => 'Someone (quite possibly you) has requested a reminder of your Flipside username.<br/>
                                Your Flipside username is '.$users[0]->uid[0].'<br/>
-                               If you did not request this reminder don\'t worry. This email was sent only to you.<br/>
-                               If you receive many of these requests you can notify the technology team (technology@burningflipside.com).<br/>
+                               If you did not request this reminder, don\'t worry. This email was sent only to you.<br/>
+                               If you receive many of these requests, you can notify the technology team (technology@burningflipside.com).<br/>
                                Thank you,<br/>
                                Burning Flipside Technology Team',
                 'alt_body' => 'Someone (quite possibly you) has requested a reminder of your Flipside username.
                                Your Flipside username is '.$users[0]->uid[0].'
-                               If you did not request this reminder don\'t worry. This email was sent only to you.
-                               If you receive many of these requests you can notify the technology team (technology@burningflipside.com).
+                               If you did not request this reminder, don\'t worry. This email was sent only to you.
+                               If you receive many of these requests, you can notify the technology team (technology@burningflipside.com).
                                Thank you,
                                Burning Flipside Technology Team'
             );
@@ -124,18 +124,18 @@ if(strtoupper($_SERVER['REQUEST_METHOD']) == 'POST')
             $mail_data = array(
                 'to'       => $users[0]->mail[0],
                 'subject'  => 'Burning Flipside Password Reset',
-                'body'     => 'Someone (quiet possibly you) has requested a password reset of your Flipside account.<br/>
+                'body'     => 'Someone (quite possibly you) has requested a password reset of your Flipside account.<br/>
                                To reset your password click on the link below.<br/>
                                <a href="https://profiles.burningflipside.com/change.php?hash='.$hash.'">Reset Password</a><br/>
-                               If you did not request this reset don\'t worry. This email was sent only to you and your password has not been changed.<br/>
-                               If you receive many of these requests you can notify the technology team (technology@burningflipside.com).<br/>
+                               If you did not request this reset, don\'t worry. This email was sent only to you and your password has not been changed.<br/>
+                               If you receive many of these requests, you can notify the technology team (technology@burningflipside.com).<br/>
                                Thank you,<br/>
                                Burning Flipside Technology Team',
-                'alt_body' => 'Someone (quiet possibly you) has requested a password reset of your Flipside account.
+                'alt_body' => 'Someone (quite possibly you) has requested a password reset of your Flipside account.
                                To reset your password copy the following URL into your browser.
                                https://profiles.burningflipside.com/change.php?hash='.$hash.'
-                               If you did not request this reset don\'t worry. This email was sent only to you and your password has not been changed.
-                               If you receive many of these requests you can notify the technology team (technology@burningflipside.com).
+                               If you did not request this reset, don\'t worry. This email was sent only to you and your password has not been changed.
+                               If you receive many of these requests, you can notify the technology team (technology@burningflipside.com).
                                Thank you,
                                Burning Flipside Technology Team'
             );
