@@ -27,6 +27,10 @@ class LoginAjax extends FlipJaxSecure
         {
             $return = 'https://profiles.burningflipside.com';
         }
+        if(isset($params['redirect']))
+        {
+            header('Location: '.$return);
+        }
         return array('return' => $return);
     }
 }
