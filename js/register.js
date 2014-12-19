@@ -48,6 +48,8 @@ function validate_pass_number(value, element, params)
     return (/[0-9]/.test(value));
 }
 
+var original_tooltip = null;
+
 function validate_complexity(value, element, params)
 {
     if(this.optional(element))
@@ -78,7 +80,7 @@ function validate_complexity(value, element, params)
            break;
     }
     $("#password").attr('title', msg+". Estimated password crack time is "+res.crack_time+"s");
-    $("#password").attr('data-original-title', $("#password").attr('data-original-title')+'\n'+msg+". Estimated password crack time is "+res.crack_time+"s");
+    $("#password").attr('data-original-title', original_tooltip+'\n'+msg+". Estimated password crack time is "+res.crack_time+"s");
     return true;
 }
 
@@ -180,6 +182,7 @@ function init_register_page()
     });
     
     $('[title]').tooltip();
+    original_tooltip = $("#password").attr('data-original-title');
     $('#submit').on('click', submit_click);
 }
 

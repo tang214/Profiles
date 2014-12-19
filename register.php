@@ -49,29 +49,41 @@ $page->body = '
                 <input class="form-control" type="text" name="email" id="email" data-toggle="tooltip" data-placement="top" title="The email to use for this account. NOTE: You must be able to verify you own this email address by responding to an email." required/>
             </div>
         </div>
+        <div class="clearfix visible-sm visible-md visible-lg"></div>
+        <div class="row" style="min-height: 15px;"></div>
         <div class="form-group">
             <label for="uid" class="col-sm-2 control-label">Username:</label>
             <div class="col-sm-10">
                 <input class="form-control" type="text" name="uid" id="uid" required/>
             </div>
         </div>
+        <div class="clearfix visible-sm visible-md visible-lg"></div>
+        <div class="row" style="min-height: 15px;"></div>
         <div class="form-group">
             <label for="password" class="col-sm-2 control-label">Password:</label>
             <div class="col-sm-10">
                 <input type="password" name="password" id="password" class="pass form-control" data-toggle="tooltip" data-placement="top" title="Your password must be at least 4 characters long, contain a lower case letter, uppercase letter, and a number." required/>
             </div>
         </div>
+        <div class="clearfix visible-sm visible-md visible-lg"></div>
+        <div class="row" style="min-height: 15px;"></div>
         <div class="form-group">
             <label for="password2" class="col-sm-2 control-label">Confirm Password:</label>
             <div class="col-sm-10">
                 <input class="form-control" type="password" name="password2" required/>
             </div>
         </div>
+        <div class="clearfix visible-sm visible-md visible-lg"></div>
+        <div class="row" style="min-height: 15px;"></div>
         <div class="form-group">
             '.$captcha->draw_captcha(true, true).'
         </div>
         '.$return.'
-        <button id="submit" type="submit" name="submit" class="btn btn-default">Register</button>
+        <div class="form-group">
+            <div class="col-sm-2">
+            <button id="submit" type="submit" name="submit" class="btn btn-default">Register</button>
+            </div>
+        </div>
     </form>
 </div>';
 

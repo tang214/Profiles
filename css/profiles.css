@@ -36,6 +36,10 @@
     display: block;
 }
 
+.error {
+    color: #8b1820;
+}
+
 @media screen and (max-width: 40.5em) {
     #content { margin: 10px 10px 0 10px }
     .login-container { position: absolute }
