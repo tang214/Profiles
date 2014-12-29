@@ -195,7 +195,7 @@ class UserAjax extends FlipJaxSecure
             $change['jpegPhoto'] = base64_decode($change['jpegPhoto']);
         }
         $valid_transforms = array('street' => 'postalAddress', 'zip' => 'postalCode');
-        foreach($values as $from => $to)
+        foreach($valid_transforms as $from => $to)
         {
             if(isset($params[$from]))
             {
