@@ -34,6 +34,7 @@ function userToArray($user)
     array_push($res, get_single_value_from_array($user->displayName));
     array_push($res, get_single_value_from_array($user->givenName).' '.get_single_value_from_array($user->sn));
     array_push($res, get_single_value_from_array($user->mail));
+    array_push($res, get_single_value_from_array($user->dn));
     return $res;
 }
 

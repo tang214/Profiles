@@ -1,10 +1,258 @@
 <?php
-if($_SERVER["HTTPS"] != "on")
-{
-    header("Location: https://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"]);
-    exit();
-}
 require_once("class.FlipSession.php");
+require_once("class.FlipJax.php");
+
+class GroupAjax extends FlipJaxSecure
+{
+    function userIsAdmin()
+    {
+        if(!$this->user_in_group("LDAPAdmins"))
+        {
+            return array('err_code' => self::ACCESS_DENIED, 'reason' => "User must be a member of LDAPAdmins!");
+        }
+        return self::SUCCESS;
+    }
+
+    function getAllGroups()
+    {
+        $server = new FlipsideLDAPServer();
+        $res = $this->userIsAdmin();
+        if($res != self::SUCCESS)
+        {
+            return $res;
+        }
+        $groups = $server->getGroups();
+        $data = array();
+        for($i = 0; $i < count($groups); $i++)
+        {
+            $group_data = groupToArray($groups[$i]);
+            array_push($data, $group_data);
+        }
+        return array('data'=>$data);
+    }
+
+    function getGroupData($gid, $fullMemberData = FALSE)
+    {
+        $res = $this->userIsAdmin();
+        if($res != self::SUCCESS)
+        {
+            return $res;
+        }
+        $server = new FlipsideLDAPServer();
+        $groups = $server->getGroups("(cn=".$_GET['gid'].")");
+        if($groups == FALSE || !isset($groups[0]))
+        {
+            echo json_encode(array('error' => "Group not found!"));
+            die();
+        }
+        $group = $groups[0];
+        $group->cn = get_single_value_from_array($group->cn);
+        $group->description = get_single_value_from_array($group->description);
+        if($fullMemberData)
+        {
+            $members = array();
+            for($i = 0; $i < $group->member['count']; $i++)
+            {
+                if(strncmp($group->member[$i], "uid=", 4) == 0)
+                {
+                    $user = $server->getUserByDN($group->member[$i]);
+                    array_push($members, array('dn'=>$group->member[$i], 'username'=>$user->uid[0], 'email'=>$user->mail[0], 'name'=>$user->givenName[0].' '.$user->sn[0]));
+                }
+                else
+                {
+                    $child_group = $server->getGroupByDN($group->member[$i]);
+                    array_push($members, array('dn'=>$group->member[$i], 'username'=>$child_group->cn[0], 'email'=>'N/A', 'name'=>$child_group->cn[0]));
+                }
+            }
+            $group->member = $members;
+        }
+        return array('group'=>$group);
+    }
+
+    function getAllNonMembers($gid)
+    {
+        $res = $this->userIsAdmin();
+        if($res != self::SUCCESS)
+        {
+            return $res;
+        }
+        $data = array();
+        $group_filter = '(&(cn=*)(!(cn='.$gid.'))';
+        $user_filter = '(&(cn=*)';
+        $server = new FlipsideLDAPServer();
+        $groups = $server->getGroups("(cn=".$gid.")");
+        if($groups == FALSE || !isset($groups[0]))
+        {
+            echo json_encode(array('error' => "Group not found!"));
+            die();
+        }
+        $group = $groups[0];
+        for($i = 0; $i < $group->member['count']; $i++)
+        {
+            $dn_comps = explode(',',$group->member[$i]);
+            if(strncmp($group->member[$i], "uid=", 4) == 0)
+            {
+                $user_filter.='(!('.$dn_comps[0].'))';
+            }
+            else
+            {
+                $group_filter.='(!('.$dn_comps[0].'))';
+            }
+        }
+        $user_filter.=')';
+        $group_filter.=')';
+        $groups = $server->getGroups($group_filter);
+        for($i = 0; $i < count($groups); $i++)
+        {
+            array_push($data, array('dn'=>$groups[$i]->dn, 'username'=>$groups[$i]->cn[0], 'email'=>'N/A', 'name'=>$groups[$i]->cn[0]));
+        }
+        $users = $server->getUsers($user_filter);
+        for($i = 0; $i < count($users); $i++)
+        {
+            array_push($data, array('dn'=>$users[$i]->dn, 'username'=>$users[$i]->uid[0], 'email'=>$users[$i]->mail[0], 'name'=>$users[$i]->givenName[0].' '.$users[$i]->sn[0]));
+        } 
+        return array('data'=>$data);
+    }
+
+    function get($params)
+    {
+        if(!isset($params['gid']))
+        {
+            return $this->getAllGroups();
+        }
+        else
+        {
+            if(isset($params['nonMembersOnly']))
+            {
+                return $this->getAllNonMembers($params['gid']);
+            }
+            else if(isset($params['fullMember']))
+            {
+                return $this->getGroupData($params['gid'], TRUE);
+            }
+            else
+            {
+                return $this->getGroupData($params['gid']);
+            }
+        }
+    }
+
+    function postNewGroup($params)
+    {
+        $res = $this->validate_params($params, array('members'=>'array'));
+        if($res != self::SUCCESS)
+        {
+            return $res;
+        }
+
+        $server = new FlipsideLDAPServer();
+        //Make sure gid is available
+        $groups = $server->getGroups("(cn=".$gid.")");
+        if($groups != FALSE && count($groups) > 0)
+        {
+            return array('err_code' => self::INTERNAL_ERROR, 'reason' => "Group Already Exists");
+        }
+        $desc = '';
+        if(isset($params['description']))
+        {
+            $desc = $params['description'];
+        }
+        $group = FlipsideUserGroup::newGroup($params['gid'], $desc, $params['members']);
+        if($server->writeObject($group))
+        {
+            return self::SUCCESS;
+        }
+        else
+        {
+            return array('err_code' => self::INTERNAL_ERROR, 'reason' => "Failed to create group!");
+        }
+    }
+
+    function postEditGroup($params)
+    {
+        $res = $this->validate_params($params, array('members'=>'array'));
+        if($res != self::SUCCESS)
+        {
+            return $res;
+        }
+        if(isset($params['old_gid']) && ($params['old_gid'] != $params['gid']))
+        {
+            return array('err_code' => self::INTERNAL_ERROR, 'reason' => "Not Implemented! Haven't added gid change support yet!");
+        }
+        else
+        {
+            unset($params['old_gid']);
+        }
+        $server = new FlipsideLDAPServer();
+        //Make sure gid is available
+        $groups = $server->getGroups("(cn=".$params['gid'].")");
+        if($groups == FALSE || count($groups) == 0)
+        {
+            return array('err_code' => self::INTERNAL_ERROR, 'reason' => "Unable to locate group!");
+        }
+        $change = array();
+        unset($params['gid']);
+        if(isset($params['description']))
+        {
+            if(strlen($params['description']) > 0)
+            {
+                $change['description'] = $params['description'];
+            }
+            unset($params['description']);
+        }
+        populate_members($groups[0], $change, $params['members']);
+        unset($params['members']);
+        if($groups[0]->setAttribs($change))
+        {
+            return array('success' => 0, 'changes'=>$change, 'unset'=>$params);
+        }
+        else
+        {
+            return array('err_code' => self::INTERNAL_ERROR, 'reason' => "Failed to set property!");
+        }
+    }
+
+    function post($params)
+    {
+        if(!$this->is_logged_in())
+        {
+            return array('err_code' => self::ACCESS_DENIED, 'reason' => "Not Logged In!");
+        }
+        $res = $this->userIsAdmin();
+        if($res != self::SUCCESS)
+        {
+            return $res;
+        }
+        $res = $this->validate_params($params, array('action'=>'string','gid'=>'string'));
+        if($res != self::SUCCESS)
+        {
+            return $res;
+        }
+        if(strpos($params['gid'], ' ') != FALSE || strpos($params['gid'], ',') != FALSE)
+        {
+            return array('err_code' => self::INTERNAL_ERROR, 'reason' => "Invalid Parameter! Invalid Group Name!");
+        }
+        switch($_POST['action'])
+        {
+            case 'new':
+                unset($params['action']);
+                $res = $this->postNewGroup($params);
+                break;
+            case 'edit':
+                unset($params['action']);
+                $res = $this->postEditGroup($params);
+                break;
+            default:
+                $res = array('err_code' => self::INVALID_PARAM, 'action_name' => $params['action']);
+                break;
+        }
+        return $res;
+    }
+}
+
+$ajax = new GroupAjax();
+$ajax->run();
+
 $user = FlipSession::get_user(TRUE);
 if($user == FALSE || !$user->isInGroupNamed("LDAPAdmins"))
 {
@@ -32,6 +280,7 @@ function groupToArray($group)
     $res = array();
     array_push($res, get_single_value_from_array($group->cn));
     array_push($res, get_single_value_from_array($group->description));
+    array_push($res, get_single_value_from_array($group->dn));
     return $res;
 }
 
@@ -166,152 +415,6 @@ function populate_members($group, &$change, $members)
             echo json_encode(array('error' => "Internal Error! Don't know how to handle class ".$class));
             die();
     }
-}
-
-function edit_existing_group($gid, $desc, $members, &$error)
-{
-    if(!isset($_POST['old_gid']))
-    {
-        //Assume it's the same...
-        $_POST['old_gid'] = $gid;
-    }
-    if($_POST['old_gid'] != $gid)
-    {
-        $error = "Not Implemented! Haven't added gid change support yet!";
-        return FALSE;
-    }
-    else
-    {
-        unset($_POST['old_gid']);
-    }
-    $server = new FlipsideLDAPServer();
-    //Make sure gid is available
-    $groups = $server->getGroups("(cn=".$gid.")");
-    if($groups == FALSE || count($groups) == 0)
-    {
-        $error = "Group does not exist!";
-        return FALSE;
-    }
-    //Convert members to rdns
-    $member_dns = get_rds_from_post_value($members, $server, $error);
-    if($member_dns == FALSE)
-    {
-        return FALSE;
-    }
-    $change = array();
-    unset($_POST['gid']);
-    unset($_POST['members']);
-    if(isset($_POST['description']))
-    {
-        if(strlen($_POST['description']) > 0)
-        {
-            $change['description'] = $_POST['description'];
-        }
-        unset($_POST['description']);
-    }
-    populate_members($groups[0], $change, $member_dns);
-    if($groups[0]->setAttribs($change))
-    {
-        echo json_encode(array('success' => 0, 'changes'=>$change, 'unset'=>$_POST));
-        die();
-    }
-    else
-    {
-        $error = "Failed to set prop!";
-        return FALSE;
-    }
-}
-
-if(strtoupper($_SERVER['REQUEST_METHOD']) == 'POST')
-{
-    if(!isset($_POST['action']))
-    {
-        echo json_encode(array('error' => "Invalid Parameter! Expected action to be set"));
-        die();
-    }
-    if(!isset($_POST['gid']))
-    {
-        echo json_encode(array('error' => "Invalid Parameter! Expected gid to be set"));
-        die();
-    }
-    else if(strpos($_POST['gid'], ' ') != FALSE || strpos($_POST['gid'], ',') != FALSE)
-    {
-        echo json_encode(array('error' => "Invalid Parameter! Invalid Group Name!", 'invalid' => 'gid'));
-        die();
-    }
-    $error = FALSE;
-    switch($_POST['action'])
-    {
-        case 'new':
-            if(!isset($_POST['members']) || !is_array($_POST['members']))
-            {
-                echo json_encode(array('error' => "Invalid Parameter! A group requires at least one member", 'invalid' => 'members'));
-                die();
-            }
-            $result = make_new_group($_POST['gid'], $_POST['description'], $_POST['members'], $error);
-            if($result == FALSE && $error == FALSE)
-            {
-                $error = "Failed to create new group!";
-            }
-            break;
-        case 'edit':
-            if(!isset($_POST['members']) || !is_array($_POST['members']))
-            {
-                echo json_encode(array('error' => "Invalid Parameter! A group requires at least one member", 'invalid' => 'members'));
-                die();
-            }
-            $result = edit_existing_group($_POST['gid'], $_POST['description'], $_POST['members'], $error);
-            if($result == FALSE && $error == FALSE)
-            {
-                $error = "Failed to edit group!";
-            }
-            break;
-        default:
-            $error = 'Unknown action '.$_POST['action'];
-            break;
-    }
-    if($error)
-    {
-        echo json_encode(array('error' => $error));
-    }
-    else
-    {
-        echo json_encode(array('success' => 0));
-    }
-}
-else if(strtoupper($_SERVER['REQUEST_METHOD']) == 'GET')
-{
-    $server = new FlipsideLDAPServer();
-    if(!isset($_GET['gid']))
-    {
-        $groups = $server->getGroups();
-        $data = array();
-        for($i = 0; $i < count($groups); $i++)
-        {
-            $group_data = groupToArray($groups[$i]);
-            array_push($data, $group_data);
-        }
-
-        echo json_encode(array('data'=>$data));
-    }
-    else
-    {
-        $groups = $server->getGroups("(cn=".$_GET['gid'].")");
-        if($groups == FALSE || !isset($groups[0]))
-        {
-            echo json_encode(array('error' => "Group not found!"));
-            die();
-        }
-        $group = $groups[0];
-        $group->cn = get_single_value_from_array($group->cn);
-        $group->description = get_single_value_from_array($group->description);
-        echo json_encode($group);
-    }
-}
-else
-{
-    echo json_encode(array('error' => "Unrecognized Operation ".$_SERVER['REQUEST_METHOD']));
-    die();
 }
 /* vim: set tabstop=4 shiftwidth=4 expandtab: */
 ?>
