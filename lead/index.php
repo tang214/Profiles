@@ -5,10 +5,6 @@ require_once('class.ProfilesLeadPage.php');
 require_once('class.FlipsideLDAPServer.php');
 $page = new ProfilesLeadPage('Burning Flipside Profiles - Lead');
 
-$script_start_tag = $page->create_open_tag('script', array('src'=>'js/index.js'));
-$script_close_tag = $page->create_close_tag('script');
-$page->add_head_tag($script_start_tag.$script_close_tag);
-
 $server = new FlipsideLDAPServer();
 $groups = $server->getGroups("(cn=Leads)");
 $members = array();
