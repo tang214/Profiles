@@ -1,12 +1,5 @@
 var _uid = null;
 
-function getParameterByName(name) {
-    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-        results = regex.exec(location.search);
-    return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-}
-
 function getUID()
 {
     if(_uid != null)
@@ -155,7 +148,7 @@ function user_submit_done(data)
     }
     else
     {
-        console.log(data);
+        alert("Success!");
     }
 }
 
