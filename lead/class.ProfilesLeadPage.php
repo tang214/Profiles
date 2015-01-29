@@ -26,7 +26,7 @@ class ProfilesLeadPage extends FlipPage
         $this->add_sites();
         $this->add_links();
         $this->add_js_from_src('/js/bootstrap-formhelpers.min.js');
-        $this->add_js_from_src('/js/jquery.dataTables.js');
+        $this->add_js_from_src('//cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js');
         $this->add_js_from_src('/js/jquery.validate.js');
         $this->add_js_from_src('/_admin/js/metisMenu.min.js');
         $this->add_js_from_src('/_admin/js/admin.js');
@@ -35,10 +35,8 @@ class ProfilesLeadPage extends FlipPage
 
     function add_css()
     {
+        $this->add_css_from_src('//cdn.datatables.net/1.10.4/css/jquery.dataTables.min.css');
         $css_tag = $this->create_open_tag('link', array('rel'=>'stylesheet', 'href'=>'/css/bootstrap-formhelpers.min.css', 'type'=>'text/css'), true);
-        $this->add_head_tag($css_tag);
-
-        $css_tag = $this->create_open_tag('link', array('rel'=>'stylesheet', 'href'=>'/css/jquery.dataTables.css', 'type'=>'text/css'), true);
         $this->add_head_tag($css_tag);
 
         $css_tag = $this->create_open_tag('link', array('rel'=>'stylesheet', 'href'=>'/css/profiles.css', 'type'=>'text/css'), true);

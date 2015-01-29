@@ -25,10 +25,6 @@ $script_start_tag = $page->create_open_tag('script', array('src'=>'js/croppic.js
 $script_close_tag = $page->create_close_tag('script');
 $page->add_head_tag($script_start_tag.$script_close_tag);
 
-//Add Jquery validator
-$script_start_tag = $page->create_open_tag('script', array('src'=>'js/jquery.validate.js'));
-$page->add_head_tag($script_start_tag.$script_close_tag);
-
 //Page specific JS
 $script_start_tag = $page->create_open_tag('script', array('src'=>'js/profile.js'));
 $page->add_head_tag($script_start_tag.$script_close_tag);
