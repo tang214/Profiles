@@ -28,6 +28,13 @@ if($groups != FALSE && isset($groups[0]))
 }
 $af_count = count($members);
 
+$groups = $server->getGroups("(cn=CC)");
+$members = array();
+if($groups != FALSE && isset($groups[0]))
+{
+    $members = $groups[0]->getMembers(FALSE);
+}
+$cc_count = count($members);
 
 $page->body .= '
 <div class="row">
@@ -72,6 +79,28 @@ $page->body .= '
                 </div>
             </div>
             <a href="directory.php?filter=af">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right glyphicon glyphicon-circle-arrow-right"></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="panel panel-yellow">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <span class="glyphicon glyphicon-subtitles" style="font-size: 5em;"></span>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div style="font-size: 40px;">'.$cc_count.'</div>
+                        <div>Combustion Chamber</div>
+                    </div>
+                </div>
+            </div>
+            <a href="directory?filter=cc">
                 <div class="panel-footer">
                     <span class="pull-left">View Details</span>
                     <span class="pull-right glyphicon glyphicon-circle-arrow-right"></span>

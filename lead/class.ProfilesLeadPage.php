@@ -122,7 +122,22 @@ class ProfilesLeadPage extends FlipPage
                                       <a href="index.php"><span class="glyphicon glyphicon-dashboard"></span> Dashboard</a>
                                   </li>
                                   <li>
-                                      <a href="directory.php"><span class="glyphicon glyphicon-th-list"></span> Directory</a>
+                                      <a href="#"><span class="glyphicon glyphicon-th-list"></span> Directory</a>
+                                      <ul class="nav nav-second-level collapse">
+                                          <li><a href="directory.php">All</a></li>
+                                          <li><a href="directory.php?filter=aar">AAR</a></li>
+                                          <li><a href="directory.php?filter=af">AFs</a></li>
+                                          <li><a href="directory.php?filter=cc">CC</a></li>
+                                          <li><a href="directory.php?filter=360">360/24/7 Department</a></li>
+                                          <li><a href="directory.php?filter=Art">Art</a></li>
+                                          <li><a href="directory.php?filter=CityPlanning">City Planning</a></li>
+                                          <li><a href="directory.php?filter=Comm">Communications</a></li>
+                                          <li><a href="directory.php?filter=Safety">Safety</a></li>
+                                          <li><a href="directory.php?filter=site-ops">Site-Ops</a></li>
+                                          <li><a href="directory.php?filter=siteprep">Site Prep</a></li>
+                                          <li><a href="directory.php?filter=sign-off">Site Sign-Off</a></li>
+                                          <li><a href="directory.php?filter=vc">Volunteer Coordinator</a></li>
+                                      </ul>
                                   </li>
                               </ul>
                           </div>
