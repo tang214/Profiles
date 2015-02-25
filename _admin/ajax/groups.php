@@ -76,31 +76,39 @@ class GroupAjax extends FlipJaxSecure
         {
             return $res;
         }
-        $data = array();
-        $group_filter = '(&(cn=*)(!(cn='.$gid.'))';
-        $user_filter = '(&(cn=*)';
         $server = new FlipsideLDAPServer();
-        $groups = $server->getGroups("(cn=".$gid.")");
-        if($groups == FALSE || !isset($groups[0]))
+        $data = array();
+        if($gid !== 'null')
         {
-            echo json_encode(array('error' => "Group not found!"));
-            die();
+            $group_filter = '(&(cn=*)(!(cn='.$gid.'))';
+            $user_filter = '(&(cn=*)';
+            $groups = $server->getGroups("(cn=".$gid.")");
+            if($groups == FALSE || !isset($groups[0]))
+            {
+                echo json_encode(array('error' => "Group not found!"));
+                die();
+            }
+            $group = $groups[0];
+            for($i = 0; $i < $group->member['count']; $i++)
+            {
+                $dn_comps = explode(',',$group->member[$i]);
+                if(strncmp($group->member[$i], "uid=", 4) == 0)
+                {
+                    $user_filter.='(!('.$dn_comps[0].'))';
+                }
+                else
+                {
+                    $group_filter.='(!('.$dn_comps[0].'))';
+                }
+            }
+            $user_filter.=')';
+            $group_filter.=')';
         }
-        $group = $groups[0];
-        for($i = 0; $i < $group->member['count']; $i++)
+        else
         {
-            $dn_comps = explode(',',$group->member[$i]);
-            if(strncmp($group->member[$i], "uid=", 4) == 0)
-            {
-                $user_filter.='(!('.$dn_comps[0].'))';
-            }
-            else
-            {
-                $group_filter.='(!('.$dn_comps[0].'))';
-            }
+            $group_filter = '((cn=*))';
+            $user_filter = '((cn=*))';
         }
-        $user_filter.=')';
-        $group_filter.=')';
         $groups = $server->getGroups($group_filter);
         for($i = 0; $i < count($groups); $i++)
         {

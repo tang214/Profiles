@@ -29,26 +29,32 @@ $page->add_head_tag($script_start_tag.$script_close_tag);
             </tr>
             <tr>
                 <td colspan=3">
-                    <table>
-                        <tr>
-                            <td>
-                                <fieldset>
-                                    <legend>Members</legend>
-                                    <table id="group_members">
-                                        <tbody></tbody>
-                                    </table>
-                                </fieldset>
-                            </td>
-                            <td>
-                                <fieldset>
-                                    <legend>Non-Members</legend>
-                                    <table id="non_members">
-                                        <tbody></tbody>
-                                    </table>
-                                </fieldset>
-                            </td>
-                        </tr>
-                    </table>
+                    <fieldset>
+                        <legend>Members</legend>
+                        <table id="members" class="table">
+                            <thead>
+                                <th></th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Name</th>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Non-Members</legend>
+                        <table id="non-members" class="table">
+                            <thead>
+                                <th></th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Name</th>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </fieldset>
                 </td>
             </tr>
             <tr>
