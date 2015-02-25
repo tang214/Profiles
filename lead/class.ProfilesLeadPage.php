@@ -26,7 +26,7 @@ class ProfilesLeadPage extends FlipPage
         $this->add_sites();
         $this->add_links();
         $this->add_js_from_src('/js/bootstrap-formhelpers.min.js');
-        $this->add_js_from_src('/js/jquery.dataTables.js');
+        $this->add_js_from_src('//cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js');
         $this->add_js_from_src('/js/jquery.validate.js');
         $this->add_js_from_src('/_admin/js/metisMenu.min.js');
         $this->add_js_from_src('/_admin/js/admin.js');
@@ -35,10 +35,8 @@ class ProfilesLeadPage extends FlipPage
 
     function add_css()
     {
+        $this->add_css_from_src('//cdn.datatables.net/1.10.4/css/jquery.dataTables.min.css');
         $css_tag = $this->create_open_tag('link', array('rel'=>'stylesheet', 'href'=>'/css/bootstrap-formhelpers.min.css', 'type'=>'text/css'), true);
-        $this->add_head_tag($css_tag);
-
-        $css_tag = $this->create_open_tag('link', array('rel'=>'stylesheet', 'href'=>'/css/jquery.dataTables.css', 'type'=>'text/css'), true);
         $this->add_head_tag($css_tag);
 
         $css_tag = $this->create_open_tag('link', array('rel'=>'stylesheet', 'href'=>'/css/profiles.css', 'type'=>'text/css'), true);
@@ -124,7 +122,22 @@ class ProfilesLeadPage extends FlipPage
                                       <a href="index.php"><span class="glyphicon glyphicon-dashboard"></span> Dashboard</a>
                                   </li>
                                   <li>
-                                      <a href="directory.php"><span class="glyphicon glyphicon-th-list"></span> Directory</a>
+                                      <a href="#"><span class="glyphicon glyphicon-th-list"></span> Directory</a>
+                                      <ul class="nav nav-second-level collapse">
+                                          <li><a href="directory.php">All</a></li>
+                                          <li><a href="directory.php?filter=aar">AAR</a></li>
+                                          <li><a href="directory.php?filter=af">AFs</a></li>
+                                          <li><a href="directory.php?filter=cc">CC</a></li>
+                                          <li><a href="directory.php?filter=360">360/24/7 Department</a></li>
+                                          <li><a href="directory.php?filter=Art">Art</a></li>
+                                          <li><a href="directory.php?filter=CityPlanning">City Planning</a></li>
+                                          <li><a href="directory.php?filter=Comm">Communications</a></li>
+                                          <li><a href="directory.php?filter=Safety">Safety</a></li>
+                                          <li><a href="directory.php?filter=site-ops">Site-Ops</a></li>
+                                          <li><a href="directory.php?filter=siteprep">Site Prep</a></li>
+                                          <li><a href="directory.php?filter=sign-off">Site Sign-Off</a></li>
+                                          <li><a href="directory.php?filter=vc">Volunteer Coordinator</a></li>
+                                      </ul>
                                   </li>
                               </ul>
                           </div>

@@ -10,15 +10,8 @@ if($_SERVER["HTTPS"] != "on")
 require_once('class.FlipsideCAPTCHA.php');
 require_once('class.ProfilesPage.php');
 $page = new ProfilesPage('Burning Flipside Profiles Registration');
-$script_start_tag = $page->create_open_tag('script', array('src'=>'js/jquery.validate.js'));
-$script_close_tag = $page->create_close_tag('script');
-$page->add_head_tag($script_start_tag.$script_close_tag);
-
-$script_start_tag = $page->create_open_tag('script', array('src'=>'js/zxcvbn-async.js'));
-$page->add_head_tag($script_start_tag.$script_close_tag);
-
-$script_start_tag = $page->create_open_tag('script', array('src'=>'js/register.js'));
-$page->add_head_tag($script_start_tag.$script_close_tag);
+$page->add_js_from_src('/js/zxcvbn-async.js');
+$page->add_js_from_src('/js/register.js');
 
 $captcha = new FlipsideCAPTCHA();
 FlipSession::set_var('captcha', $captcha);

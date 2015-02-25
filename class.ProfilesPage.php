@@ -15,16 +15,10 @@ class ProfilesPage extends FlipPage
 
     function add_css()
     {
-        $css_tag = $this->create_open_tag('link', array('rel'=>'stylesheet', 'href'=>'css/jquery-ui.css', 'type'=>'text/css'), true);
-        $this->add_head_tag($css_tag);
-
-        $css_tag = $this->create_open_tag('link', array('rel'=>'stylesheet', 'href'=>'css/bootstrap.min.css', 'type'=>'text/css'), true);
-        $this->add_head_tag($css_tag);
+        $this->add_css_from_src('//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css');
+        $this->add_css_from_src('//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css');
 
         $css_tag = $this->create_open_tag('link', array('rel'=>'stylesheet', 'href'=>'/css/bootstrap-formhelpers.min.css', 'type'=>'text/css'), true);
-        $this->add_head_tag($css_tag);
-
-        $css_tag = $this->create_open_tag('link', array('rel'=>'stylesheet', 'href'=>'css/bootstrap-theme.min.css', 'type'=>'text/css'), true);
         $this->add_head_tag($css_tag);
 
         $css_tag = $this->create_open_tag('link', array('rel'=>'stylesheet', 'href'=>'css/profiles.css', 'type'=>'text/css'), true);

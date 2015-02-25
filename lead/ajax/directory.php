@@ -78,6 +78,32 @@ class DirectoryAjax extends FlipJaxSecure
             }
             $members = $groups[0]->getMembers(FALSE);
         }
+        else if($filter == 'cc')
+        {
+            $groups = $server->getGroups("(cn=CC)");
+            if($groups == FALSE || !isset($groups[0]))
+            {
+                return array('err_code' => self::INTERNAL_ERROR, 'reason' => "Unable to locate CC Group!");
+            }
+            $members = $groups[0]->getMembers();
+        }
+        else
+        {
+            //filter is an area
+            $users = $server->getUsers('(ou='.$filter.')');
+            $res = array();
+            $user_count = count($users);
+            for($i = 0; $i < $user_count; $i++)
+            {
+                array_push($res, array('legalName' => $users[$i]->givenName[0].' '.$users[$i]->sn[0],
+                                     'burnerName' => $users[$i]->displayName[0],
+                                     'title'=>$this->title_to_string($users[$i]->title[0]),
+                                     'email'=>$users[$i]->mail[0],
+                                     'phone'=>$users[$i]->mobile[0],
+                                     'area'=>$users[$i]->ou[0]));
+            }
+            return array('data'=>$res);
+        }
         $members = array_unique($members);
         $res = array();
         foreach($members as $key => $member)
