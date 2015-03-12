@@ -96,7 +96,7 @@ function group_data_submitted(form)
     var members_str = "";
     for(i = 0; i < members.length; i++)
     {
-        members_str += "&members[]="+member[i].dn;
+        members_str += "&members[]="+members[i].dn;
     } 
     $.ajax({
         url: 'ajax/groups.php',
@@ -120,13 +120,15 @@ function do_group_edit_init()
     });
     $('#non-members').dataTable({
         'columns':[{'className':'addControl','data':null,'defaultContent':'','orderable':false},{'data': "username"},{'data': 'email'},{'data': 'name'}],
-        'order': [[1, 'asc']]
+        'order': [[1, 'asc']],
+        'ajax': 'ajax/groups.php?gid=null&nonMembersOnly=true'
     });
-    non_members.ajax.url('ajax/groups.php?gid=null&nonMembersOnly=true').load();
     $("#form").validate({
         debug: true,
         submitHandler: group_data_submitted
     });
+    $('#members tbody').on('click', 'td.removeControl', remove_clicked);
+    $('#non-members tbody').on('click', 'td.addControl', add_clicked);
     $('#submit').removeAttr("disabled");
 }
 

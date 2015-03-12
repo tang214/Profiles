@@ -106,8 +106,8 @@ class GroupAjax extends FlipJaxSecure
         }
         else
         {
-            $group_filter = '((cn=*))';
-            $user_filter = '((cn=*))';
+            $group_filter = '(cn=*)';
+            $user_filter = '(cn=*)';
         }
         $groups = $server->getGroups($group_filter);
         for($i = 0; $i < count($groups); $i++)
