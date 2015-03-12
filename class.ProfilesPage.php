@@ -56,16 +56,16 @@ class ProfilesPage extends FlipPage
         $about_menu = array(
             'Burning Flipside'=>'http://www.burningflipside.com/about/event',
             'AAR, LLC'=>'http://www.burningflipside.com/LLC',
-            'Privacy Policy'=>'http://www.burningflipside.com/about/rivacy'
+            'Privacy Policy'=>'http://www.burningflipside.com/about/privacy'
         );
         $this->add_link('About', 'http://www.burningflipside.com/about', $about_menu);
     }
 
     function add_script()
     {
-        $this->add_js_from_src('/js/jquery.validate.js');
+        $this->add_js_from_src('/js/jquery.validate.min.js');
         $this->add_js_from_src('/js/bootstrap-formhelpers.min.js');
-        $this->add_js_from_src('/js/login.js');
+        $this->add_js_from_src('/js/login.min.js');
     }
 
     function add_login_form()
@@ -90,6 +90,15 @@ class ProfilesPage extends FlipPage
                                 </div>
                             </div>
                         </div>';
+    }
+
+    function current_url()
+    {
+        if($_SERVER['REQUEST_URI'][0] === '/')
+        {
+            return 'http'.(isset($_SERVER['HTTPS'])?'s':'').'://'."{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}";
+        }
+        return 'http'.(isset($_SERVER['HTTPS'])?'s':'').'://'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}";
     }
 }
 ?>
