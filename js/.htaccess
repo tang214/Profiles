@@ -1,0 +1,12 @@
+<FilesMatch "^jquery">
+    ExpiresActive On
+    ExpiresDefault "access plus 1 month"
+</FilesMatch>
+<FilesMatch "^bootstrap">
+    ExpiresActive On
+    ExpiresDefault "access plus 1 month"
+</FilesMatch>
+<FilesMatch "\.min.js">
+    ExpiresActive On
+    ExpiresDefault "access plus 1 week"
+</FilesMatch>
