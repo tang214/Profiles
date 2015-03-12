@@ -4,8 +4,6 @@ error_reporting(E_ALL);
 require_once('class.ProfilesPage.php');
 $page = new ProfilesPage('Burning Flipside Profiles');
 
-$page->add_js_from_src('/js/index.js');
-
 $page->body .= '
 <div id="content">
     <h1>Welcome to the Burning Flipside Profile System</h1>
@@ -33,7 +31,8 @@ else
     <p>You can sign up for an account <a href="register.php">here</a>.
     <h1>Forgot your username or password?</h1>
     <p>You can lookup a forgotten username or reset your password <a href="reset.php">here.</a></p>
-</div>';
+</div>
+<script async src="/js/index.min.js"></script>';
 }
 
 $page->print_page();
