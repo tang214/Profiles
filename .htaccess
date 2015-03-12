@@ -2,3 +2,7 @@
   php_value include_path ".:/var/www/common"
   php_value session.cookie_domain ".burningflipside.com"
 </IfModule>
+
+AddType image/vnd.microsoft.icon .ico
+ExpiresActive on
+ExpiresByType image/vnd.microsoft.icon "access plus 3 months"
