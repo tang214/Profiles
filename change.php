@@ -88,9 +88,16 @@ if(strtoupper($_SERVER['REQUEST_METHOD']) == 'POST')
 }
 else
 {
-    if($user == FALSE)
+    if($user === FALSE)
     {
-        die("Please Log in first!");
+        if(isset($_GET['hash']))
+        {
+            die("This reset hash is no longer valid. Please select the neweset reset link in your email");
+        }
+        else
+        {
+            die("Please Log in first!");
+        }
     }
     $page = new ProfilesPage('Burning Flipside Password Change');
     $script_start_tag = $page->create_open_tag('script', array('src'=>'js/jquery.validate.js'));
