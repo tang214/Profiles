@@ -1,0 +1,286 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0",
+        "title": "Burning Flipside User API",
+        "description": "This api allows access to basic user data including profiles",
+        "contact": {
+            "name": "Problem",
+            "email": "problem@burningflipside.com"
+        }
+    },
+    "host": "profiles.burningflipside.com",
+    "basePath": "/api/v1",
+    "schemes": [
+        "https"
+    ],
+    "paths": {
+        "/users": {
+            "get": {
+                "summary": "Gets a list of all 'User' objects",
+                "description": "Gets a list of all 'User' objects the caller is authorized to see",
+                "produces": [
+                    "application/json",
+                    "text/csv",
+                    "application/xml"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "title": "ArrayOfUsers",
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/User"
+                            }
+                        }
+                    },
+                    "303": {
+                        "description": "Not logged in"
+                    }
+                },
+                "security": [
+                    {
+                        "apikey": []
+                    },
+                    {
+                        "flipside_auth": [
+                            "read:users"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/users/me": {
+            "get": {
+                "summary": "Gets the current 'User' object",
+                "description": "Gets the currently logged in 'User' object",
+                "produces": [
+                    "application/json",
+                    "text/csv",
+                    "application/xml"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    },
+                    "303": {
+                        "description": "Not logged in"
+                    }
+                },
+                "security": [
+                    {
+                        "apikey": []
+                    },
+                    {
+                        "flipside_auth": [
+                            "read:users"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/users/{uid}": {
+            "get": {
+                "summary": "Gets the 'User' object specified",
+                "description": "Gets the specified 'User' object if user has access",
+                "produces": [
+                    "application/json",
+                    "text/csv",
+                    "application/xml"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "uid",
+                        "description": "User ID",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    },
+                    "303": {
+                        "description": "Not logged in"
+                    }
+                },
+                "security": [
+                    {
+                        "apikey": []
+                    },
+                    {
+                        "flipside_auth": [
+                            "read:users"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/users/me/groups": {
+            "get": {
+                "summary": "Gets a list of all 'Group' objects for the user",
+                "description": "Gets a list of all 'Group' objects the caller user is associated with",
+                "produces": [
+                    "application/json",
+                    "text/csv",
+                    "application/xml"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "title": "ArrayOfGroups",
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Group"
+                            }
+                        }
+                    },
+                    "303": {
+                        "description": "Not logged in"
+                    }
+                },
+                "security": [
+                    {
+                        "apikey": []
+                    },
+                    {
+                        "flipside_auth": [
+                            "read:users"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/groups": {
+            "get": {
+                "summary": "Gets a list of all 'Group' objects",
+                "description": "Gets a list of all 'Group' objects the caller is authorized to see",
+                "produces": [
+                    "application/json",
+                    "text/csv",
+                    "application/xml"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "title": "ArrayOfGroups",
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Group"
+                            }
+                        }
+                    },
+                    "303": {
+                        "description": "Not logged in"
+                    }
+                },
+                "security": [
+                    {
+                        "apikey": []
+                    },
+                    {
+                        "flipside_auth": [
+                            "read:users"
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    "securityDefinitions": {
+        "flipside_auth": {
+            "type": "oauth2",
+            "flow": "accessCode",
+            "authorizationUrl": "https://profiles.burningflipside.com/OAUTH2/authorize.php",
+            "tokenUrl": "https://profiles.burningflipside.com/OAUTH2/token.php",
+            "scopes": {
+                "read:users": "read regisration information"
+            }
+        },
+        "apikey": {
+            "type": "apiKey",
+            "name": "apikey",
+            "in": "header"
+        }
+    },
+    "definitions": {
+        "User": {
+            "properties": {
+                "displayName": {
+                    "type": "string"
+                },
+                "givenName": {
+                    "type": "string"
+                },
+                "jpegPhoto": {
+                    "type": "string"
+                },
+                "mail": {
+                    "type": "string"
+                },
+                "mobile": {
+                    "type": "string"
+                },
+                "uid": {
+                    "type": "string"
+                },
+                "o": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "st": {
+                    "type": "string"
+                },
+                "l": {
+                    "type": "string"
+                },
+                "sn": {
+                    "type": "string"
+                },
+                "cn": {
+                    "type": "string"
+                },
+                "postalAddress": {
+                    "type": "string"
+                },
+                "postalCode": {
+                    "type": "string"
+                },
+                "c": {
+                    "type": "string"
+                },
+                "ou": {
+                    "type": "string"
+                }
+            }
+        },
+        "Group": {
+            "properties": {
+                "member": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "cn": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
