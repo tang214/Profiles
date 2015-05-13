@@ -21,7 +21,8 @@ if($user != FALSE)
                             Your profile is not yet complete. Click <a href="/profile.php" class="alert-link">here</a> to complete your profile.
                 </div>';
     }
-    $page->body .= '
+    $page->body .= '<h1>Need to reset your password?</h1>
+    <p>You can reset your password <a href="reset.php">here.</a></p>
 </div>';
 }
 else

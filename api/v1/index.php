@@ -245,6 +245,42 @@ function show_user($uid = 'me')
     }
 }
 
+function edit_user($uid = 'me')
+{
+    global $app;
+    if(!$app->user)
+    {
+        $app->response->setStatus(401);
+        return;
+    }
+    $body = $app->request->getBody();
+    $obj  = json_decode($body);
+    if($uid === 'me')
+    {
+        $app->user->edit_user($obj);
+    }
+    else if($uid === $app->user->getUid())
+    {
+        $app->user->edit_user($obj);
+    }
+    else if($app->user->isInGroupNamed("LDAPAdmins"))
+    {
+        $user = AuthProvider::get_instance()->get_user(false, $uid);
+        if($user === false)
+        {
+            $app->response->setStatus(404);
+            return;
+        }
+        $user->edit_user($obj);
+    }
+    else
+    {
+        $app->response->setStatus(404);
+        return;
+    }
+    echo json_encode(array('success'=>true));
+}
+
 function list_groups()
 {
     global $app;
@@ -304,6 +340,7 @@ function users()
     global $app;
     $app->get('', 'list_users');
     $app->get('/me', 'show_user');
+    $app->patch('/me', 'edit_user');
     $app->get('/:uid', 'show_user');
     $app->get('/:uid/groups', 'list_groups_for_user');
 }

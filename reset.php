@@ -12,13 +12,40 @@ require_once("class.FlipSession.php");
 require_once('class.ProfilesPage.php');
 require_once('class.FlipsideMail.php');
 $page = new ProfilesPage('Burning Flipside Profiles Reset');
-//Add Jquery validator
-$script_start_tag = $page->create_open_tag('script', array('src'=>'js/jquery.validate.js'));
-$script_close_tag = $page->create_close_tag('script');
-$page->add_head_tag($script_start_tag.$script_close_tag);
 //Add Reset Javascript
-$script_start_tag = $page->create_open_tag('script', array('src'=>'js/reset.js'));
-$page->add_head_tag($script_start_tag.$script_close_tag);
+$page->add_js_from_src('js/reset.js');
+
+$user = FlipSession::get_user();
+if($user !== false)
+{
+    //User is logged in. They can reset their password...
+    $page->body = '
+        <div id="content">
+            <h3>Burning Flipside Password Reset</h3>
+            <div class="form-group">
+                <label for="oldpass" class="col-sm-2 control-label">Current Password:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" type="password" name="oldpass" id="oldpass" required/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="newpass" class="col-sm-2 control-label">New Password:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" type="password" name="newpass" id="newpass" required/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="confirm" class="col-sm-2 control-label">Confirm Password:</label>
+                <div class="col-sm-10">
+                    <input class="form-control" type="password" name="confirm" id="confirm" required/>
+                </div>
+            </div>
+            <button name="submit" class="btn btn-primary" onclick="change_password();">Change Password</button>
+        </div>
+    ';
+}
+else
+{
 if(strtoupper($_SERVER['REQUEST_METHOD']) == 'POST')
 {
     if(isset($_POST['forgot']))
@@ -177,6 +204,7 @@ else
                 </table>
             </form>
         </div>';
+}
 }
 
 $page->print_page();
