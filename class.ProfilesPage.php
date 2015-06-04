@@ -13,9 +13,9 @@ class ProfilesPage extends FlipPage
         $this->profiles_root = substr($script_dir, strlen($root));
         $this->add_profiles_css();
         $this->add_profiles_script();
-        $this->add_sites();
         $this->add_links();
         $this->add_login_form();
+        $this->body_tags='data-login-url="'.$this->profiles_root.'/api/v1/login"';
     }
 
     function add_profiles_css()
@@ -31,33 +31,25 @@ class ProfilesPage extends FlipPage
         $this->add_js(JS_LOGIN);
     }
 
-    function add_sites()
-    {
-        $this->add_site('Profiles', 'https://profiles.burningflipside.com');
-        $this->add_site('WWW', 'http://www.burningflipside.com');
-        $this->add_site('Pyropedia', 'http://wiki.burningflipside.com');
-        $this->add_site('Secure', 'https://secure.burningflipside.com');
-    }
-
     function add_links()
     {
         if(!FlipSession::is_logged_in())
         {
-            $this->add_link('Login', 'https://profiles.burningflipside.com/login.php');
+            $this->add_link('Login', $this->profiles_root.'/login.php');
         }
         else
         {
             $this->user = FlipSession::get_user(TRUE);
             if($this->user != FALSE && $this->user->isInGroupNamed("LDAPAdmins"))
             {
-                $this->add_link('Admin', 'https://profiles.burningflipside.com/_admin/index.php');
+                $this->add_link('Admin', $this->profiles_root.'/_admin/index.php');
             }
             if($this->user != FALSE && ($this->user->isInGroupNamed("Leads") || $this->user->isInGroupNamed("CC")))
             {
-                $this->add_link('Leads', 'https://profiles.burningflipside.com/lead/index.php');
+                $this->add_link('Leads', $this->profiles_root.'/lead/index.php');
             }
-            $this->add_link('My Profile', 'https://profiles.burningflipside.com/profile.php');
-            $this->add_link('Logout', 'https://profiles.burningflipside.com/logout.php');
+            $this->add_link('My Profile', $this->profiles_root.'/profile.php');
+            $this->add_link('Logout', $this->profiles_root.'/logout.php');
         }
         $about_menu = array(
             'Burning Flipside'=>'http://www.burningflipside.com/about/event',
