@@ -12,14 +12,11 @@ $page->body .= '
        Additionally, completing your profile on this site will enable you to complete ticket requests and sign up for volunteer shifts even faster than before.</p>';
 
 $user = FlipSession::get_user();
-if($user != FALSE)
+if($user !== null)
 {
     if(!$user->isProfileComplete())
     {
-        $page->body .= '<div class="alert alert-warning alert-dismissible" role="alert">
-                            <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                            Your profile is not yet complete. Click <a href="/profile.php" class="alert-link">here</a> to complete your profile.
-                </div>';
+        $page->add_notification('Your profile is not yet complete. Click <a href="/profile.php" class="alert-link">here</a> to complete your profile.', $page::NOTIFICATION_WARNING);
     }
     $page->body .= '<h1>Need to reset your password?</h1>
     <p>You can reset your password <a href="reset.php">here.</a></p>
@@ -33,7 +30,7 @@ else
     <h1>Forgot your username or password?</h1>
     <p>You can lookup a forgotten username or reset your password <a href="reset.php">here.</a></p>
 </div>
-<script async src="/js/index.min.js"></script>';
+<script async src="'.$page->profiles_root.'/js/index.min.js"></script>';
 }
 
 $page->print_page();
