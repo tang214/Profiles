@@ -6,8 +6,15 @@ $page = new ProfilesPage('Burning Flipside Profiles');
 
 $page->body .= '
 <div id="content">
-    You have been logged out. Click <a href="login.php">here</a> to log back in.
-</div>';
+    You have been logged out.
+</div>
+<script>
+    function send_to_index()
+    {
+        window.location.href="index.php";
+    }
+    setTimeout(send_to_index, 5000);
+</script>';
 
 $page->print_page();
 ?>

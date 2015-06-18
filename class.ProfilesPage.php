@@ -35,12 +35,15 @@ class ProfilesPage extends FlipPage
     {
         if(!FlipSession::is_logged_in())
         {
-            $this->add_link('Login', $this->profiles_root.'/login.php');
+            if(strstr($_SERVER['REQUEST_URI'], 'logout.php') === false)
+            {
+                $this->add_link('Login', $this->profiles_root.'/login.php');
+            }
         }
         else
         {
             $this->user = FlipSession::get_user(TRUE);
-            if($this->user != FALSE && $this->user->isInGroupNamed("LDAPAdmins"))
+            if($this->user !== false && $this->user->isInGroupNamed("LDAPAdmins"))
             {
                 $this->add_link('Admin', $this->profiles_root.'/_admin/index.php');
             }
@@ -61,6 +64,14 @@ class ProfilesPage extends FlipPage
 
     function add_login_form()
     {
+        $auth = \AuthProvider::getInstance();
+        $auth_links = $auth->get_supplementary_links();
+        $auth_links_str = '';
+        $count = count($auth_links);
+        for($i = 0; $i < $count; $i++)
+        {
+            $auth_links_str .= $auth_links[$i];
+        }
         $this->body .= '<div class="modal fade" role="dialog" id="login-dialog" title="Login" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
@@ -77,6 +88,7 @@ class ProfilesPage extends FlipPage
                                             <input class="form-control" type="password" name="password" placeholder="Password" required/>
                                             <button class="btn btn-lg btn-primary btn-block" type="submit">Login</button>
                                         </form>
+                                        '.$auth_links_str.'
                                     </div>
                                 </div>
                             </div>
