@@ -2,39 +2,18 @@
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 require_once('class.ProfilesLeadPage.php');
-require_once('class.FlipsideLDAPServer.php');
 $page = new ProfilesLeadPage('Burning Flipside Profiles - Lead');
 
-$server = new FlipsideLDAPServer();
-$groups = $server->getGroups("(cn=Leads)");
-$members = array();
-if($groups != FALSE && isset($groups[0]))
-{
-    $members = $groups[0]->getMembers(FALSE);
-}
-$lead_count = count($members);
-$groups = $server->getGroups("(cn=AAR)");
-$members = array();
-if($groups != FALSE && isset($groups[0]))
-{
-    $members = $groups[0]->getMembers(FALSE);
-}
-$aar_count = count($members);
-$groups = $server->getGroups("(cn=AFs)");
-$members = array();
-if($groups != FALSE && isset($groups[0]))
-{
-    $members = $groups[0]->getMembers(FALSE);
-}
-$af_count = count($members);
+$auth = AuthProvider::getInstance();
+$leadGroup = $auth->get_group_by_name(false, 'Leads');
+$aarGroup  = $auth->get_group_by_name(false, 'AAR');
+$afGroup   = $auth->get_group_by_name(false, 'AFs');
+$ccGroup   = $auth->get_group_by_name(false, 'CC');
 
-$groups = $server->getGroups("(cn=CC)");
-$members = array();
-if($groups != FALSE && isset($groups[0]))
-{
-    $members = $groups[0]->getMembers(FALSE);
-}
-$cc_count = count($members);
+$lead_count = $leadGroup->member_count();
+$aar_count  = $aarGroup->member_count();
+$af_count   = $afGroup->member_count();
+$cc_count   = $ccGroup->member_count();
 
 $page->body .= '
 <div class="row">

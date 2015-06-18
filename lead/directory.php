@@ -2,38 +2,16 @@
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 require_once('class.ProfilesLeadPage.php');
-require_once('class.FlipsideLDAPServer.php');
 $page = new ProfilesLeadPage('Burning Flipside Profiles - Lead');
 
-$page->add_js_from_src('/js/jquery.dataTables.js');
+$page->add_js(JS_CRYPTO_MD5_JS);
 $page->add_js_from_src('js/directory.js');
 
-$css_tag = $page->create_open_tag('link', array('rel'=>'stylesheet', 'href'=>'/css/jquery.dataTables.css', 'type'=>'text/css'), true);
-$page->add_head_tag($css_tag);
-
-$server = new FlipsideLDAPServer();
-$groups = $server->getGroups("(cn=Leads)");
-$members = array();
-if($groups != FALSE && isset($groups[0]))
+$query = '?fmt=csv';
+if(isset($_GET['filter']))
 {
-    $members = $groups[0]->getMembers(FALSE);
+    $query = '?type='.$_GET['filter'].'&fmt=csv';
 }
-$lead_count = count($members);
-$groups = $server->getGroups("(cn=AAR)");
-$members = array();
-if($groups != FALSE && isset($groups[0]))
-{
-    $members = $groups[0]->getMembers(FALSE);
-}
-$aar_count = count($members);
-$groups = $server->getGroups("(cn=AFs)");
-$members = array();
-if($groups != FALSE && isset($groups[0]))
-{
-    $members = $groups[0]->getMembers(FALSE);
-}
-$af_count = count($members);
-
 
 $page->body .= '
 <div class="row">
@@ -47,14 +25,12 @@ $page->body .= '
             <th>Legal Name</th>
             <th>Burner Name</th>
             <th>Position</th>
-            <th>Email</th>
-            <th>Phone</th>
         </thead>
         <tbody></tbody>
     </table>
 </div>
 <div class="row">
-Export: <a href="directory.csv.php"><img src="/images/csv.svg"/></a>
+Export: <a href="../api/v1/leads'.$query.'"><img src="../images/csv.svg"/></a>
 </div>';
 
 $page->print_page();
