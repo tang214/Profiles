@@ -12,46 +12,11 @@ function update_city_state(data)
     }
 }
 
-function validate_zip(value, element)
-{
-    if(value.length > 0)
-    {
-        if($('#c').val() == 'US')
-        {
-            //Make sure this is either a 5 or 5+4 zip code
-            if(/^\d{5}(?:-\d{4})?$/.test(value) == false)
-            {
-                return this.optional(element);
-            }
-            try{
-                $.ajax({
-                    url: '/ajax/zip_proxy.php',
-                    data: 'zip='+value,
-                    type: 'get',
-                    dataType: 'json',
-                    async: false,
-                    success: function(data){is_valid = (data.city !== undefined); update_city_state(data)}});
-                return is_valid;
-            } catch(err) {
-                return true;
-            }
-        }
-        else
-        {
-            return true;
-        }
-    }
-    else
-    {
-        return this.optional(element);
-    }
-}
-
-function finish_populate_form(data, textStatus, jqXHR)
+function finish_populate_form(jqXHR, textStatus)
 {
     if(textStatus === 'success')
     {
-        var json = eval('('+data+')');
+        var json = jqXHR.responseJSON;
         $('#uid_label').html(json.uid);
         $('#uid').val(json.uid);
         $('#givenName').val(json.givenName);
@@ -66,6 +31,11 @@ function finish_populate_form(data, textStatus, jqXHR)
         if(json.jpegPhoto != undefined && json.jpegPhoto.length > 0)
         {
             cropper.obj.append('<img src="data:image/jpeg;base64,'+json.jpegPhoto+'">');
+        }
+        else
+        {
+            //Use gravatar
+            $('#gravatar').append('If no profile photo is set. Your <a href="http://www.gravatar.com">Gravatar</a> image will be used instead<br/><img src="//www.gravatar.com/avatar/'+CryptoJS.MD5(json.mail.toLowerCase())+'?d=identicon" style="width:64px; height: 64px;"/>');
         }
         if(json.c != undefined && json.c.length > 0)
         {
@@ -87,7 +57,12 @@ function finish_populate_form(data, textStatus, jqXHR)
 
 function start_user_population()
 {
-    $.ajax('./ajax/user.php').done(finish_populate_form);
+    $.ajax({
+        url: 'api/v1/users/me',
+        type: 'GET',
+        dataType: 'json',
+        complete: finish_populate_form
+    });
 }
 
 function populate_user_data()
@@ -100,14 +75,9 @@ function start_populate_form()
     populate_user_data();
 }
 
-function profile_submit_done(data)
+function profile_submit_done(jqXHR)
 {
-    if(data.error)
-    {
-         alert(data.error);
-         console.log(data.error);
-    }
-    else
+    if(jqXHR.status == 200)
     {
         if($('#content .alert').length == 0)
         {
@@ -119,22 +89,27 @@ function profile_submit_done(data)
         }
         window.scrollTo(0, 0);
     }
-    return false;
+    else(data.error)
+    {
+         alert(jqXHR.responseJSON.message);
+         console.log(jqXHR);
+    }
 }
 
-function profile_data_submitted(form)
+function update_profile()
 {
-    var jpegPhoto = '';
+    var obj = $('#profile').serializeObject();
     if($('#jpegPhoto img').length > 0)
     {
-        jpegPhoto = '&jpegPhoto='+encodeURIComponent($('#jpegPhoto img').attr('src').substring(23));
+        obj['jpegPhoto'] = $('#jpegPhoto img').attr('src').substring(23);
     }
     $.ajax({
-        url: '/ajax/user.php',
-        data: $(form).serialize()+jpegPhoto,
-        type: 'post',
+        url: 'api/v1/users/me',
+        data: obj,
+        type: 'PATCH',
         dataType: 'json',
-        success:profile_submit_done});
+        processData: false,
+        complete: profile_submit_done});
 }
 
 function delete_user()
@@ -144,8 +119,6 @@ function delete_user()
 
 function do_init()
 {
-    jQuery.validator.addMethod("zip", validate_zip, "Please provide a valid zipcode.");
-
     cropper = new Croppic('jpegPhoto', {
          modal: true,
          uploadUrl: '/ajax/upload.php',
@@ -156,9 +129,17 @@ function do_init()
         debug: true,
         rules: {
             email: { required: true, email: true},
-            postalCode: "zip"
-        },
-        submitHandler: profile_data_submitted
+            postalCode: {
+                remote: {
+                    url: 'api/v1/zip',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        c: function() { return $('#c').val(); }
+                    }
+                }
+            }
+        }
     });
 }
 
