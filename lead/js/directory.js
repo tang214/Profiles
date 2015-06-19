@@ -138,7 +138,7 @@ function show_details(e)
     html +=     '<td style="text-align: center; padding: .5em;"><a href="mailto:'+data.mail+'"><span class="glyphicon glyphicon-envelope" style="font-size: 2em"></span><br/>Email</a></td>';
     html +=     '<td style="text-align: center; padding: .5em;"><a href="tel:'+data.mobile+'"><span class="glyphicon glyphicon-earphone" style="font-size: 2em"></span><br/>Call</a></td>';
     html +=     '<td style="text-align: center; padding: .5em;"><a href="sms:'+data.mobile+'"><span class="glyphicon glyphicon-phone" style="font-size: 2em"></span><br/>Text</a></td>';
-    html +=     '<td style="text-align: center; padding: .5em;"><a href="vcard.php?data='+encodeURIComponent(JSON.stringify(data))+'"><span class="glyphicon glyphicon-download" style="font-size: 2em"></span><br/>Download</a></td>';
+    html +=     '<td style="text-align: center; padding: .5em;"><a href="../api/v1/users/'+data.uid+'?fmt=vcard"><span class="glyphicon glyphicon-download" style="font-size: 2em"></span><br/>Download</a></td>';
     html +=     '</tr></table>';
     var title = data.givenName+' '+data.sn;
     if(data.jpegPhoto !== null && data.jpegPhoto != '')

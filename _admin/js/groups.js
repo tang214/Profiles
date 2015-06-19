@@ -51,13 +51,12 @@ function do_groups_init()
 {
     if($("#group_table").length > 0)
     {
-        var cols = [
-            {"render": renderGroupName, "targets": 0}
-        ];
-
         $("#group_table").dataTable({
-            "ajax": 'ajax/groups.php',
-            "columnDefs": cols
+            'ajax': '../api/v1/groups?fmt=data-table',
+            'columns': [
+                {'data': 'cn', 'render': renderGroupName},
+                {'data': 'description'}
+            ]
         });
 
         $("#group_table tbody").on('click', 'tr', onGroupTableBodyClick);

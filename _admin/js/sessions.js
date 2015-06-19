@@ -1,4 +1,4 @@
-function session_exec_done(data)
+function session_del_done(data)
 {
     if(data.error === undefined)
     {
@@ -13,46 +13,66 @@ function session_exec_done(data)
 
 function sessionExecute()
 {
-    var action;
-    var selected = [];
-    switch($("#session_action")[0].value)
-    {
-        case "none":
-            return;
-        case "del":
-            action = "delete";
-            break;
-    }
     var selected_rows = $('#sessions tr.selected');
     if(selected_rows.length < 1)
     {
         return;
     }
-    for(i = 0; i < selected_rows.length; i++)
+    switch($("#session_action")[0].value)
     {
-        selected.push(selected_rows[i].childNodes[0].innerHTML);
+        case "none":
+            return;
+        case "del":
+            for(i = 0; i < selected_rows.length; i++)
+            {
+                $.ajax({
+                    url: '../api/v1/sessions/'+selected_rows[i].childNodes[0].innerHTML,
+                    type: 'DELETE',
+                    success: session_del_done
+                });
+            }
+            break;
     }
-    $.ajax({
-        url: 'ajax/sessions.php',
-        data: {'sids':selected,'action':action},
-        type: 'post',
-        dataType: 'json',
-        success: session_exec_done});
 }
 
-function renderSID(data, type, row)
+function renderSID(data, type, row, meta)
 {
-    if(row[4] == 1)
+    if(row['current'] === true)
     {
         return 'This Session';
     }
-    return data;
+    return row['sid'];
 }
 
-function renderTime(data, type, row)
+function renderUID(data, type, row, meta)
 {
-    var date = new Date(data);
-    return date.toLocaleString();
+    if(row['AuthData'] !== undefined && row['AuthData']['extended'] !== undefined)
+    {
+        if(row['AuthData']['extended']['uid'] !== undefined)
+        {
+            return row['AuthData']['extended']['uid'];
+        }
+    }
+    return 'Anonymous';
+}
+
+function renderIP(data, type, row, meta)
+{
+    if(row['ip_address'] !== undefined)
+    {
+        return row['ip_address'];
+    }
+    return 'Unknown';
+}
+
+function renderTime(data, type, row, meta)
+{
+    if(row['init_time'] !== undefined)
+    {
+        var date = new Date(row['init_time']);
+        return date.toLocaleString();
+    }
+    return 'Unknown';
 }
 
 function onSessionTableBodyClick()
@@ -76,14 +96,14 @@ function do_sessions_init()
 {
     if($("#sessions").length > 0)
     {
-        var cols = [
-            {"render": renderSID, "targets": 0},
-            {"render": renderTime, "targets": 3}
-        ];
-
         $("#sessions").dataTable({
-            "ajax": 'ajax/sessions.php',
-            "columnDefs": cols
+            'ajax': '../api/v1/sessions?fmt=data-table',
+            'columns': [
+                {'render': renderSID, 'data': null},
+                {'render': renderUID, 'data': null},
+                {'render': renderIP, 'data': null},
+                {'render': renderTime, 'data': null}
+            ]
         });
 
         $("#sessions tbody").on('click', 'tr', onSessionTableBodyClick);

@@ -79,7 +79,7 @@ $page->body .= '
                     </div>
                 </div>
             </div>
-            <a href="directory?filter=cc">
+            <a href="directory.php?filter=cc">
                 <div class="panel-footer">
                     <span class="pull-left">View Details</span>
                     <span class="pull-right glyphicon glyphicon-circle-arrow-right"></span>

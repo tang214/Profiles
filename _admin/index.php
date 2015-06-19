@@ -2,35 +2,18 @@
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 require_once('class.ProfilesAdminPage.php');
-require_once('class.FlipsideLDAPServer.php');
 $page = new ProfilesAdminPage('Burning Flipside Profiles - Admin');
 
-$script_start_tag = $page->create_open_tag('script', array('src'=>'js/index.js'));
-$script_close_tag = $page->create_close_tag('script');
-$page->add_head_tag($script_start_tag.$script_close_tag);
+$page->add_js_from_src('js/index.js');
 
-$server = new FlipsideLDAPServer();
-$users = $server->getUsers();
-$user_count = 0;
-if($users != FALSE)
-{
-    $user_count = count($users);
-}
-$temp_users = FlipsideUser::get_all_temp_users();
-$temp_user_count = 0;
-if($temp_users != FALSE)
-{
-    $temp_user_count = count($temp_users);
-}
-$groups = $server->getGroups();
-$group_count = 0;
-if($groups != FALSE)
-{
-    $group_count = count($groups);
-}
+$auth = AuthProvider::getInstance();
+$user_count = $auth->get_active_user_count(false);
+$temp_user_count = $auth->get_pending_user_count(false);
+$group_count = $auth->get_group_count(false);
+
 $sessions = FlipSession::get_all_sessions();
 $session_count = 0;
-if($sessions != FALSE)
+if($sessions !== false)
 {
     $session_count = count($sessions);
 }
