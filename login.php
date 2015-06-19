@@ -23,6 +23,15 @@ if(isset($_GET['failed']))
     $page->add_notification('Login Failed! <a href="/reset.php" class="alert-link">Click here to reset your password.</a>', $page::NOTIFICATION_FAILED);
 }
 
+$auth = \AuthProvider::getInstance();
+$auth_links = $auth->get_supplementary_links();
+$auth_links_str = '';
+$count = count($auth_links);
+for($i = 0; $i < $count; $i++)
+{
+    $auth_links_str .= $auth_links[$i];
+}
+
 $page->body = '
 <div id="content" class="container">
     <div class="login-container">
@@ -33,6 +42,7 @@ $page->body = '
         '.$return.'
         <button class="btn btn-lg btn-primary btn-block" type="submit">Login</button>
     </form>
+    '.$auth_links_str.'
     </div>
 </div>';
 
