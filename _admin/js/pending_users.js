@@ -67,7 +67,7 @@ function do_pending_init()
 {
     if($("#pending_table").length > 0)
     {
-        pendingTable = $("#pending_table").dataTable({
+        $("#pending_table").DataTable({
             "ajax": 'ajax/pending_users.php'
         });
 
