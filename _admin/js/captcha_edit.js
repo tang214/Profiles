@@ -1,12 +1,5 @@
 var _cid = null;
 
-function getParameterByName(name) {
-    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-        results = regex.exec(location.search);
-    return results == null ? null : decodeURIComponent(results[1].replace(/\+/g, " "));
-}
-
 function getCID()
 {
     if(_cid != null)
@@ -52,7 +45,7 @@ function populate_captcha_dropdown()
     //Turn off events on the dropdown
     $('#captcha_select').change(null);
     $.ajax({
-        url: 'ajax/captcha.php',
+        url: '../api/v1/captchas?select=id,question',
         type: 'get',
         dataType: 'json',
         success: captchas_done});
@@ -106,24 +99,22 @@ function captcha_submit_done(data)
     }
 }
 
-function captcha_data_submitted(form)
+function captcha_data_submitted(e)
 {
     $.ajax({
-        url: 'ajax/captcha.php',
+        url: '../api/v1/captchas',
         data: $(form).serialize(),
         type: 'post',
         dataType: 'json',
         success: captcha_submit_done});
+    return false;
 }
 
 function do_captcha_edit_init()
 {
     populate_captcha_dropdown();
     populate_captcha_data();
-    $("#form").validate({
-        debug: true,
-        submitHandler: captcha_data_submitted
-    });
+    $("#form").submit(captcha_data_submitted);
 }
 
 $(do_captcha_edit_init);
