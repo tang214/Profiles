@@ -7,8 +7,12 @@ if($_SERVER['REQUEST_URI'][0] == '/' && $_SERVER['REQUEST_URI'][1] == '/')
     $_SERVER['REQUEST_URI'] = substr($_SERVER['REQUEST_URI'], 1);
 }
 
+require('login.php');
+require('users.php');
+
 $app = new FlipREST();
 $app->post('/login', 'login');
+$app->post('/logout', 'logout');
 $app->group('/users', 'users');
 $app->group('/groups', 'groups');
 $app->group('/zip', 'postalcode');
@@ -16,21 +20,6 @@ $app->group('/pending_users', 'pending_users');
 $app->get('/leads', 'leads');
 $app->get('/sessions', 'get_sessions');
 $app->delete('/sessions/:id', 'end_session');
-
-function login()
-{
-    global $app;
-    $auth = AuthProvider::getInstance();
-    $res = $auth->login($app->request->params('username'), $app->request->params('password'));
-    if($res === false)
-    {
-        $app->response->setStatus(403);
-    }
-    else
-    {
-        echo @json_encode($res);
-    }
-}
 
 function odata_filter_to_ldap_filter($filter, $server)
 {
@@ -159,151 +148,6 @@ function encode_group(&$group)
     return $out;
 }
 
-function list_users()
-{
-    global $app;
-    if(!$app->user)
-    {
-        $headers = apache_request_headers();
-        if(isset($headers['apikey']))
-        {
-            require_once('/var/www/secure_settings/class.FlipsideSettings.php');
-            if(!in_array($headers['apikey'], FlipsideSettings::$apikey['profiles']))
-            {
-                throw new Exception('Invalid API Key', ACCESS_DENIED);
-            }
-        }
-        else
-        {
-            $app->response->setStatus(401);
-            return;
-        }
-    }
-    if($app->user && !$app->user->isInGroupNamed("LDAPAdmins"))
-    {
-        //Only return this user. This user doesn't have access to other accounts
-        echo json_encode(array(encode_user($app->user)));
-    }
-    else
-    {
-        $auth = AuthProvider::getInstance();
-        $users = $auth->get_users_by_filter(false, $app->odata->filter, $app->odata->select, $app->odata->top, $app->odata->skip, $app->odata->orderby);
-        echo json_encode($users);
-    }
-}
-
-function show_user($uid = 'me')
-{
-    global $app;
-    if(!$app->user)
-    {
-        $app->response->setStatus(401);
-        return;
-    }
-    $user = false;
-    if($uid === 'me' || $uid === $app->user->getUid())
-    {
-        $user = $app->user;
-    }
-    else if($app->user->isInGroupNamed("LDAPAdmins"))
-    {
-        $user = \AuthProvider::getInstance()->get_users_by_filter(false, new \Data\Filter("uid eq $uid"));
-    }
-    else if($app->user->isInGroupNamed("Leads") || $app->user->isInGroupNamed("CC"))
-    {
-        $user = \AuthProvider::getInstance()->get_users_by_filter(false, new \Data\Filter("uid eq $uid"));
-    }
-    if($user === false) $app->halt(404);
-    if(!is_object($user) && isset($user[0]))
-    {
-        $user = $user[0];
-    }
-    if($app->fmt === 'vcard')
-    {
-        $app->response->headers->set('Content-Type', 'text/x-vCard');
-        echo $user->getVcard();
-        $app->fmt = 'passthru';
-    }
-    else
-    {
-        echo $user->serializeObject();
-    }
-}
-
-function edit_user($uid = 'me')
-{
-    global $app;
-    if(!$app->user)
-    {
-        $app->response->setStatus(401);
-        return;
-    }
-    $body = $app->request->getBody();
-    $obj  = json_decode($body);
-    if($uid === 'me')
-    {
-        $app->user->edit_user($obj);
-    }
-    else if($uid === $app->user->getUid())
-    {
-        $app->user->edit_user($obj);
-    }
-    else if($app->user->isInGroupNamed("LDAPAdmins"))
-    {
-        $user = AuthProvider::getInstance()->get_user(false, $uid);
-        if($user === false)
-        {
-            $app->response->setStatus(404);
-            return;
-        }
-        $user->edit_user($obj);
-    }
-    else
-    {
-        $app->response->setStatus(404);
-        return;
-    }
-    echo json_encode(array('success'=>true));
-}
-
-function link_user($uid = 'me')
-{
-    global $app;
-    if(!$app->user)
-    {
-        $app->response->setStatus(401);
-        return;
-    }
-    $body = $app->request->getBody();
-    $obj  = json_decode($body);
-    if($uid === 'me')
-    {
-        $app->user->addLoginProvider($obj->provider);
-        AuthProvider::getInstance()->impersonate_user($app->user);
-    }
-    else if($uid === $app->user->getUid())
-    {
-        $app->user->addLoginProvider($obj->provider);
-        AuthProvider::getInstance()->impersonate_user($app->user);
-    }
-    else if($app->user->isInGroupNamed("LDAPAdmins"))
-    {
-        $user = AuthProvider::getInstance()->get_user(false, $uid);
-        if($user === false)
-        {
-            $app->response->setStatus(404);
-            return;
-        }
-        $user->addLoginProvider($obj->provider);
-    }
-    else
-    {
-        $app->response->setStatus(404);
-        return;
-    }
-    echo json_encode(array('success'=>true));
-}
-
 function list_pending_users()
 {
     global $app;
@@ -394,34 +238,6 @@ function list_groups()
     else
     {
         list_groups_for_user();
-    }
-}
-
-function list_groups_for_user($uid = 'me')
-{
-    global $app;
-    if(!$app->user)
-    {
-        $app->response->setStatus(401);
-        return;
-    }
-    $groups = FALSE;
-    if($uid === 'me')
-    {
-        $groups = $app->user->getGroups();
-    }
-    if($groups === FALSE)
-    {
-        echo json_encode(array());
-    }
-    else
-    {
-        $count = count($groups);
-        for($i = 0; $i < $count; $i++)
-        {
-            $groups[$i] = encode_group($groups[$i]);
-        }
-        echo json_encode($groups);
     }
 }
 
@@ -552,17 +368,6 @@ function end_session($id)
     }
     $ret = FlipSession::delete_session_by_id($id);
     echo json_encode($ret);
-}
-
-function users()
-{
-    global $app;
-    $app->get('', 'list_users');
-    $app->get('/me', 'show_user');
-    $app->patch('/me', 'edit_user');
-    $app->get('/:uid', 'show_user');
-    $app->get('/:uid/groups', 'list_groups_for_user');
-    $app->post('/:uid/Actions/link', 'link_user');
 }
 
 function pending_users()
