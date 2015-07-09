@@ -20,14 +20,11 @@ class ProfilesPage extends FlipPage
 
     function add_profiles_css()
     {
-        $this->add_css(CSS_BOOTSTRAP_FH);
         $this->add_css_from_src($this->profiles_root.'/css/profiles.css');
     }
 
     function add_profiles_script()
     {
-        $this->add_js(JQUERY_VALIDATE);
-        $this->add_js(JS_BOOTSTRAP_FH);
         $this->add_js(JS_LOGIN);
     }
 
