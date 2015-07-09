@@ -20,46 +20,53 @@ function area_change(control)
 
 function areas_done(data)
 {
-    if(data.areas != false)
+    for(i = 0; i < data.length; i++)
     {
-        for(i = 0; i < data.areas.length; i++)
-        {
-            var opt = $('<option/>', {value: data.areas[i].short_name}).html(data.areas[i].name);
-            opt.appendTo($('#area_select'));
-            opt.data('area', data.areas[i]);
-        }
+        var opt = $('<option/>', {value: data[i].short_name}).html(data[i].name);
+        opt.appendTo($('#area_select'));
+        opt.data('area', data[i]);
     }
 }
 
 function areas_post_done(data)
 {
-    if(data.success !== undefined)
-    {
-        location.reload();
-    }
-    else
-    {
-        alert(data.error);
-    }
+    location.reload();
 }
 
 function submit_areas(event)
 {
-    var short_name = $('#short_name').val();
-    var name = $('#name').val();
-    $.ajax({
-        url: 'ajax/areas.php',
-        data: 'short_name='+short_name+'&name='+name,
-        type: 'post',
-        dataType: 'json',
-        success: areas_post_done});
+    var obj = {};
+    var old_name = $('#area_name').html();
+    obj.short_name = $('#short_name').val();
+    obj.name = $('#name').val();
+    if(old_name == obj.short_name)
+    {
+        $.ajax({
+            url: '../api/v1/areas/'+obj.short_name,
+            data: JSON.stringify(obj),
+            type: 'PATCH',
+            processData: false,
+            dataType: 'json',
+            success: areas_post_done});
+            method = 'PATCH';
+    }
+    else
+    {
+        $.ajax({
+            url: '../api/v1/areas',
+            data: JSON.stringify(obj),
+            type: method,
+            processData: false,
+            dataType: 'json',
+            success: areas_post_done});
+    }
 }
 
 function init_page()
 {
     $('#submit').on('click', submit_areas);
     $.ajax({
-        url: 'ajax/areas.php',
+        url: '../api/v1/areas',
         type: 'get',
         dataType: 'json',
         success: areas_done});

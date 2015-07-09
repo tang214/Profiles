@@ -1,34 +1,65 @@
 <?php
-if(strtoupper($_SERVER['REQUEST_METHOD']) != 'POST')
-{
-    ini_set('display_errors', 1);
-    error_reporting(E_ALL);
-}
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 //Redirect users to https
 if($_SERVER["HTTPS"] != "on")
 {
     header("Location: https://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"]);
     exit();
 }
-require_once("class.FlipsideLDAPServer.php");
 require_once('class.ProfilesPage.php');
 require_once("class.FlipsideMail.php");
+$page = new ProfilesPage('Burning Flipside Password Change');
+$auth = AuthProvider::getInstance();
 $require_current_pass = true;
 $user = FlipSession::get_user(TRUE);
-if($user == FALSE)
+if($user === false)
 {
     //We might be reseting a user's forgotten password...
     if(isset($_GET['hash']))
     {
-        $user = FlipsideUser::getUserByResetHash($_GET['hash']);
+        $user = $auth->getUserByResetHash($_GET['hash']);
         $require_current_pass = false;
     }
-    else if(isset($_POST['hash']))
+}
+
+if($user === FALSE)
+{
+    if(isset($_GET['hash']))
     {
-         $user = FlipsideUser::getUserByResetHash($_POST['hash']);
-         $require_current_pass = false;
+        $page->add_notification('This reset hash is no longer valid. Please select the neweset reset link in your email', FlipPage::NOTIFICATION_FAILED);
+    }
+    else
+    {
+        $page->add_notification('Please Log in first!', FlipPage::NOTIFICATION_FAILED);
     }
 }
+else
+{
+    $page->add_js_from_src('js/zxcvbn-async.js');
+    $page->add_js_from_src('js/change.js');
+    $current ='';
+    if($require_current_pass)
+    {
+        $current = '<div class="form-group"><input class="form-control" type="password" id="current" name="current" placeholder="Current Password" required autofocus/></div>';
+    }
+    else
+    {
+        $current = '<input type="hidden" id="hash" name="hash" value="'.$_GET['hash'].'"/>';
+    }
+    $page->body = '
+        <div id="content" class="container">
+            <h3>Burning Flipside Password Change</h3>
+            <form name="form" id="form" role="form">
+                '.$current.'
+                <div class="form-group"><input class="form-control" type="password" id="password" name="password" placeholder="New Password" required/></div>
+                <div class="form-group"><input class="form-control" type="password" id="password2" name="password2" placeholder="Confirm Password" required/></div>
+                <button class="btn btn-lg btn-primary btn-block" type="submit">Change Password</button>
+            </form>
+        </div>';
+}
+$page->print_page();
+
 if(strtoupper($_SERVER['REQUEST_METHOD']) == 'POST')
 {
     if($user == FALSE)
@@ -85,55 +116,6 @@ if(strtoupper($_SERVER['REQUEST_METHOD']) == 'POST')
     {
         echo json_encode(array('status'=>-1,'msg'=>'failed to send mail'));
     }
-}
-else
-{
-    if($user === FALSE)
-    {
-        if(isset($_GET['hash']))
-        {
-            die("This reset hash is no longer valid. Please select the neweset reset link in your email");
-        }
-        else
-        {
-            die("Please Log in first!");
-        }
-    }
-    $page = new ProfilesPage('Burning Flipside Password Change');
-    $script_start_tag = $page->create_open_tag('script', array('src'=>'js/jquery.validate.js'));
-    $script_close_tag = $page->create_close_tag('script');
-    $page->add_head_tag($script_start_tag.$script_close_tag);
-
-    $script_start_tag = $page->create_open_tag('script', array('src'=>'js/zxcvbn-async.js'));
-    $page->add_head_tag($script_start_tag.$script_close_tag);
-
-    $script_start_tag = $page->create_open_tag('script', array('src'=>'js/change.js'));
-    $page->add_head_tag($script_start_tag.$script_close_tag);
-
-    $current ='';
-    if($require_current_pass)
-    {
-        $current = '<tr><td>Current Password:</td><td><input type="password" name="current" required/></td></tr>';
-    }
-    else
-    {
-        $current = '<input type="hidden" name="hash" value="'.$_GET['hash'].'"/>';
-    }
-
-    $page->body = '
-        <div id="content">
-        <h3>Burning Flipside Password Change</h3>
-        <form action="/change.php" method="post" name="form" id="form">
-        <table>
-        '.$current.'
-        <tr><td>Password:</td><td><input type="password" name="password" class="pass" id="password"/></td><td><label for="password" title=""/></td></tr>
-        <tr><td>Confirm Password:</td><td><input type="password" name="password2"/></td><td><label class="error" for="password2" style="color:red"/></td></tr>
-        <tr><td>&nbsp;</td><td><input type="submit" name="submit" value="Change"/></td></tr>
-        </table>
-        </form>
-        </div>';
-
-    $page->print_page();
 }
 /* vim: set tabstop=4 shiftwidth=4 expandtab: */
 ?>
