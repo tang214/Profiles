@@ -58,47 +58,5 @@ class ProfilesPage extends FlipPage
         );
         $this->add_link('About', 'http://www.burningflipside.com/about', $about_menu);
     }
-
-    function add_login_form()
-    {
-        $auth = \AuthProvider::getInstance();
-        $auth_links = $auth->get_supplementary_links();
-        $auth_links_str = '';
-        $count = count($auth_links);
-        for($i = 0; $i < $count; $i++)
-        {
-            $auth_links_str .= $auth_links[$i];
-        }
-        $this->body .= '<div class="modal fade" role="dialog" id="login-dialog" title="Login" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <button type="button" class="close" data-dismiss="modal">
-                                            <span aria-hidden="true">&times;</span>
-                                            <span class="sr-only">Close</span>
-                                        </button>
-                                        <h4 class="modal-title">Login</h4>
-                                    </div>
-                                    <div class="modal-body">
-                                        <form id="login_dialog_form" role="form">
-                                            <input class="form-control" type="text" name="username" placeholder="Username or Email" required autofocus/>
-                                            <input class="form-control" type="password" name="password" placeholder="Password" required/>
-                                            <button class="btn btn-lg btn-primary btn-block" type="submit">Login</button>
-                                        </form>
-                                        '.$auth_links_str.'
-                                    </div>
-                                </div>
-                            </div>
-                        </div>';
-    }
-
-    function current_url()
-    {
-        if($_SERVER['REQUEST_URI'][0] === '/')
-        {
-            return 'http'.(isset($_SERVER['HTTPS'])?'s':'').'://'."{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}";
-        }
-        return 'http'.(isset($_SERVER['HTTPS'])?'s':'').'://'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}";
-    }
 }
 ?>
