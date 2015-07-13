@@ -3,25 +3,23 @@ require_once('class.ProfilesPage.php');
 require_once('class.FlipSession.php');
 class ProfilesLeadPage extends FlipPage
 {
-    private $user;
     private $is_lead;
 
     function __construct($title)
     {
-        $this->user = FlipSession::get_user(TRUE);
+        parent::__construct($title);
         if($this->user == FALSE)
         {
             $this->is_lead = FALSE;
         }
         else
         {
-            $this->is_lead = $this->user->isInGroupNamed("Leads");
+            $this->is_lead = $this->user->isInGroupNamed('Leads');
             if(!$this->is_lead)
             {
-                $this->is_lead = $this->user->isInGroupNamed("CC");
+                $this->is_lead = $this->user->isInGroupNamed('CC');
             }
         }
-        parent::__construct($title);
         $this->add_leads_css();
         $this->add_links();
         $this->add_js(JS_DATATABLE);
