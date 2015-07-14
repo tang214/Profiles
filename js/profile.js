@@ -124,6 +124,11 @@ function delete_user()
     location = '/delete.php';
 }
 
+function reset_password()
+{
+    location = 'reset.php';
+}
+
 var jcrop_api;
 
 function crop()

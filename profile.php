@@ -123,6 +123,7 @@ $page->body = '
     <fieldset>
         <legend>Other Options:</legend>
         <button class="btn btn-default" onclick="delete_user()">Delete My Account&hellip;</button>
+        <button class="btn btn-default" onclick="reset_password()">Reset My Password&hellip;</button>
     </fieldset>
 </div>';
 
