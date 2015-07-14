@@ -8,31 +8,23 @@ class ProfilesAdminPage extends FlipAdminPage
     {
         parent::__construct($title, 'LDAPAdmins');
         $this->add_js_from_src('js/admin.js');
-        $this->add_links();
     }
 
     function add_links()
     {
-        if(!FlipSession::is_logged_in())
-        {
-            $this->add_link('Login', $this->login_url);
-        }
-        else
-        {
-            $users_menu = array(
-                'Current' => 'users_current.php',
-                'Pending' => 'users_pending.php'
-            );
-            $pos_menu = array(
-                'Areas' => 'areas.php',
-                'Leads' => 'leads.php'
-            );
-            $this->add_link('<span class="glyphicon glyphicon-dashboard"></span> Dashboard', 'index.php');
-            $this->add_link('<span class="glyphicon glyphicon-user"></span> Users', '#', $users_menu);
-            $this->add_link('<span class="glyphicon glyphicon-tower"></span> Groups', 'groups.php');
-            $this->add_link('<span class="glyphicon glyphicon-briefcase"></span> Positions', '#', $pos_menu);
-            $this->add_link('<span class="glyphicon glyphicon-cloud"></span> Sessions', 'sessions.php');
-        }
+        $users_menu = array(
+            'Current' => 'users_current.php',
+            'Pending' => 'users_pending.php'
+        );
+        $pos_menu = array(
+            'Areas' => 'areas.php',
+            'Leads' => 'leads.php'
+        );
+        $this->add_link('<span class="glyphicon glyphicon-dashboard"></span> Dashboard', 'index.php');
+        $this->add_link('<span class="glyphicon glyphicon-user"></span> Users', '#', $users_menu);
+        $this->add_link('<span class="glyphicon glyphicon-tower"></span> Groups', 'groups.php');
+        $this->add_link('<span class="glyphicon glyphicon-briefcase"></span> Positions', '#', $pos_menu);
+        $this->add_link('<span class="glyphicon glyphicon-cloud"></span> Sessions', 'sessions.php');
     }
 
     function print_page($header = true)
