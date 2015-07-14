@@ -16,10 +16,12 @@ if(!FlipSession::is_logged_in())
 require_once('class.ProfilesPage.php');
 $page = new ProfilesPage('Burning Flipside Profiles');
 
+$page->add_js(JS_BOOTSTRAP_FH);
+$page->add_css(CSS_BOOTSTRAP_FH);
 $page->add_js(JS_CRYPTO_MD5_JS);
-//Add picture cropper
-$page->add_css_from_src('css/croppic.css');
-$page->add_js_from_src('js/croppic.js');
+$page->add_js(JS_BOOTBOX);
+$page->add_js(JS_JCROP);
+$page->add_css(CSS_JCROP);
 $page->add_js_from_src('js/profile.js');
 
 $page->add_notification('All the information on this page is optional. However, it will make the process of signing up for Ticket Requests, Theme Camp Registrations, Art Project Registrations, and Volunteer Signup faster and easier. If you have any concerns with providing this information we suggest your read our <a href="http://www.burningflipside.com/about/privacy" class="alert-link" target="_new">Privacy Policy</a> or contact the <a href="http://www.burningflipside.com/contact/Website%20Feedback" class="alert-link" target="_new">Technology Team</a> or the <a href="http://www.burningflipside.com/contact/AAR-LLC" class="alert-link" target="_new">AAR Board of Directors</a> with your concerns.', $page::NOTIFICATION_INFO);
@@ -103,10 +105,10 @@ $page->body = '
             </div>
         </div>
         <div class="clearfix visible-sm visible-md visible-lg"></div>
-        <div class="form-group imgCropper">
-            <label for="jpegPhoto" class="col-sm-2 control-label">Profile Photo:</label>
+        <div class="form-group">
+            <label for="jpegPhotoBtn" class="col-sm-2 control-label">Profile Photo:</label>
             <div class="col-sm-4">
-                <div id="jpegPhoto"></div>
+                <input class="form-control" id="jpegPhotoBtn" name="jpegPhotoBtn" type="file" accept="image/*"/>
             </div>
             <div class="col-sm-4">
                 <div id="gravatar"></div>
