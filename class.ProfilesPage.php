@@ -29,7 +29,7 @@ class ProfilesPage extends FlipPage
 
     function add_links()
     {
-        if($this->user !== false)
+        if($this->user !== false && $this->user !== null)
         {
             if($this->user->isInGroupNamed('LDAPAdmins'))
             {
