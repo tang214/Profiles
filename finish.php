@@ -28,7 +28,7 @@ else
         }
         else
         {
-            $page->add_notification('You have successfully registered! You will be redirect to the login page in <span id="secs">5</span> seconds&hellip;', $page::NOTIFICATION_SUCCESS);
+            $page->add_notification('You have successfully registered! You will be redirected to the login page in <span id="secs">5</span> seconds&hellip;', $page::NOTIFICATION_SUCCESS);
             $user->eraseFromTempDB($_GET['hash']);
             $page->add_js_from_src('js/finish.js');
         }
