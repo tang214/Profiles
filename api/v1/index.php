@@ -123,6 +123,10 @@ function leads()
                 $ccGroup   = $auth->get_group_by_name(false, 'CC');
                 $leads     = array_merge($leads, $ccGroup->members(true));
                 break;
+            case 'lead':
+                $leadGroup = $auth->get_group_by_name(false, 'Leads');
+                $leads     = array_merge($leads, $leadGroup->members(true));
+                break;
             default:
                 $filter    = new \Data\Filter('ou eq '.$params['type']);
                 $leads     = $auth->get_users_by_filter(false, $filter);
