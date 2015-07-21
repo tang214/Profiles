@@ -75,17 +75,97 @@ function change_password()
     }
 }
 
-function forget_submit(form)
+function reminder_post_done(jqXHR)
 {
-    form.submit();
+    console.log(jqXHR);
 }
 
-function do_init()
+function reset_post_done(jqXHR)
 {
-    $("#forgot_form").validate({
-        submitHandler: forget_submit
+    if(jqXHR.status === 404)
+    {
+        bootbox.dialog({
+            message: "Did you forget your username?",
+            title: "Invalid User Name",
+            buttons: {
+                success: {
+                    label: "Yes",
+                    callback: remind_user_name
+                },
+                danger: {
+                    label: "No, Let me try again.",
+                    callback: reset_password_not_logged_in
+                }
+            }
+        });
+    }
+    else
+    {
+        console.log(jqXHR);
+    }
+}
+
+function got_email(result)
+{
+    if(result !== null)
+    {
+        $.ajax({
+            url: 'api/v1/users/Actions/remind_uid',
+            data: 'email='+encodeURIComponent(result),
+            type: 'POST',
+            complete: reminder_post_done
+        });
+    }
+}
+
+function got_uid(result)
+{
+    if(result !== null)
+    {
+        $.ajax({
+            url: 'api/v1/users/'+encodeURIComponent(result)+'/Actions/reset_pass',
+            type: 'POST',
+            complete: reset_post_done
+        });
+    }
+}
+
+function remind_user_name()
+{
+    bootbox.prompt({
+        title: 'What is your email address?',
+        callback: got_email
     });
 }
 
-$(do_init);
+function reset_password_not_logged_in()
+{
+    bootbox.prompt({
+        title: 'What is your user name?',
+        callback: got_uid
+    });
+}
+
+function what_did_they_forget()
+{
+    var forgot = $('input[name=forgot]:checked').val();
+    if(forgot === undefined)
+    {
+        alert('Must select one!');
+        return;
+    }
+    switch(forgot)
+    {
+        case 'user':
+            remind_user_name();
+            break;
+        case 'pass':
+            reset_password_not_logged_in();
+            break;
+        default:
+            alert('BUGBUG: I don\'t know how to reset '+forgot);
+            return;
+    }
+}
+
 // vim: set tabstop=4 shiftwidth=4 expandtab:

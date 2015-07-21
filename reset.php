@@ -7,16 +7,14 @@ if($_SERVER["HTTPS"] != "on")
     header("Location: https://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"]);
     exit();
 }
-require_once("class.FlipsideLDAPServer.php");
 require_once("class.FlipSession.php");
 require_once('class.ProfilesPage.php');
 require_once('class.FlipsideMail.php');
 $page = new ProfilesPage('Burning Flipside Profiles Reset');
-//Add Reset Javascript
+$page->add_js(JS_BOOTBOX);
 $page->add_js_from_src('js/reset.js');
 
-$user = FlipSession::get_user();
-if($user !== false)
+if($page->user !== false && $page->user !== null)
 {
     //User is logged in. They can reset their password...
     $page->body = '
@@ -28,61 +26,48 @@ if($user !== false)
                     <input class="form-control" type="password" name="oldpass" id="oldpass" required/>
                 </div>
             </div>
+            <div class="clearfix visible-sm visible-md visible-lg"></div>
             <div class="form-group">
                 <label for="newpass" class="col-sm-2 control-label">New Password:</label>
                 <div class="col-sm-10">
                     <input class="form-control" type="password" name="newpass" id="newpass" required/>
                 </div>
             </div>
+            <div class="clearfix visible-sm visible-md visible-lg"></div>
             <div class="form-group">
                 <label for="confirm" class="col-sm-2 control-label">Confirm Password:</label>
                 <div class="col-sm-10">
                     <input class="form-control" type="password" name="confirm" id="confirm" required/>
                 </div>
             </div>
+            <div class="clearfix visible-sm visible-md visible-lg"></div>
             <button name="submit" class="btn btn-primary" onclick="change_password();">Change Password</button>
         </div>
     ';
 }
 else
 {
+    $page->body = '
+        <div id="content">
+            <h3>Burning Flipside Login Reset/Recover</h3>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="forgot" value="user"/>
+                    Forgot Username
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="forgot" value="pass"/>
+                    Forgot Password
+                </label>
+            </div>
+            <div class="clearfix visible-sm visible-md visible-lg"></div>
+            <button name="submit" class="btn btn-primary" onclick="what_did_they_forget();">Next</button>
+        </div>';
 if(strtoupper($_SERVER['REQUEST_METHOD']) == 'POST')
 {
-    if(isset($_POST['forgot']))
-    {
-        if($_POST['forgot'] == 'user')
-        {
-            $page->body = '
-        <div id="content">
-            <h3>Burning Flipside Username Recovery</h3>
-            <form action="/reset.php" method="post" name="user_form" id="user_form">
-                <table>
-                    <tr><td>Email:</td><td><input type="text" name="email"/></td></tr>
-                    <tr><td>&nbsp;</td><td><input type="submit" name="submit" value="Next ->"/></td></tr>
-                </table>
-            </form>
-        </div>';
-        }
-        else if($_POST['forgot'] == 'pass')
-        {
-            $page->body = '
-        <div id="content">
-            <h3>Burning Flipside Password Reset</h3>
-            <form action="/reset.php" method="post" name="pass_form" id="pass_form">
-                <table>
-                    <tr><td>User ID:</td><td><input type="text" name="uid"/></td></tr>
-                    <tr><td>&nbsp;</td><td><input type="submit" name="submit" value="Next ->"/></td></tr>
-                </table>
-            </form>
-        </div>';
-
-        }
-        else
-        {
-            $page->body = 'Unknown POST!';
-        }
-    }
-    else if(isset($_POST['email']))
+    if(isset($_POST['email']))
     {
         //Email UID to email address if it exists
         $server = new FlipsideLDAPServer(); 
@@ -187,23 +172,6 @@ if(strtoupper($_SERVER['REQUEST_METHOD']) == 'POST')
     {
         $page->body = 'Unknown POST!';
     }
-}
-else
-{
-    $page->body = '
-        <div id="content">
-            <h3>Burning Flipside Login Reset/Recover</h3>
-            <form action="/reset.php" method="post" name="forgot_form" id="forgot_form">
-                <table>
-                    <tr>
-                        <td><input type="radio" name="forgot" value="user" class="required">Forgot Username</input></td>
-                        <td rowspan="2"><label class="error" for="forgot"></div></td>
-                    </tr>
-                    <tr><td><input type="radio" name="forgot" value="pass">Forgot Password</input></td></tr>
-                    <tr><td>&nbsp;</td><td><input type="submit" name="submit" value="Next ->"/></td></tr>
-                </table>
-            </form>
-        </div>';
 }
 }
 
