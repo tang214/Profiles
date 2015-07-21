@@ -10,6 +10,7 @@ if($_SERVER['REQUEST_URI'][0] == '/' && $_SERVER['REQUEST_URI'][1] == '/')
 require('login.php');
 require('users.php');
 require('pending_users.php');
+require('sessions.php');
 
 $app = new FlipREST();
 $app->post('/login', 'login');
@@ -18,12 +19,11 @@ $app->group('/users', 'users');
 $app->group('/groups', 'groups');
 $app->group('/zip', 'postalcode');
 $app->group('/pending_users', 'pending_users');
+$app->group('/sessions', 'sessions');
 $app->get('/leads', 'leads');
 $app->get('/areas', 'get_areas');
 $app->patch('/areas/:name', 'update_area');
 $app->post('/areas', 'create_area');
-$app->get('/sessions', 'get_sessions');
-$app->delete('/sessions/:id', 'end_session');
 
 function list_groups()
 {
@@ -184,48 +184,6 @@ function create_area()
     $data_set = DataSetFactory::get_data_set('profiles');
     $data_table = $data_set['area'];
     $ret = $data_table->create($obj);
-    echo json_encode($ret);
-}
-
-function get_sessions()
-{
-    global $app;
-    if(!$app->user)
-    {
-        throw new Exception('Must be logged in', ACCESS_DENIED);
-    }
-    if(!$app->user->isInGroupNamed("LDAPAdmins"))
-    {
-        throw new Exception('Must be Admin', ACCESS_DENIED);
-    }
-    $sessions = FlipSession::get_all_sessions();
-    if($sessions !== false)
-    {
-        $count = count($sessions);
-        $sid = session_id();
-        for($i = 0; $i < $count; $i++)
-        {
-            if(strcasecmp($sessions[$i]['sid'], $sid) === 0)
-            {
-                $sessions[$i]['current'] = true;
-            }
-        }
-    }
-    echo json_encode($sessions);
-}
-
-function end_session($id)
-{
-    global $app;
-    if(!$app->user)
-    {
-        throw new Exception('Must be logged in', ACCESS_DENIED);
-    }
-    if(!$app->user->isInGroupNamed("LDAPAdmins"))
-    {
-        throw new Exception('Must be Admin', ACCESS_DENIED);
-    }
-    $ret = FlipSession::delete_session_by_id($id);
     echo json_encode($ret);
 }
 
