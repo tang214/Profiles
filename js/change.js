@@ -1,36 +1,24 @@
-function form_submit_done(data, textStatus, jqXHR)
+function change_password_done(jqXHR)
 {
-    var json = eval(data);
-    if(json.status == 0)
+    if(jqXHR.status === 500)
     {
-        window.location.replace('index.php');
+        if(jqXHR.responseJSON !== undefined && jqXHR.responseJSON.message !== undefined)
+        {
+            alert(jqXHR.responseJSON.message);
+        }
+        else
+        {
+            alert('Unknown error changing password!');
+        }
+    }
+    else if(jqXHR.status === 200)
+    {
+        window.location = '/index.php';
     }
     else
     {
-        alert(json.msg);
-        console.log(json);
+        console.log(jqXHR);
     }
-}
-
-function forget_submit()
-{
-    var form = $('#form');
-    $.post('change.php', form.serializeArray(), form_submit_done, 'json');
-}
-
-function validate_pass_lower(value, element, params)
-{
-    return (/[a-z]/.test(value));
-}
-
-function validate_pass_upper(value, element, params)
-{
-    return (/[A-Z]/.test(value));
-}
-
-function validate_pass_number(value, element, params)
-{
-    return (/[0-9]/.test(value));
 }
 
 function change_password(e)
@@ -84,7 +72,13 @@ function change_password(e)
     {
         $('#password2').parent().removeClass('has-error');
     }
-    console.log(obj);
+    $.ajax({
+        url: 'api/v1/users/me',
+        type: 'PATCH',
+        data: JSON.stringify(obj),
+        processData: false,
+        complete: change_password_done
+    });
     return false;
 }
 

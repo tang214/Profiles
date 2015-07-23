@@ -12,18 +12,18 @@ require_once("class.FlipsideMail.php");
 $page = new ProfilesPage('Burning Flipside Password Change');
 $auth = AuthProvider::getInstance();
 $require_current_pass = true;
-$user = FlipSession::get_user(TRUE);
-if($user === false)
+$user = FlipSession::get_user();
+if($user === false || $user === null)
 {
     //We might be reseting a user's forgotten password...
     if(isset($_GET['hash']))
     {
-        $user = $auth->getUserByResetHash($_GET['hash']);
+        $user = $auth->get_user_by_reset_hash(false, $_GET['hash']);
         $require_current_pass = false;
     }
 }
 
-if($user === FALSE)
+if($user === false || $user === null)
 {
     if(isset($_GET['hash']))
     {
@@ -87,27 +87,6 @@ if(strtoupper($_SERVER['REQUEST_METHOD']) == 'POST')
     }
     $user->setPassword($_POST['password']);
     $mail = new FlipsideMail();
-    $forward = '';
-    if(isset($_SERVER['HTTP_X_FORWARDED_FOR']))
-    {
-        $forward = 'Behind Proxy: '.$_SERVER['HTTP_X_FORWARDED_FOR'];
-    }
-    $mail_data = array(
-            'to'       => $user->mail[0],
-            'subject'  => 'Burning Flipside Password Change',
-            'body'     => 'Someone (quiet possibly you) has changed your Flipside password.<br/>
-                           If you did not request this change please notify the technology team (technology@burningflipside.com).<br/>
-                           IP Address: '.$_SERVER['REMOTE_ADDR'].'<br/>
-                           '.$forward.'<br/>
-                           Thank you,<br/>
-                           Burning Flipside Technology Team',
-            'alt_body' => 'Someone (quiet possibly you) has changed your Flipside password.
-                           If you did not request this change please notify the technology team (technology@burningflipside.com).
-                           IP Address: '.$_SERVER['REMOTE_ADDR'].'
-                           '.$forward.'
-                           Thank you,<br/>
-                           Burning Flipside Technology Team'
-    );
     if($mail->send_HTML($mail_data))
     {
         echo json_encode(array('status'=>0,'msg'=>'success'));

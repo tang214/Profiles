@@ -1,6 +1,7 @@
 <?php
 require('class.UIDForgotEmail.php');
 require('class.PasswordResetEmail.php');
+require('class.PasswordHasBeenResetEmail.php');
 
 function users()
 {
@@ -126,20 +127,26 @@ function show_user($uid = 'me')
 function edit_user($uid = 'me')
 {
     global $app;
-    if(!$app->user)
-    {
-        $app->response->setStatus(401);
-        return;
-    }
     $body = $app->request->getBody();
     $obj  = json_decode($body);
-    if($uid === 'me')
+    if(!$app->user)
     {
-        $app->user->edit_user($obj);
+        if(isset($obj->hash))
+        {
+            $auth = AuthProvider::getInstance();
+            $app->user = $auth->get_user_by_reset_hash(false, $obj->hash);
+        }
+        if(!$app->user)
+        {
+            $app->response->setStatus(401);
+            return;
+        }
     }
-    else if($uid === $app->user->getUid())
+    $user = false;
+    if($uid === 'me' || $uid === $app->user->getUid())
     {
         $app->user->edit_user($obj);
+        $user = $app->user;
     }
     else if($app->user->isInGroupNamed("LDAPAdmins"))
     {
@@ -155,6 +162,20 @@ function edit_user($uid = 'me')
     {
         $app->response->setStatus(404);
         return;
+    }
+    if(isset($obj->password))
+    {
+        $forwarded_for = false;
+        if(isset($_SERVER['HTTP_X_FORWARDED_FOR']))
+        {
+            $forwarded_for = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        }
+        $email_msg = new PasswordHasBeenResetEmail($user, $_SERVER['REMOTE_ADDR'], $forwarded_for);
+        $email_provider = EmailProvider::getInstance();
+        if($email_provider->sendEmail(false, $email_msg) === false)
+        {
+            throw new \Exception('Unable to send password reset email!');
+        }
     }
     echo json_encode(array('success'=>true));
 }
@@ -337,5 +358,5 @@ function remind_uid()
         }
     }
 }
-
+/* vim: set tabstop=4 shiftwidth=4 expandtab: */
 ?>
