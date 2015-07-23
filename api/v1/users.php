@@ -1,4 +1,6 @@
 <?php
+require('class.UIDForgotEmail.php');
+require('class.PasswordResetEmail.php');
 
 function users()
 {
@@ -13,8 +15,10 @@ function users()
     $app->get('/:uid/groups', 'list_groups_for_user');
     $app->post('/me/Actions/link', 'link_user');
     $app->post('/:uid/Actions/link', 'link_user');
+    $app->post('/:uid/Actions/reset_pass', 'reset_pass');
     $app->post('/Actions/check_email_available', 'check_email_available');
     $app->post('/Actions/check_uid_available', 'check_uid_available');
+    $app->post('/Actions/remind_uid', 'remind_uid');
 }
 
 function list_users()
@@ -288,6 +292,49 @@ function check_uid_available()
     else
     {
         echo json_encode(array('res'=>false, 'uid'=>$user[0]->getUid()));
+    }
+}
+
+function reset_pass($uid)
+{
+    global $app;
+    $auth = AuthProvider::getInstance();
+    $users = $auth->get_users_by_filter(false, new \Data\Filter('uid eq '.$uid));
+    if($users === false || !isset($users[0]))
+    {
+        $app->response->setStatus(404);
+        return;
+    }
+    else
+    {
+        $email_msg = new PasswordResetEmail($users[0]);
+        $email_provider = EmailProvider::getInstance();
+        if($email_provider->sendEmail(false, $email_msg) === false)
+        {
+            throw new \Exception('Unable to send email!');
+        }
+    }
+}
+
+function remind_uid()
+{
+    global $app;
+    $email = $app->request->params('email');
+    $auth = AuthProvider::getInstance();
+    $users = $auth->get_users_by_filter(false, new \Data\Filter('mail eq '.$email));
+    if($users === false || !isset($users[0]))
+    {
+        $app->response->setStatus(404);
+        return;
+    }
+    else
+    {
+        $email_msg = new UIDForgotEmail($users[0]);
+        $email_provider = EmailProvider::getInstance();
+        if($email_provider->sendEmail(false, $email_msg) === false)
+        {
+            throw new \Exception('Unable to send email!');
+        }
     }
 }
 

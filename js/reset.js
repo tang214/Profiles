@@ -45,6 +45,11 @@ function change_password_done(jqXHR)
     }
 }
 
+function redirect()
+{
+    window.location = '/index.php';
+}
+
 function change_password()
 {
     var pass = true;
@@ -77,7 +82,35 @@ function change_password()
 
 function reminder_post_done(jqXHR)
 {
-    console.log(jqXHR);
+    if(jqXHR.status === 404)
+    {
+        bootbox.dialog({
+            message: 'Could not locate user! To register a new user click <a href="/register.php">here</a>.',
+            title: 'User not found!',
+            buttons: {
+                success: {
+                    label: 'Ok'
+                }
+            }
+        });
+    }
+    else if(jqXHR.status === 200)
+    {
+        bootbox.dialog({
+            message: 'An email has been sent to remind you of your username..',
+            title: 'Email sent',
+            buttons: {
+                success: {
+                    label: 'Ok',
+                    callback: redirect
+                }
+            }
+        });
+    }
+    else
+    {
+        console.log(jqXHR);
+    }
 }
 
 function reset_post_done(jqXHR)
