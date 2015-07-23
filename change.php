@@ -8,7 +8,6 @@ if($_SERVER["HTTPS"] != "on")
     exit();
 }
 require_once('class.ProfilesPage.php');
-require_once("class.FlipsideMail.php");
 $page = new ProfilesPage('Burning Flipside Password Change');
 $auth = AuthProvider::getInstance();
 $require_current_pass = true;
