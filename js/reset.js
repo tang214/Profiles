@@ -36,8 +36,21 @@ function change_password_done(jqXHR)
         }
         else
         {
-            alert('Unknown error changing password!');
+            alert('Unknown error resetting password!');
         }
+    }
+    else if(jqXHR.status === 200)
+    {
+         bootbox.dialog({
+            message: 'An email has been sent with password reset instructions.',
+            title: 'Email sent',
+            buttons: {
+                success: {
+                    label: 'Ok',
+                    callback: redirect
+                }
+            }
+        });
     }
     else
     {
@@ -97,7 +110,7 @@ function reminder_post_done(jqXHR)
     else if(jqXHR.status === 200)
     {
         bootbox.dialog({
-            message: 'An email has been sent to remind you of your username..',
+            message: 'An email has been sent to remind you of your username.',
             title: 'Email sent',
             buttons: {
                 success: {
