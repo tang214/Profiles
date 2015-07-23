@@ -59,43 +59,6 @@ else
         </div>';
 }
 $page->print_page();
-
-if(strtoupper($_SERVER['REQUEST_METHOD']) == 'POST')
-{
-    if($user == FALSE)
-    {
-        echo json_encode(array('status'=>-1,'msg'=>'Please Log in first!'));
-        die();
-    }
-    /*This is a post*/
-    if(isset($_POST['current']))
-    {
-        $server = new FlipsideLDAPServer();
-        if($server->testLogin($user->uid[0],$_POST['current']) == FALSE)
-        {
-            echo json_encode(array('status'=>-1,'msg'=>'Current password incorrect!'));
-            die();
-        }
-    }
-    if(!isset($_POST['password']) || !isset($_POST['password2']))
-    {
-        echo json_encode(array('status'=>-1,'msg'=>'Invalid Submission. Please fillout all fields!'));
-    }
-    if($_POST['password'] != $_POST['password2'])
-    {
-        echo json_encode(array('status'=>-1,'msg'=>'Passwords must match!'));
-    }
-    $user->setPassword($_POST['password']);
-    $mail = new FlipsideMail();
-    if($mail->send_HTML($mail_data))
-    {
-        echo json_encode(array('status'=>0,'msg'=>'success'));
-    }
-    else
-    {
-        echo json_encode(array('status'=>-1,'msg'=>'failed to send mail'));
-    }
-}
 /* vim: set tabstop=4 shiftwidth=4 expandtab: */
 ?>
 
