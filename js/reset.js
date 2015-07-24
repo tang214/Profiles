@@ -42,8 +42,8 @@ function change_password_done(jqXHR)
     else if(jqXHR.status === 200)
     {
          bootbox.dialog({
-            message: 'An email has been sent with password reset instructions.',
-            title: 'Email sent',
+            message: 'Your password has been succesfully changed.',
+            title: 'Success',
             buttons: {
                 success: {
                     label: 'Ok',
@@ -141,6 +141,19 @@ function reset_post_done(jqXHR)
                 danger: {
                     label: "No, Let me try again.",
                     callback: reset_password_not_logged_in
+                }
+            }
+        });
+    }
+    else if(jqXHR.status === 200)
+    {
+        bootbox.dialog({
+            message: 'An email has been sent with password reset instructions.',
+            title: 'Email sent',
+            buttons: {
+                success: {
+                    label: 'Ok',
+                    callback: redirect
                 }
             }
         });
