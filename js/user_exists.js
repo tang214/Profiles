@@ -34,6 +34,9 @@ function link_accounts()
         case 'google':
             obj.provider = 'google.com';
             break;
+        default:
+            obj.provider = prov;
+            break;
     }
     $.ajax({
         'url': 'api/v1/users/me/Actions/link',
