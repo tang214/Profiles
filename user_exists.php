@@ -11,12 +11,11 @@ if(!isset($_GET['src']))
 {
     die('Error loading page. Authentication source (src) must be specified');
 }
-switch($_GET['src'])
+$provider = $auth->getSuplementalProviderByHost($_GET['src']);
+if($provider !== false)
 {
-    case 'google':
-	$google = $auth->getAuthenticator('Auth\GoogleAuthenticator');
-        $user = $google->get_user(false);
-        $email = $user['mail'];
+   $user = $provider->getUserFromToken(false);
+   $email = $user->getEmail();
 }
 
 $page->body .= '
