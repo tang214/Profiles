@@ -20,7 +20,7 @@ $page->body .= '
     </div>       
 </div>
 <div class="row">
-    <table class="table" id="directory">
+    <table class="table" id="directory" style="cursor: pointer;">
         <thead>
             <th>Legal Name</th>
             <th>Burner Name</th>
