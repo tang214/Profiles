@@ -39,7 +39,7 @@ $page->body .= '
             </div>
             <div class="card-footer">
                 <a href="users_current.php">
-                    <div class="panel-footer">
+                    <div class="panel-footer text-primary">
                         <span class="pull-left">View Details</span>
                         <i class="pull-right fa fa-arrow-circle-right"></i>
                         <div class="clearfix"></div>
@@ -61,7 +61,7 @@ $page->body .= '
             </div>
             <div class="card-footer">
                 <a href="users_pending.php">
-                    <div class="panel-footer">
+                    <div class="panel-footer text-success">
                         <span class="pull-left">View Details</span>
                         <i class="pull-right fa fa-arrow-circle-right"></i>
                         <div class="clearfix"></div>
@@ -83,7 +83,7 @@ $page->body .= '
             </div>
             <div class="card-footer">
                 <a href="groups.php">
-                    <div class="panel-footer">
+                    <div class="panel-footer text-danger">
                         <span class="pull-left">View Details</span>
                         <i class="pull-right fa fa-arrow-circle-right"></i>
                         <div class="clearfix"></div>
@@ -105,7 +105,7 @@ $page->body .= '
             </div>
             <div class="card-footer">
                 <a href="sessions.php">
-                    <div class="panel-footer">
+                    <div class="panel-footer text-warning">
                         <span class="pull-left">View Details</span>
                         <i class="pull-right fa fa-arrow-circle-right"></i>
                         <div class="clearfix"></div>
