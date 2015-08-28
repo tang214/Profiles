@@ -27,91 +27,91 @@ $page->body .= '
 </div>
 <div class="row">
     <div class="col-lg-3 col-md-6">
-        <div class="panel panel-primary">
-            <div class="panel-heading">
+        <div class="card card-primary card-inverse">
+            <div class="card-block card-text">
                 <div class="row">
-                    <div class="col-xs-3">
-                        <span class="glyphicon glyphicon-user" style="font-size: 5em;"></span>                                
-                    </div>
+                    <div class="col-xs-3"><i class="fa fa-user" style="font-size: 5em;"></i></div>
                     <div class="col-xs-9 text-right">
                         <div style="font-size: 40px;">'.$user_count.'</div>
                         <div>Users</div>
                     </div>
                 </div>
             </div>
-            <a href="users_current.php">
-                <div class="panel-footer">
-                    <span class="pull-left">View Details</span>
-                    <span class="pull-right glyphicon glyphicon-circle-arrow-right"></span>
-                    <div class="clearfix"></div>
-                </div>
-            </a>
+            <div class="card-footer">
+                <a href="users_current.php">
+                    <div class="panel-footer">
+                        <span class="pull-left">View Details</span>
+                        <i class="pull-right fa fa-arrow-circle-right"></i>
+                        <div class="clearfix"></div>
+                    </div>
+                </a>
+            </div>
         </div>
     </div>
     <div class="col-lg-3 col-md-6">
-        <div class="panel panel-green">
-            <div class="panel-heading">
+        <div class="card card-success card-inverse">
+            <div class="card-block card-text">
                 <div class="row">
-                    <div class="col-xs-3">
-                        <span class="glyphicon glyphicon-inbox" style="font-size: 5em;"></span>
-                    </div>
+                    <div class="col-xs-3"><i class="fa fa-inbox" style="font-size: 5em;"></i></div>
                     <div class="col-xs-9 text-right">
                         <div style="font-size: 40px;">'.$temp_user_count.'</div>
                         <div>Pending Users</div>
                     </div>
                 </div>
             </div>
-            <a href="users_pending.php">
-                <div class="panel-footer">
-                    <span class="pull-left">View Details</span>
-                    <span class="pull-right glyphicon glyphicon-circle-arrow-right"></span>
-                    <div class="clearfix"></div>
-                </div>
-            </a>
+            <div class="card-footer">
+                <a href="users_pending.php">
+                    <div class="panel-footer">
+                        <span class="pull-left">View Details</span>
+                        <i class="pull-right fa fa-arrow-circle-right"></i>
+                        <div class="clearfix"></div>
+                    </div>
+                </a>
+            </div>
         </div>
     </div>
     <div class="col-lg-3 col-md-6">
-        <div class="panel panel-red">
-            <div class="panel-heading">
+        <div class="card card-danger card-inverse">
+            <div class="card-block card-text">
                 <div class="row">
-                    <div class="col-xs-3">
-                        <span class="glyphicon glyphicon-tower" style="font-size: 5em;"></span>
-                    </div>
+                    <div class="col-xs-3"><i class="fa fa-users" style="font-size: 5em;"></i></div>
                     <div class="col-xs-9 text-right">
                         <div style="font-size: 40px;">'.$group_count.'</div>
                         <div>Groups</div>
                     </div>
                 </div>
             </div>
-            <a href="groups.php">
-                <div class="panel-footer">
-                    <span class="pull-left">View Details</span>
-                    <span class="pull-right glyphicon glyphicon-circle-arrow-right"></span>
-                    <div class="clearfix"></div>
-                </div>
-            </a>
+            <div class="card-footer">
+                <a href="groups.php">
+                    <div class="panel-footer">
+                        <span class="pull-left">View Details</span>
+                        <i class="pull-right fa fa-arrow-circle-right"></i>
+                        <div class="clearfix"></div>
+                    </div>
+                </a>
+            </div>
         </div>
     </div>
     <div class="col-lg-3 col-md-6">
-        <div class="panel panel-yellow">
-            <div class="panel-heading">
+        <div class="card card-warning card-inverse">
+            <div class="card-block card-text">
                 <div class="row">
-                    <div class="col-xs-3">
-                        <span class="glyphicon glyphicon-cloud" style="font-size: 5em;"></span>
-                    </div>
+                    <div class="col-xs-3"><i class="fa fa-cloud" style="font-size: 5em;"></i></div>
                     <div class="col-xs-9 text-right">
                         <div style="font-size: 40px;">'.$session_count.'</div>
                         <div>Sessions</div>
                     </div>
                 </div>
             </div>
-            <a href="sessions.php">
-                <div class="panel-footer">
-                    <span class="pull-left">View Details</span>
-                    <span class="pull-right glyphicon glyphicon-circle-arrow-right"></span>
-                    <div class="clearfix"></div>
-                </div>
-            </a>
+            <div class="card-footer">
+                <a href="sessions.php">
+                    <div class="panel-footer">
+                        <span class="pull-left">View Details</span>
+                        <i class="pull-right fa fa-arrow-circle-right"></i>
+                        <div class="clearfix"></div>
+                    </div>
+                </a>
+            </div>
         </div>
     </div>
 </div>';
