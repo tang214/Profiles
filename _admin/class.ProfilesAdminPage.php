@@ -20,11 +20,11 @@ class ProfilesAdminPage extends FlipAdminPage
             'Areas' => 'areas.php',
             'Leads' => 'leads.php'
         );
-        $this->add_link('<span class="glyphicon glyphicon-dashboard"></span> Dashboard', 'index.php');
-        $this->add_link('<span class="glyphicon glyphicon-user"></span> Users', '#', $users_menu);
-        $this->add_link('<span class="glyphicon glyphicon-tower"></span> Groups', 'groups.php');
-        $this->add_link('<span class="glyphicon glyphicon-briefcase"></span> Positions', '#', $pos_menu);
-        $this->add_link('<span class="glyphicon glyphicon-cloud"></span> Sessions', 'sessions.php');
+        $this->add_link('<i class="fa fa-tachometer"></i> Dashboard', 'index.php');
+        $this->add_link('<i class="fa fa-user"></i> Users', '#', $users_menu);
+        $this->add_link('<i class="fa fa-users"></i> Groups', 'groups.php');
+        $this->add_link('<i class="fa fa-briefcase"></i> Positions', '#', $pos_menu);
+        $this->add_link('<i class="fa fa-cloud"></i> Sessions', 'sessions.php');
     }
 
     function print_page($header = true)
