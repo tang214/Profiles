@@ -25,96 +25,14 @@ $page->body .= '
         <h1 class="page-header">Dashboard</h1>
     </div>       
 </div>
-<div class="row">
-    <div class="col-lg-3 col-md-6">
-        <div class="card card-primary card-inverse">
-            <div class="card-block card-text">
-                <div class="row">
-                    <div class="col-xs-3"><i class="fa fa-user" style="font-size: 5em;"></i></div>
-                    <div class="col-xs-9 text-right">
-                        <div style="font-size: 40px;">'.$user_count.'</div>
-                        <div>Users</div>
-                    </div>
-                </div>
-            </div>
-            <div class="card-footer">
-                <a href="users_current.php">
-                    <div class="panel-footer text-primary">
-                        <span class="pull-left">View Details</span>
-                        <i class="pull-right fa fa-arrow-circle-right"></i>
-                        <div class="clearfix"></div>
-                    </div>
-                </a>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-3 col-md-6">
-        <div class="card card-success card-inverse">
-            <div class="card-block card-text">
-                <div class="row">
-                    <div class="col-xs-3"><i class="fa fa-inbox" style="font-size: 5em;"></i></div>
-                    <div class="col-xs-9 text-right">
-                        <div style="font-size: 40px;">'.$temp_user_count.'</div>
-                        <div>Pending Users</div>
-                    </div>
-                </div>
-            </div>
-            <div class="card-footer">
-                <a href="users_pending.php">
-                    <div class="panel-footer text-success">
-                        <span class="pull-left">View Details</span>
-                        <i class="pull-right fa fa-arrow-circle-right"></i>
-                        <div class="clearfix"></div>
-                    </div>
-                </a>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-3 col-md-6">
-        <div class="card card-danger card-inverse">
-            <div class="card-block card-text">
-                <div class="row">
-                    <div class="col-xs-3"><i class="fa fa-users" style="font-size: 5em;"></i></div>
-                    <div class="col-xs-9 text-right">
-                        <div style="font-size: 40px;">'.$group_count.'</div>
-                        <div>Groups</div>
-                    </div>
-                </div>
-            </div>
-            <div class="card-footer">
-                <a href="groups.php">
-                    <div class="panel-footer text-danger">
-                        <span class="pull-left">View Details</span>
-                        <i class="pull-right fa fa-arrow-circle-right"></i>
-                        <div class="clearfix"></div>
-                    </div>
-                </a>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-3 col-md-6">
-        <div class="card card-warning card-inverse">
-            <div class="card-block card-text">
-                <div class="row">
-                    <div class="col-xs-3"><i class="fa fa-cloud" style="font-size: 5em;"></i></div>
-                    <div class="col-xs-9 text-right">
-                        <div style="font-size: 40px;">'.$session_count.'</div>
-                        <div>Sessions</div>
-                    </div>
-                </div>
-            </div>
-            <div class="card-footer">
-                <a href="sessions.php">
-                    <div class="panel-footer text-warning">
-                        <span class="pull-left">View Details</span>
-                        <i class="pull-right fa fa-arrow-circle-right"></i>
-                        <div class="clearfix"></div>
-                    </div>
-                </a>
-            </div>
-        </div>
-    </div>
-</div>';
+<div class="row">';
+
+$page->add_card('fa-user', $user_count, 'Users', 'users_current.php');
+$page->add_card('fa-inbox', $temp_user_count, 'Pending Users', 'users_pending.php', $page::CARD_GREEN);
+$page->add_card('fa-users', $group_count, 'Groups', 'groups.php', $page::CARD_RED);
+$page->add_card('fa-cloud', $session_count, 'Sessions', 'sessions.php', $page::CARD_YELLOW);
+
+$page->body .= '</div>';
 
 $page->print_page();
 ?>
