@@ -1,24 +1,20 @@
 <?php
 require_once('class.ProfilesPage.php');
 require_once('class.FlipSession.php');
-class ProfilesLeadPage extends FlipPage
+class ProfilesLeadPage extends FlipAdminPage
 {
     private $is_lead;
 
     function __construct($title)
     {
-        parent::__construct($title);
-        if($this->user == FALSE)
+        parent::__construct($title, 'Leads');
+        if($this->user !== false && $this->user !== null)
         {
-            $this->is_lead = FALSE;
+            $this->is_lead  = $this->user->isInGroupNamed('CC');
         }
         else
         {
-            $this->is_lead = $this->user->isInGroupNamed('Leads');
-            if(!$this->is_lead)
-            {
-                $this->is_lead = $this->user->isInGroupNamed('CC');
-            }
+            $this->is_lead  = true;
         }
         $this->add_leads_css();
         $this->add_links();
@@ -38,100 +34,23 @@ class ProfilesLeadPage extends FlipPage
 
     function add_links()
     {
-        if(!FlipSession::is_logged_in())
-        {
-            $this->add_link('Login', '../login.php');
-        }
-        else
-        {
-            $this->add_link('Logout', '../logout.php');
-        }
-        $about_menu = array(
-            'Burning Flipside'=>'http://www.burningflipside.com/about/event',
-            'AAR, LLC'=>'http://www.burningflipside.com/LLC',
-            'Privacy Policy'=>'http://www.burningflipside.com/about/privacy'
+        $dir_menu = array(
+            'All' => 'directory.php',
+            'AAR' => 'directory.php?filter=aar',
+            'AFs' => 'directory.php?filter=af',
+            'CC'  => 'directory.php?filter=cc',
+            '360/24/7 Department' => 'directory.php?filter=360',
+            'Art' => 'directory.php?filter=Art',
+            'City Planning' => 'directory.php?filter=CityPlanning',
+            'Communications' => 'directory.php?filter=Comm',
+            'Safety' => 'directory.php?filter=Safety',
+            'Site-Ops' => 'directory.php?filter=site-ops',
+            'Site Prep' => 'directory.php?filter=siteprep', 
+            'Site Sign-Off' => 'directory.php?filter=sign-off',
+            'Volunteer Coordinator' => 'directory.php?filter=vc'
         );
-        $this->add_link('About', 'http://www.burningflipside.com/about', $about_menu);
-    }
-
-    function add_header()
-    {
-        $sites = '';
-        $log = '';
-        foreach($this->sites as $link => $site_name)
-        {
-            $sites .= '<li><a href="'.$site_name.'">'.$link.'</a></li>';
-        }
-        if(!FlipSession::is_logged_in())
-        {
-            $log = '<a href="../login.php?return='.$this->current_url().'"><span class="glyphicon glyphicon-log-in"></span></a>';
-        }
-        else
-        {
-            $log = '<a href="../logout.php"><span class="glyphicon glyphicon-log-out"></span></a>';
-        }
-        $this->body = '<div id="wrapper">
-                  <nav class="navbar navbar-default navbar-static-top" role=navigation" style="margin-bottom: 0">
-                      <div class="navbar-header">
-                          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
-                              <span class="sr-only">Toggle Navigation</span>
-                              <span class="icon-bar"></span>
-                              <span class="icon-bar"></span>
-                              <span class="icon-bar"></span>
-                          </button>
-                          <a class="navbar-brand" href="index.php">Leads</a>
-                      </div>
-                      <ul class="nav navbar-top-links navbar-right links">
-                           <a href="../">
-                              <span class="glyphicon glyphicon-home"></span>
-                           </a>
-                           &nbsp;&nbsp;
-                          '.$log.'
-                          <li class="dropdown">
-                              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                  <span class="glyphicon glyphicon-link"></span>
-                                  <b class="caret"></b>
-                              </a>
-                              <ul class="dropdown-menu dropdown-sites">
-                                  '.$sites.'
-                              </ul>
-                          </li>
-                      </ul>
-                      <div class="navbar-default sidebar" role="navigation">
-                          <div class="sidebar-nav navbar-collapse" style="height: 1px;">
-                              <ul class="nav" id="side-menu">
-                                  <li>
-                                      <a href="index.php"><span class="glyphicon glyphicon-dashboard"></span> Dashboard</a>
-                                  </li>
-                                  <li>
-                                      <a href="#"><span class="glyphicon glyphicon-th-list"></span> Directory</a>
-                                      <ul class="nav nav-second-level collapse">
-                                          <li><a href="directory.php">All</a></li>
-                                          <li><a href="directory.php?filter=aar">AAR</a></li>
-                                          <li><a href="directory.php?filter=af">AFs</a></li>
-                                          <li><a href="directory.php?filter=cc">CC</a></li>
-                                          <li><a href="directory.php?filter=360">360/24/7 Department</a></li>
-                                          <li><a href="directory.php?filter=Art">Art</a></li>
-                                          <li><a href="directory.php?filter=CityPlanning">City Planning</a></li>
-                                          <li><a href="directory.php?filter=Comm">Communications</a></li>
-                                          <li><a href="directory.php?filter=Safety">Safety</a></li>
-                                          <li><a href="directory.php?filter=site-ops">Site-Ops</a></li>
-                                          <li><a href="directory.php?filter=siteprep">Site Prep</a></li>
-                                          <li><a href="directory.php?filter=sign-off">Site Sign-Off</a></li>
-                                          <li><a href="directory.php?filter=vc">Volunteer Coordinator</a></li>
-                                      </ul>
-                                  </li>
-                              </ul>
-                          </div>
-                      </div>
-                  </nav>
-                  <div id="page-wrapper" style="min-height: 538px;">'.$this->body.'</div></div>';
-        $this->add_login_form();
-    }
-
-    function current_url()
-    {
-        return 'http'.(isset($_SERVER['HTTPS'])?'s':'').'://'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}";
+        $this->add_link('<i class="fa fa-tachometer"></i> Dashboard', 'index.php');
+        $this->add_link('<i class="fa fa-th-list"></i> Directory', '#', $dir_menu);
     }
 
     function print_page($header=true)
