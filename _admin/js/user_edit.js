@@ -14,10 +14,10 @@ function getUID()
 
 function users_done(data)
 {
-    var users = data.data;
+    var users = data;
     for(i = 0; i < users.length; i++)
     {
-        $('#user_select').append('<option value="'+users[i][0]+'">'+users[i][0]+'</option>');
+        $('#user_select').append('<option value="'+users[i].uid+'">'+users[i].uid+'</option>');
     }
     var uid = getUID();
     if(uid != null)
@@ -31,7 +31,7 @@ var user = null;
 
 function areas_done(data)
 {
-    var areas = data.areas;
+    var areas = data;
     for(i = 0; i < areas.length; i++)
     {
         $('#ou').append('<option value="'+areas[i].short_name+'">'+areas[i].name+'</option>');
@@ -45,7 +45,7 @@ function areas_done(data)
 
 function leads_done(data)
 {
-    leads = data.leads;
+    leads = data;
     area_change($('#ou'));
 }
 
@@ -96,7 +96,7 @@ function populate_user_dropdown()
     //Turn off events on the dropdown
     $('#user_select').change(null);
     $.ajax({
-        url: 'ajax/users.php',
+        url: '../api/v1/users?$select=uid',
         type: 'get',
         dataType: 'json',
         success: users_done});
@@ -108,12 +108,12 @@ function populate_area_dropdown()
 {
     $.when(
         $.ajax({
-            url: 'ajax/areas.php',
+            url: '../api/v1/areas',
             type: 'get',
             dataType: 'json',
             success: areas_done}),
         $.ajax({
-            url: 'ajax/leads.php',
+            url: '../api/v1/leads',
             type: 'get',
             dataType: 'json',
             success: leads_done})
@@ -126,7 +126,7 @@ function populate_user_data()
     if(($('#user_data').length > 0) && (uid != null))
     {
         $.ajax({
-            url: '/ajax/user.php?uid='+uid,
+            url: '../api/v1/users/'+uid,
             type: 'get',
             dataType: 'json',
             success: user_data_done});
