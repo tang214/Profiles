@@ -29,7 +29,7 @@ function do_users_init()
     if($("#user_table").length > 0)
     {
         $('#user_table').dataTable({
-            'ajax': '../api/v1/users?fmt=data-table',
+            'ajax': '../api/v1/users?fmt=data-table&$select=uid,displayName,sn,mail,givenName',
             'columns': [
                 {'data': 'uid', 'render': renderUID},
                 {'data': 'displayName'},
