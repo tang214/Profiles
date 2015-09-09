@@ -11,10 +11,9 @@ $page->body .= '
     <p>This system will contain all your private data seperately so as to help prevent unwanted display of your data on www.burningflipside.com.
        Additionally, completing your profile on this site will enable you to complete ticket requests and sign up for volunteer shifts even faster than before.</p>';
 
-$user = FlipSession::get_user();
-if($user !== null)
+if($page->user !== null)
 {
-    if(!$user->isProfileComplete())
+    if(!$page->user->isProfileComplete())
     {
         $page->add_notification('Your profile is not yet complete. Click <a href="/profile.php" class="alert-link">here</a> to complete your profile.', $page::NOTIFICATION_WARNING);
     }

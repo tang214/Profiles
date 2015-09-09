@@ -59,7 +59,7 @@ function create_user()
         $app->response->setStatus(401);
         return;
     }
-    $captcha = FlipSession::get_var('captcha');
+    $captcha = FlipSession::getVar('captcha');
     if($captcha === false)
     {
         $app->response->setStatus(401);

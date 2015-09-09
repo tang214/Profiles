@@ -11,7 +11,7 @@ $user_count = $auth->getActiveUserCount(false);
 $temp_user_count = $auth->getPendingUserCount();
 $group_count = $auth->getGroupCount();
 
-$sessions = FlipSession::get_all_sessions();
+$sessions = FlipSession::getAllSessions();
 $session_count = 0;
 if($sessions !== false)
 {

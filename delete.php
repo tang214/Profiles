@@ -8,7 +8,7 @@ if($_SERVER["HTTPS"] != "on")
     exit();
 }
 require_once("class.FlipSession.php");
-if(!FlipSession::is_logged_in())
+if(!FlipSession::isLoggedIn())
 {
     header("Location: login.php");
     exit();
