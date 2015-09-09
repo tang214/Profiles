@@ -14,6 +14,8 @@ require('sessions.php');
 require('areas.php');
 
 $app = new FlipREST();
+$app->get('(/)', 'service_root');
+$app->get('/\$metadata', 'metadata');
 $app->post('/login', 'login');
 $app->post('/logout', 'logout');
 $app->group('/users', 'users');
@@ -23,6 +25,70 @@ $app->group('/pending_users', 'pending_users');
 $app->group('/sessions', 'sessions');
 $app->group('/areas', 'areas');
 $app->get('/leads', 'leads');
+
+function service_root()
+{
+    global $app;
+    $res = array();
+    $res['@odata.context'] = $app->request->getUrl().$app->request->getRootUri().'/$metadata';
+    $res['value'] = array(
+        array('name'=>'users', 'kind'=>'EntitySet', 'url'=>'users')
+        //array('name'=>'groups', 'kind'=>'EntitySet', 'url'=>'groups'),
+        //array('name'=>'pending_users', 'kind'=>'EntitySet', 'url'=>'pending_users'),
+        //array('name'=>'sessions', 'kind'=>'EntitySet', 'url'=>'sessions'),
+        //array('name'=>'areas', 'kind'=>'EntitySet', 'url'=>'areas'),
+        //array('name'=>'leads', 'kind'=>'EntitySet', 'url'=>'leads')
+    );
+    echo json_encode($res);
+}
+
+function metadata()
+{
+    global $app;
+    echo '
+        <edmx:Edmx xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx" Version="4.0">
+            <edmx:DataServices>
+                <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="BurningFlipside.Profiles">
+                    <EntityType Name="User">
+                        <Key>
+                            <PropertyRef Name="uid"/>
+                        </Key>
+                        <Property Name="uid" Type="Edm.String" Nullable="false">
+                            <Annotation Term="Org.OData.Core.V1.Permissions">
+                                <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
+                            </Annotation>
+                        </Property>
+                        <Property Name="displayName" Type="Edm.String"/>
+                        <Property Name="mail" Type="Edm.String" Nullable="false">
+                        </Property>
+                    </EntityType>
+                    <EntitySet Name="Users" EntityType="BurningFlipside.Profiles.User">
+                        <NavigationPropertyBinding Path="users" Target="Users"/>
+                        <Annotation Term="Org.OData.Core.V1.ResourcePath" String="users"/>
+                        <Annotation Term="Org.OData.Capabilities.V1.NavigationRestrictions">
+                            <Record>
+                                <PropertyValue Property="Navigability">
+                                    <EnumMember>Org.OData.Capabilities.V1.NavigationType/None</EnumMember>
+                                </PropertyValue>
+                            </Record>
+                        </Annotation>
+                        <Annotation Term="Org.OData.Capabilities.V1.SearchRestrictions">
+                            <Record>
+                                <PropertyValue Property="Searchable" Bool="true"/>
+                                <PropertyValue Property="UnsupportedExpressions">
+                                    <EnumMember>Org.OData.Capabilities.V1.SearchExpressions/none</EnumMember>
+                                </PropertyValue>
+                            </Record>
+                        </Annotation>
+                    </EntitySet>
+                    <Singleton Name="Me" Type="BurningFlipside.Profiles.User">
+                        <Annotation Term="Org.OData.Core.V1.ResourcePath" String="me"/>
+                    </Singleton>
+                </Schema>
+            </edmx:DataServices>
+        </edmx:Edmx>
+    ';
+}
 
 function list_groups()
 {
@@ -35,7 +101,7 @@ function list_groups()
     if($app->user->isInGroupNamed("LDAPAdmins"))
     {
         $auth = AuthProvider::getInstance();
-        $users = $auth->get_groups_by_filter(false, $app->odata->filter, $app->odata->select, $app->odata->top, $app->odata->skip, $app->odata->orderby);
+        $users = $auth->getGroupsByFilter($app->odata->filter, $app->odata->select, $app->odata->top, $app->odata->skip, $app->odata->orderby);
         echo json_encode($users);
     }
     else
@@ -97,10 +163,10 @@ function leads()
     $leads     = array();
     if(!isset($params['type']))
     {
-        $leadGroup = $auth->get_group_by_name(false, 'Leads');
-        $aarGroup  = $auth->get_group_by_name(false, 'AAR');
-        $afGroup   = $auth->get_group_by_name(false, 'AFs');
-        $ccGroup   = $auth->get_group_by_name(false, 'CC');
+        $leadGroup = $auth->getGroupByName('Leads');
+        $aarGroup  = $auth->getGroupByName('AAR');
+        $afGroup   = $auth->getGroupByName('AFs');
+        $ccGroup   = $auth->getGroupByName('CC');
         $leads     = array_merge($leads, $leadGroup->members(true));
         $leads     = array_merge($leads, $aarGroup->members(true));
         $leads     = array_merge($leads, $afGroup->members(true));
@@ -111,24 +177,24 @@ function leads()
         switch($params['type'])
         {
             case 'aar':
-                $aarGroup  = $auth->get_group_by_name(false, 'AAR');
+                $aarGroup  = $auth->getGroupByName('AAR');
                 $leads     = array_merge($leads, $aarGroup->members(true));
                 break;
             case 'af':
-                $afGroup   = $auth->get_group_by_name(false, 'AFs');
+                $afGroup   = $auth->getGroupByName('AFs');
                 $leads     = array_merge($leads, $afGroup->members(true));
                 break;
             case 'cc':
-                $ccGroup   = $auth->get_group_by_name(false, 'CC');
+                $ccGroup   = $auth->getGroupByName('CC');
                 $leads     = array_merge($leads, $ccGroup->members(true));
                 break;
             case 'lead':
-                $leadGroup = $auth->get_group_by_name(false, 'Leads');
+                $leadGroup = $auth->getGroupByName('Leads');
                 $leads     = array_merge($leads, $leadGroup->members(true));
                 break;
             default:
                 $filter    = new \Data\Filter('ou eq '.$params['type']);
-                $leads     = $auth->get_users_by_filter(false, $filter);
+                $leads     = $auth->getUsersByFilter($filter);
                 break;
         }
     }

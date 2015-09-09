@@ -5,10 +5,10 @@ require_once('class.ProfilesLeadPage.php');
 $page = new ProfilesLeadPage('Burning Flipside Profiles - Lead');
 
 $auth = AuthProvider::getInstance();
-$leadGroup = $auth->get_group_by_name(false, 'Leads');
-$aarGroup  = $auth->get_group_by_name(false, 'AAR');
-$afGroup   = $auth->get_group_by_name(false, 'AFs');
-$ccGroup   = $auth->get_group_by_name(false, 'CC');
+$leadGroup = $auth->getGroupByName('Leads');
+$aarGroup  = $auth->getGroupByName('AAR');
+$afGroup   = $auth->getGroupByName('AFs');
+$ccGroup   = $auth->getGroupByName('CC');
 
 $lead_count = $leadGroup->member_count();
 $aar_count  = $aarGroup->member_count();

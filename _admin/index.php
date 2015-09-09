@@ -7,9 +7,9 @@ $page = new ProfilesAdminPage('Burning Flipside Profiles - Admin');
 $page->add_js_from_src('js/index.js');
 
 $auth = AuthProvider::getInstance();
-$user_count = $auth->get_active_user_count(false);
-$temp_user_count = $auth->get_pending_user_count(false);
-$group_count = $auth->get_group_count(false);
+$user_count = $auth->getActiveUserCount(false);
+$temp_user_count = $auth->getPendingUserCount();
+$group_count = $auth->getGroupCount();
 
 $sessions = FlipSession::get_all_sessions();
 $session_count = 0;
