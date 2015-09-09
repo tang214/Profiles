@@ -17,7 +17,7 @@ if($user === false || $user === null)
     //We might be reseting a user's forgotten password...
     if(isset($_GET['hash']))
     {
-        $user = $auth->get_user_by_reset_hash(false, $_GET['hash']);
+        $user = $auth->getUserByResetHash($_GET['hash']);
         $require_current_pass = false;
     }
 }

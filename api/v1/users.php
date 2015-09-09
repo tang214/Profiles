@@ -33,12 +33,12 @@ function list_users()
     if($app->user && !$app->user->isInGroupNamed("LDAPAdmins"))
     {
         //Only return this user. This user doesn't have access to other accounts
-        echo json_encode(array(encode_user($app->user)));
+        echo json_encode(array($app->user));
     }
     else
     {
         $auth = AuthProvider::getInstance();
-        $users = $auth->get_users_by_filter(false, $app->odata->filter, $app->odata->select, $app->odata->top, $app->odata->skip, $app->odata->orderby);
+        $users = $auth->getUsersByFilter($app->odata->filter, $app->odata->select, $app->odata->top, $app->odata->skip, $app->odata->orderby);
         echo json_encode($users);
     }
 }
@@ -71,18 +71,18 @@ function create_user()
         return;
     }
     $auth = AuthProvider::getInstance();
-    $user = $auth->get_users_by_filter(false, new \Data\Filter('mail eq '.$obj->mail));
+    $user = $auth->getUsersByFilter(new \Data\Filter('mail eq '.$obj->mail));
     if($user !== false && isset($user[0]))
     {
         echo json_encode(array('res'=>false, 'message'=>'Email already exists!'));
         return;
     }
-    $user = $auth->get_users_by_filter(false, new \Data\Filter('uid eq '.$obj->uid));
+    $user = $auth->getUsersByFilter(new \Data\Filter('uid eq '.$obj->uid));
     if($user !== false && isset($user[0]))
     {
         echo json_encode(array('res'=>false, 'message'=>'Username already exists!'));
     }
-    $ret = $auth->create_pending_user(false, $obj);
+    $ret = $auth->createPendingUser($obj);
     echo json_encode($ret);
 }
 
@@ -101,11 +101,11 @@ function show_user($uid = 'me')
     }
     else if($app->user->isInGroupNamed("LDAPAdmins"))
     {
-        $user = \AuthProvider::getInstance()->get_users_by_filter(false, new \Data\Filter("uid eq $uid"));
+        $user = \AuthProvider::getInstance()->getUsersByFilter(new \Data\Filter("uid eq $uid"));
     }
     else if($app->user->isInGroupNamed("Leads") || $app->user->isInGroupNamed("CC"))
     {
-        $user = \AuthProvider::getInstance()->get_users_by_filter(false, new \Data\Filter("uid eq $uid"));
+        $user = \AuthProvider::getInstance()->getUsersByFilter(new \Data\Filter("uid eq $uid"));
     }
     if($user === false) $app->halt(404);
     if(!is_object($user) && isset($user[0]))
@@ -134,7 +134,7 @@ function edit_user($uid = 'me')
         if(isset($obj->hash))
         {
             $auth = AuthProvider::getInstance();
-            $app->user = $auth->get_user_by_reset_hash(false, $obj->hash);
+            $app->user = $auth->getUserByResetHash(false, $obj->hash);
         }
         if(!$app->user)
         {
@@ -150,7 +150,7 @@ function edit_user($uid = 'me')
     }
     else if($app->user->isInGroupNamed("LDAPAdmins"))
     {
-        $user = AuthProvider::getInstance()->get_user(false, $uid);
+        $user = AuthProvider::getInstance()->getUser($uid);
         if($user === false)
         {
             $app->response->setStatus(404);
@@ -195,7 +195,7 @@ function list_groups_for_user($uid = 'me')
     }
     else if($app->user->isInGroupNamed("LDAPAdmins"))
     {
-        $user = AuthProvider::getInstance()->get_user(false, $uid);
+        $user = AuthProvider::getInstance()->getUser($uid);
         if($user === false)
         {
             $app->response->setStatus(404);
@@ -231,11 +231,11 @@ function link_user($uid = 'me')
     if($uid === 'me' || $uid === $app->user->getUid())
     {
         $app->user->addLoginProvider($obj->provider);
-        AuthProvider::getInstance()->impersonate_user($app->user);
+        AuthProvider::getInstance()->impersonateUser($app->user);
     }
     else if($app->user->isInGroupNamed("LDAPAdmins"))
     {
-        $user = AuthProvider::getInstance()->get_user(false, $uid);
+        $user = AuthProvider::getInstance()->getUser($uid);
         if($user === false)
         {
             $app->response->setStatus(404);
@@ -270,10 +270,10 @@ function check_email_available()
     }
     $auth = AuthProvider::getInstance();
     $filter = new \Data\Filter('mail eq '.$email);
-    $user = $auth->get_users_by_filter(false, $filter);
+    $user = $auth->getUsersByFilter($filter);
     if($user === false || !isset($user[0]))
     {
-        $user = $auth->get_pending_users_by_filter(false, $filter);
+        $user = $auth->getPendingUsersByFilter($filter);
         if($user === false || !isset($user[0]))
         {
             echo 'true';
@@ -297,10 +297,10 @@ function check_uid_available()
     {
         return false;
     }
-    $user = AuthProvider::getInstance()->get_users_by_filter(false, new \Data\Filter('uid eq '.$uid));
+    $user = AuthProvider::getInstance()->getUsersByFilter(new \Data\Filter('uid eq '.$uid));
     if($user === false || !isset($user[0]))
     {
-         $user = $auth->get_pending_users_by_filter(false, $filter);
+         $user = $auth->getPendingUsersByFilter($filter);
         if($user === false || !isset($user[0]))
         {
             echo 'true';
@@ -320,7 +320,7 @@ function reset_pass($uid)
 {
     global $app;
     $auth = AuthProvider::getInstance();
-    $users = $auth->get_users_by_filter(false, new \Data\Filter('uid eq '.$uid));
+    $users = $auth->getUsersByFilter(new \Data\Filter('uid eq '.$uid));
     if($users === false || !isset($users[0]))
     {
         $app->response->setStatus(404);
@@ -342,7 +342,7 @@ function remind_uid()
     global $app;
     $email = $app->request->params('email');
     $auth = AuthProvider::getInstance();
-    $users = $auth->get_users_by_filter(false, new \Data\Filter('mail eq '.$email));
+    $users = $auth->getUsersByFilter(new \Data\Filter('mail eq '.$email));
     if($users === false || !isset($users[0]))
     {
         $app->response->setStatus(404);

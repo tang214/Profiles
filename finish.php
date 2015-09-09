@@ -12,7 +12,7 @@ if(!isset($_GET['hash']))
 else
 {
     $auth = AuthProvider::getInstance();
-    $user = $auth->get_temp_user_by_hash(false, $_GET['hash']);
+    $user = $auth->getTempUserByHash($_GET['hash']);
     if($user === false)
     {
         $page->add_notification("Unable to locate user! This registration has either expired or already been completed!", $page::NOTIFICATION_FAILED);

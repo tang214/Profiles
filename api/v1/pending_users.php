@@ -22,7 +22,7 @@ function list_pending_users()
         throw new Exception('Must be Admin', ACCESS_DENIED);
     }
     $auth = AuthProvider::getInstance();
-    $users = $auth->get_pending_users_by_filter(false, $app->odata->filter, $app->odata->select, $app->odata->top, $app->odata->skip, $app->odata->orderby);
+    $users = $auth->getPendingUsersByFilter($app->odata->filter, $app->odata->select, $app->odata->top, $app->odata->skip, $app->odata->orderby);
     echo json_encode($users);
 }
 
@@ -39,7 +39,7 @@ function show_pending_user($hash)
     }
     else
     {
-        $user = \AuthProvider::getInstance()->get_pending_users_by_filter(false, new \Data\Filter("hash eq '$hash'"));
+        $user = \AuthProvider::getInstance()->getPendingUsersByFilter(new \Data\Filter("hash eq '$hash'"));
     }
     if($user === false) $app->halt(404);
     if(!is_object($user) && isset($user[0]))
@@ -77,9 +77,9 @@ function activate_user($hash)
     else
     {
         $auth = \AuthProvider::getInstance();
-        $user = $auth->get_pending_users_by_filter(false, new \Data\Filter("hash eq '$hash'"));
+        $user = $auth->getPendingUsersByFilter(new \Data\Filter("hash eq '$hash'"));
         if($user === false || !isset($user[0])) $app->halt(404);
-        $res = $auth->activate_pending_user(false, $user[0]);
+        $res = $auth->activatePendingUser($user[0]);
         if($app->request->isGet())
         {
             if($res)
