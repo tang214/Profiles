@@ -19,7 +19,7 @@ else
     }
     else
     {
-        if($auth->activate_pending_user(false, $user) === false)
+        if($auth->activatePendingUser($user) === false)
         {
             $page->add_notification("Internal Error! ".$server->lastError(), $page::NOTIFICATION_FAILED);
         }
