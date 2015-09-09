@@ -14,7 +14,7 @@ $page->add_js_from_src('/js/zxcvbn-async.js');
 $page->add_js_from_src('/js/register.js');
 
 $captcha = new FlipsideCAPTCHA();
-FlipSession::set_var('captcha', $captcha);
+FlipSession::setVar('captcha', $captcha);
 
 if(isset($_GET['return']))
 {
@@ -25,7 +25,7 @@ else
     $return = '';
 }
 
-if(FlipSession::is_logged_in())
+if(FlipSession::isLoggedIn())
 {
     $page->add_notification('You are currently logged in to the system. Are you sure you want to register another account?');
 }

@@ -11,7 +11,7 @@ require_once('class.ProfilesPage.php');
 $page = new ProfilesPage('Burning Flipside Password Change');
 $auth = AuthProvider::getInstance();
 $require_current_pass = true;
-$user = FlipSession::get_user();
+$user = $page->user;
 if($user === false || $user === null)
 {
     //We might be reseting a user's forgotten password...

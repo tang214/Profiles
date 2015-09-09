@@ -18,7 +18,7 @@ function get_sessions()
     {
         throw new Exception('Must be Admin', ACCESS_DENIED);
     }
-    $sessions = FlipSession::get_all_sessions();
+    $sessions = FlipSession::getAllSessions();
     if($sessions !== false)
     {
         $count = count($sessions);
@@ -45,7 +45,7 @@ function end_session($id)
     {
         throw new Exception('Must be Admin', ACCESS_DENIED);
     }
-    $ret = FlipSession::delete_session_by_id($id);
+    $ret = FlipSession::deleteSessionById($id);
     echo json_encode($ret);
 }
 
