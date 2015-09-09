@@ -48,7 +48,7 @@ function on_key(event)
     if(stage == 9 && event.keyCode == 65)
     {
         var marquee = $('<marquee/>', {behavior: 'slide', direction: 'left', id: 'konami'});
-        var img = $('<img/>', {src: '/img/logo.svg'});
+        var img = $('<img/>', {src: '/img/common/logo.svg'});
         if(times >= 1)
         {
             marquee.append("Here we go again...");
