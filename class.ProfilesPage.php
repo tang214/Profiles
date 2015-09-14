@@ -10,7 +10,14 @@ class ProfilesPage extends FlipPage
         parent::__construct($title, true);
         $root = $_SERVER['DOCUMENT_ROOT'];
         $script_dir = dirname(__FILE__);
-        $this->profiles_root = substr($script_dir, strlen($root));
+        if(strstr($script_dir, $root) === false)
+        {
+            $this->profiles_root = dirname($_SERVER['SCRIPT_NAME']);
+        }
+        else
+        {
+            $this->profiles_root = substr($script_dir, strlen($root));
+        }
         $this->add_profiles_css();
         $this->add_profiles_script();
         $this->add_login_form();
