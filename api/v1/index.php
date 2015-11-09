@@ -45,6 +45,8 @@ function service_root()
 function metadata()
 {
     global $app;
+    $app->fmt = 'passthru';
+    $app->response->headers->set('Content-Type', 'application/xml;charset=utf-8');
     echo '
         <edmx:Edmx xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx" Version="4.0">
             <edmx:DataServices>
