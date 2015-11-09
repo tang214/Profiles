@@ -1,7 +1,7 @@
 <?php
 require_once('class.ProfilesPage.php');
 require_once('class.FlipSession.php');
-class ProfilesLeadPage extends FlipPage
+class ProfilesLeadPage extends FlipAdminPage
 {
     private $is_lead;
 
@@ -38,7 +38,7 @@ class ProfilesLeadPage extends FlipPage
 
     function add_links()
     {
-        if(!FlipSession::is_logged_in())
+        if(!FlipSession::isLoggedIn())
         {
             $this->add_link('Login', '../login.php');
         }
@@ -62,7 +62,7 @@ class ProfilesLeadPage extends FlipPage
         {
             $sites .= '<li><a href="'.$site_name.'">'.$link.'</a></li>';
         }
-        if(!FlipSession::is_logged_in())
+        if(!FlipSession::isLoggedIn())
         {
             $log = '<a href="../login.php?return='.$this->current_url().'"><span class="glyphicon glyphicon-log-in"></span></a>';
         }
