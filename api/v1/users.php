@@ -145,7 +145,7 @@ function edit_user($uid = 'me')
     $user = false;
     if($uid === 'me' || $uid === $app->user->getUid())
     {
-        $app->user->edit_user($obj);
+        $app->user->editUser($obj);
         $user = $app->user;
     }
     else if($app->user->isInGroupNamed("LDAPAdmins"))
@@ -156,7 +156,7 @@ function edit_user($uid = 'me')
             $app->response->setStatus(404);
             return;
         }
-        $user->edit_user($obj);
+        $user->editUser($obj);
     }
     else
     {
