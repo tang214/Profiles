@@ -12,6 +12,7 @@ require('users.php');
 require('pending_users.php');
 require('sessions.php');
 require('areas.php');
+require('groups.php');
 
 $app = new FlipREST();
 $app->get('(/)', 'service_root');
@@ -90,26 +91,6 @@ function metadata()
             </edmx:DataServices>
         </edmx:Edmx>
     ';
-}
-
-function list_groups()
-{
-    global $app;
-    if(!$app->user)
-    {
-        $app->response->setStatus(401);
-        return;
-    }
-    if($app->user->isInGroupNamed("LDAPAdmins"))
-    {
-        $auth = AuthProvider::getInstance();
-        $users = $auth->getGroupsByFilter($app->odata->filter, $app->odata->select, $app->odata->top, $app->odata->skip, $app->odata->orderby);
-        echo json_encode($users);
-    }
-    else
-    {
-        list_groups_for_user();
-    }
 }
 
 function validate_post_code()
@@ -201,12 +182,6 @@ function leads()
         }
     }
     echo json_encode($leads);
-}
-
-function groups()
-{
-    global $app;
-    $app->get('', 'list_groups');
 }
 
 function postalcode()

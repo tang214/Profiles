@@ -4,13 +4,8 @@ error_reporting(E_ALL);
 require_once('class.ProfilesAdminPage.php');
 $page = new ProfilesAdminPage('Burning Flipside Profiles - Admin');
 
-$script_start_tag = $page->create_open_tag('script', array('src'=>'js/group_edit.js'));
-$script_close_tag = $page->create_close_tag('script');
-$page->add_head_tag($script_start_tag.$script_close_tag);
-
-//Add Jquery validator
-$script_start_tag = $page->create_open_tag('script', array('src'=>'/js/jquery.validate.js'));
-$page->add_head_tag($script_start_tag.$script_close_tag);
+$page->add_js(JS_DATATABLE, false);
+$page->add_js_from_src('js/group_edit.js');
 
 $hidden='';
 if(!isset($_GET['gid']))
