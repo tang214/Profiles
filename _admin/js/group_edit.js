@@ -81,7 +81,7 @@ function groupDataDone(jqXHR)
     var non_members = $('#non-members').DataTable();
     members.clear();
     members.rows.add(group.member).draw();
-    non_members.ajax.url('../api/v1/groups/'+group.cn+'/non-members?$select=cn,mail,description,givenName,sn,uid&fmt=data-table').load();
+    non_members.ajax.url('../api/v1/groups/'+group.cn+'/non-members?$select=cn,mail,description,givenName,sn,uid,type&fmt=data-table').load();
     $('#group_data').show();
     $('#members tbody').on('click', 'td.removeControl', remove_clicked);
     $('#non-members tbody').on('click', 'td.addControl', add_clicked);
@@ -146,6 +146,26 @@ function group_submit_done(data)
 
 function groupDataSubmitted(e)
 {
+    e.preventDefault();
+    var group = $('#form :input:not(select)').serializeObject();
+    var members = $('#members').DataTable().data();
+    group.member = [];
+    for(i = 0; i < members.length; i++)
+    {
+       child = {};
+       child.type = members[i].type;
+       if(members[i].type === 'Group')
+       {
+           child.cn = members[i].cn;
+       }
+       else
+       {
+           child.uid = members[i].uid;
+       }
+       group.member.push(child);
+    }
+    console.log(group);
+    return false;
     var members = $('#members').DataTable().data();
     var members_str = "";
     for(i = 0; i < members.length; i++)

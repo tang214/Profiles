@@ -146,7 +146,16 @@ function getNonGroupMembers($name)
         $keys = array_flip($app->odata->select);
         for($i = 0; $i < $count; $i++)
         {
-            $res[$i] = array_intersect_key(json_decode(json_encode($res[$i]), true), $keys);
+            $tmp = json_decode(json_encode($res[$i]), true);
+            if(is_subclass_of($res[$i], 'Auth\Group'))
+            {
+                $tmp['type'] = 'Group';
+            }
+            else
+            {
+                $tmp['type'] = 'User';
+            }
+            $res[$i] = array_intersect_key($tmp, $keys);
         }
     }
     echo json_encode($res);
