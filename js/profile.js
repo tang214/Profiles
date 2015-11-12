@@ -112,7 +112,7 @@ function update_profile()
     }
     $.ajax({
         url: 'api/v1/users/me',
-        data: obj,
+        data: JSON.stringify(obj),
         type: 'PATCH',
         dataType: 'json',
         processData: false,

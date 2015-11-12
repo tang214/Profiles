@@ -10,7 +10,6 @@ function users()
     $app->post('', 'create_user');
     $app->get('/me', 'show_user');
     $app->get('/:uid', 'show_user');
-    $app->patch('/me', 'edit_user');
     $app->patch('/:uid', 'edit_user');
     $app->get('/me/groups', 'list_groups_for_user');
     $app->get('/:uid/groups', 'list_groups_for_user');
@@ -129,11 +128,11 @@ function edit_user($uid = 'me')
     global $app;
     $body = $app->request->getBody();
     $obj  = json_decode($body);
+    $auth = AuthProvider::getInstance();
     if(!$app->user)
     {
         if(isset($obj->hash))
         {
-            $auth = AuthProvider::getInstance();
             $app->user = $auth->getUserByResetHash(false, $obj->hash);
         }
         if(!$app->user)
@@ -150,13 +149,13 @@ function edit_user($uid = 'me')
     }
     else if($app->user->isInGroupNamed("LDAPAdmins"))
     {
-        $user = AuthProvider::getInstance()->getUser($uid);
-        if($user === false)
+        $user = $auth->getUsersByFilter(new \Data\Filter("uid eq $uid"));
+        if($user === false || !isset($user[0]))
         {
             $app->response->setStatus(404);
             return;
         }
-        $user->editUser($obj);
+        $user[0]->editUser($obj);
     }
     else
     {
