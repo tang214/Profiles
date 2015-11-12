@@ -5,6 +5,7 @@ function groups()
     global $app;
     $app->get('', 'listGroups');
     $app->get('/:name', 'getGroup');
+    $app->get('/:name/non-members', 'getNonGroupMembers');
 }
 
 function listGroups()
@@ -40,7 +41,7 @@ function getGroup($name)
         $app->response->setStatus(401);
         return;
     }
-    if($isLocal || $app->user->isInGroupNamed('LDAPAdmin'))
+    if(($isLocal === true) || $app->user->isInGroupNamed('LDAPAdmins'))
     {
         $auth = AuthProvider::getInstance();
         $users = $auth->getGroupByName($name);
@@ -108,7 +109,7 @@ function getGroup($name)
         $groups = $app->user->getGroups();
         foreach($groups as $group)
         {
-            if($group['cn'] === $name)
+            if($group->getGroupName() === $name)
             {
                 echo json_encode($group);
                 die();
@@ -116,6 +117,39 @@ function getGroup($name)
         }
         $app->notFound();
     }
+}
+
+function getNonGroupMembers($name)
+{
+    global $app;
+    $isLocal = false;
+    if($_SERVER['SERVER_ADDR'] === $_SERVER['REMOTE_ADDR'])
+    {
+        $isLocal = true;
+    }
+    if(!$app->user && !$isLocal)
+    {
+        $app->response->setStatus(401);
+        return;
+    }
+    if(($isLocal === false) && !$app->user->isInGroupNamed('LDAPAdmins'))
+    {
+        $app->response->setStatus(401);
+        return;
+    }
+    $auth = AuthProvider::getInstance();
+    $group = $auth->getGroupByName($name);
+    $res = $group->getNonMemebers();
+    if($app->odata->select !== false)
+    {
+        $count = count($res);
+        $keys = array_flip($app->odata->select);
+        for($i = 0; $i < $count; $i++)
+        {
+            $res[$i] = array_intersect_key(json_decode(json_encode($res[$i]), true), $keys);
+        }
+    }
+    echo json_encode($res);
 }
 
 ?>
