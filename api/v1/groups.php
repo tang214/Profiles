@@ -30,12 +30,17 @@ function listGroups()
 function getGroup($name)
 {
     global $app;
-    if(!$app->user)
+    $isLocal = false;
+    if($_SERVER['SERVER_ADDR'] === $_SERVER['REMOTE_ADDR'])
+    {
+        $isLocal = true;
+    }
+    if(!$app->user && !$isLocal)
     {
         $app->response->setStatus(401);
         return;
     }
-    if($app->user->isInGroupNamed("LDAPAdmins"))
+    if($isLocal || $app->user->isInGroupNamed('LDAPAdmin'))
     {
         $auth = AuthProvider::getInstance();
         $users = $auth->getGroupByName($name);
