@@ -81,7 +81,7 @@ function groupDataDone(jqXHR)
     var non_members = $('#non-members').DataTable();
     members.clear();
     members.rows.add(group.member).draw();
-    non_members.ajax.url('../api/v1/groups/'+group.cn+'/non-members?$select=cn,mail,description,givenName,sn&fmt=data-table').load();
+    non_members.ajax.url('../api/v1/groups/'+group.cn+'/non-members?$select=cn,mail,description,givenName,sn,uid&fmt=data-table').load();
     $('#group_data').show();
     $('#members tbody').on('click', 'td.removeControl', remove_clicked);
     $('#non-members tbody').on('click', 'td.addControl', add_clicked);
