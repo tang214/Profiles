@@ -24,7 +24,7 @@ if(isset($_GET['failed']))
 }
 
 $auth = \AuthProvider::getInstance();
-$auth_links = $auth->get_supplementary_links();
+$auth_links = $auth->getSupplementaryLinks();
 $auth_links_str = '';
 $count = count($auth_links);
 for($i = 0; $i < $count; $i++)
