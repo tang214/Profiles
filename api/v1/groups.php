@@ -179,7 +179,46 @@ function getNonGroupMembers($name)
         return;
     }
     $auth = AuthProvider::getInstance();
+    if($name === 'none')
+    {
+        $res = array();
+        $groups = $auth->getGroupsByFilter(false);
+        $count  = count($groups);
+        $keys   = false;
+        if($app->odata->select !== false)
+        {
+            $keys = array_flip($app->odata->select);
+        }
+        for($i = 0; $i < $count; $i++)
+        {
+            $tmp = json_decode(json_encode($groups[$i]), true);
+            $tmp['type'] = 'Group';
+            if($keys !== false)
+            {
+                $tmp = array_intersect_key($tmp, $keys);
+            } 
+            array_push($res, $tmp);
+        }
+        $users  = $auth->getUsersByFilter(false);
+        $count  = count($users);
+        for($i = 0; $i < $count; $i++)
+        {
+            $tmp = json_decode(json_encode($users[$i]), true);
+            $tmp['type'] = 'User';
+            if($keys !== false)
+            {
+                $tmp = array_intersect_key($tmp, $keys);
+            }
+            array_push($res, $tmp);
+        }
+        echo json_encode($res);
+        return;
+    }
     $group = $auth->getGroupByName($name);
+    if($group === false)
+    {
+        $app->notFound();
+    }
     $res = $group->getNonMemebers();
     if($app->odata->select !== false)
     {
