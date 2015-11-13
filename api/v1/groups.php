@@ -5,6 +5,7 @@ function groups()
     global $app;
     $app->get('', 'listGroups');
     $app->get('/:name', 'getGroup');
+    $app->patch('/:name', 'updateGroup');
     $app->get('/:name/non-members', 'getNonGroupMembers');
 }
 
@@ -45,6 +46,12 @@ function getGroup($name)
     {
         $auth = AuthProvider::getInstance();
         $users = $auth->getGroupByName($name);
+        $params = $app->request->params();
+        $directOnly = false;
+        if(isset($params['directOnly']) && $params['directOnly'] === 'true')
+        {
+            $directOnly = true;
+        }
         if($app->odata->expand !== false)
         {
             if(in_array('member', $app->odata->expand))
@@ -52,9 +59,24 @@ function getGroup($name)
                 $group = array();
                 $group['cn'] = $users->getGroupName();
                 $group['description'] = $users->getDescription();
-                $group['member'] = $users->members(true);
+                if($directOnly)
+                {
+                    $group['member'] = $users->members(true, false);
+                }
+                else
+                {
+                    $group['member'] = $users->members(true);
+                }
                 $users = json_decode(json_encode($group), true);
             }
+        }
+        else if($directOnly)
+        {
+            $group = array();
+            $group['cn'] = $users->getGroupName();
+            $group['description'] = $users->getDescription();
+            $group['member'] = $users->getMemberUids(false);
+            $users = json_decode(json_encode($group), true);
         }
         else
         {
@@ -117,6 +139,25 @@ function getGroup($name)
         }
         $app->notFound();
     }
+}
+
+function updateGroup($name)
+{
+    global $app;
+    if(!$app->user->isInGroupNamed('LDAPAdmins'))
+    {
+        $app->response->setStatus(401);
+        return;
+    }
+    $auth = AuthProvider::getInstance();
+    $group = $auth->getGroupByName($name);
+    if($group === false)
+    {
+        $app->notFound();
+        return;
+    }
+    $obj = $app->getJsonBody();
+    echo json_encode($group->editGroup($obj));
 }
 
 function getNonGroupMembers($name)
