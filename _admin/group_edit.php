@@ -4,13 +4,9 @@ error_reporting(E_ALL);
 require_once('class.ProfilesAdminPage.php');
 $page = new ProfilesAdminPage('Burning Flipside Profiles - Admin');
 
-$script_start_tag = $page->create_open_tag('script', array('src'=>'js/group_edit.js'));
-$script_close_tag = $page->create_close_tag('script');
-$page->add_head_tag($script_start_tag.$script_close_tag);
-
-//Add Jquery validator
-$script_start_tag = $page->create_open_tag('script', array('src'=>'/js/jquery.validate.js'));
-$page->add_head_tag($script_start_tag.$script_close_tag);
+$page->add_js(JS_DATATABLE, false);
+$page->add_css(CSS_DATATABLE);
+$page->add_js_from_src('js/group_edit.js');
 
 $hidden='';
 if(!isset($_GET['gid']))
@@ -24,51 +20,47 @@ if(!isset($_GET['gid']))
     <form method="post" id="form">
         <fieldset id="group_data" '.$hidden.'>
             <legend id="gid"></legend>
-            <table>
-                <tr>
-                    <th>Group Name:</th>
-                    <td><input type="text" name="gid" id="gid_edit"/><input type="hidden" name="old_gid" id="old_gid"/></td>
-                    <td><label id="dn"></label></td>
-                </tr>
-                <tr>
-                    <th>Description:</th>
-                    <td><input type="text" name="description" id="description"/></td>
-                </tr>
-            </tr>
-            <tr>
-                <td colspan=3">
-                    <fieldset>
-                        <legend>Members</legend>
-                        <table id="members" class="table">
-                            <thead>
-                                <th></th>
-                                <th>Username</th>
-                                <th>Email</th>
-                                <th>Name</th>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </fieldset>
-                    <fieldset>
-                        <legend>Non-Members</legend>
-                        <table id="non-members" class="table">
-                            <thead>
-                                <th></th>
-                                <th>Username</th>
-                                <th>Email</th>
-                                <th>Name</th>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </fieldset>
-                </td>
-            </tr>
-            <tr>
-                <td><input type="submit" value="Submit Changes" id="submit"/></td>
-            </tr>
-        </table>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Group Name:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" name="gid" id="gid_edit" disabled="true"/>
+               </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Description:</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" name="description" id="description"></textarea>
+               </div>
+            </div>
+            <div class="clearfix visible-sm visible-md visible-lg"></div>
+            <fieldset>
+                <legend>Members</legend>
+                <table id="members" class="table">
+                    <thead>
+                        <th></th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Name</th>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </fieldset>
+            <div class="clearfix visible-sm visible-md visible-lg"></div>
+            <fieldset>
+                <legend>Non-Members</legend>
+                <table id="non-members" class="table">
+                    <thead>
+                        <th></th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Name</th>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </fieldset>
+            <input type="submit" class="form-control" value="Submit Changes" id="submit"/>
     </fieldset>
     </form>
 </div>';

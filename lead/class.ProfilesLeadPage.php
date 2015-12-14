@@ -1,68 +1,50 @@
 <?php
 require_once('class.ProfilesPage.php');
 require_once('class.FlipSession.php');
-class ProfilesLeadPage extends FlipPage
+class ProfilesLeadPage extends FlipAdminPage
 {
-    private $user;
     private $is_lead;
 
     function __construct($title)
     {
-        $this->user = FlipSession::get_user(TRUE);
+        parent::__construct($title);
         if($this->user == FALSE)
         {
             $this->is_lead = FALSE;
         }
         else
         {
-            $this->is_lead = $this->user->isInGroupNamed("Leads");
+            $this->is_lead = $this->user->isInGroupNamed('Leads');
             if(!$this->is_lead)
             {
-                $this->is_lead = $this->user->isInGroupNamed("CC");
+                $this->is_lead = $this->user->isInGroupNamed('CC');
             }
         }
-        parent::__construct($title);
-        $this->add_css();
-        $this->add_sites();
+        $this->add_leads_css();
         $this->add_links();
-        $this->add_js_from_src('/js/bootstrap-formhelpers.min.js');
-        $this->add_js_from_src('//cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js');
-        $this->add_js_from_src('/js/jquery.validate.js');
-        $this->add_js_from_src('/_admin/js/metisMenu.min.js');
-        $this->add_js_from_src('/_admin/js/admin.js');
-        $this->add_js_from_src('/js/login.js');
+        $this->add_js(JS_DATATABLE);
+        $this->add_js(JQUERY_VALIDATE);
+        $this->add_js(JS_METISMENU);
+        $this->add_js_from_src('../_admin/js/admin.js');
+        $this->add_js(JS_LOGIN);
     }
 
-    function add_css()
+    function add_leads_css()
     {
-        $this->add_css_from_src('//cdn.datatables.net/1.10.4/css/jquery.dataTables.min.css');
-        $css_tag = $this->create_open_tag('link', array('rel'=>'stylesheet', 'href'=>'/css/bootstrap-formhelpers.min.css', 'type'=>'text/css'), true);
-        $this->add_head_tag($css_tag);
-
-        $css_tag = $this->create_open_tag('link', array('rel'=>'stylesheet', 'href'=>'/css/profiles.css', 'type'=>'text/css'), true);
-        $this->add_head_tag($css_tag);
-
-        $css_tag = $this->create_open_tag('link', array('rel'=>'stylesheet', 'href'=>'/lead/css/lead.css', 'type'=>'text/css'), true);
-        $this->add_head_tag($css_tag);
-    }
-
-    function add_sites()
-    {
-        $this->add_site('Profiles', 'http://profiles.burningflipside.com');
-        $this->add_site('WWW', 'http://www.burningflipside.com');
-        $this->add_site('Pyropedia', 'http://wiki.burningflipside.com');
-        $this->add_site('Secure', 'https://secure.burningflipside.com');
+        $this->add_css(CSS_DATATABLE);
+        $this->add_css_from_src('../css/profiles.css');
+        $this->add_css_from_src('css/lead.css');
     }
 
     function add_links()
     {
-        if(!FlipSession::is_logged_in())
+        if(!FlipSession::isLoggedIn())
         {
-            $this->add_link('Login', 'http://profiles.burningflipside.com/login.php');
+            $this->add_link('Login', '../login.php');
         }
         else
         {
-            $this->add_link('Logout', 'http://profiles.burningflipside.com/logout.php');
+            $this->add_link('Logout', '../logout.php');
         }
         $about_menu = array(
             'Burning Flipside'=>'http://www.burningflipside.com/about/event',
@@ -80,13 +62,13 @@ class ProfilesLeadPage extends FlipPage
         {
             $sites .= '<li><a href="'.$site_name.'">'.$link.'</a></li>';
         }
-        if(!FlipSession::is_logged_in())
+        if(!FlipSession::isLoggedIn())
         {
-            $log = '<a href="/login.php?return='.$this->current_url().'"><span class="glyphicon glyphicon-log-in"></span></a>';
+            $log = '<a href="../login.php?return='.$this->current_url().'"><span class="glyphicon glyphicon-log-in"></span></a>';
         }
         else
         {
-            $log = '<a href="/logout.php"><span class="glyphicon glyphicon-log-out"></span></a>';
+            $log = '<a href="../logout.php"><span class="glyphicon glyphicon-log-out"></span></a>';
         }
         $this->body = '<div id="wrapper">
                   <nav class="navbar navbar-default navbar-static-top" role=navigation" style="margin-bottom: 0">
@@ -100,7 +82,7 @@ class ProfilesLeadPage extends FlipPage
                           <a class="navbar-brand" href="index.php">Leads</a>
                       </div>
                       <ul class="nav navbar-top-links navbar-right links">
-                           <a href="/">
+                           <a href="../">
                               <span class="glyphicon glyphicon-home"></span>
                            </a>
                            &nbsp;&nbsp;
@@ -152,7 +134,7 @@ class ProfilesLeadPage extends FlipPage
         return 'http'.(isset($_SERVER['HTTPS'])?'s':'').'://'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}";
     }
 
-    function print_page()
+    function print_page($header=true)
     {
         if($this->user == FALSE)
         {

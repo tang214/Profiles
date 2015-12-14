@@ -1,8 +1,7 @@
 function area_change(control)
 {
     $.ajax({
-        url: 'ajax/leads.php',
-        data: 'area_name='+$('#area_select').val(),
+        url: '../api/v1/areas/'+$('#area_select').val()+'/leads',
         type: 'get',
         dataType: 'json',
         success: leads_done});
@@ -37,34 +36,27 @@ function leads_done(data)
     opt.appendTo($('#lead_select'));
     opt = $('<option/>', {value: '_new'}).html('New...');
     opt.appendTo($('#lead_select'));
-    if(data.leads != false)
+    for(i = 0; i < data.length; i++)
     {
-        for(i = 0; i < data.leads.length; i++)
-        {
-            var opt = $('<option/>', {value: data.leads[i].short_name}).html(data.leads[i].name);
+        var opt = $('<option/>', {value: data[i].short_name}).html(data[i].name);
             opt.appendTo($('#lead_select'));
-            opt.data('lead', data.leads[i]);
-        }
+            opt.data('lead', data[i]);
     }
 }
 
 function areas_done(data)
 {
-    if(data.areas != false)
+    for(i = 0; i < data.length; i++)
     {
-        for(i = 0; i < data.areas.length; i++)
-        {
-            var opt = $('<option/>', {value: data.areas[i].short_name}).html(data.areas[i].name);
-            opt.appendTo($('#area_select'));
-            opt.data('area', data.areas[i]);
-        }
-        $.ajax({
-            url: 'ajax/leads.php',
-            data: 'area_name='+$('#area_select').val(),
-            type: 'get',
-            dataType: 'json',
-            success: leads_done});
+        var opt = $('<option/>', {value: data[i].short_name}).html(data[i].name);
+        opt.appendTo($('#area_select'));
+        opt.data('area', data[i]);
     }
+    $.ajax({
+        url: '../api/v1/areas/'+$('#area_select').val()+'/leads',
+        type: 'get',
+        dataType: 'json',
+        success: leads_done});
 }
 
 function leads_post_done(data)
@@ -81,13 +73,15 @@ function leads_post_done(data)
 
 function submit_lead(event)
 {
-    var short_name = $('#short_name').val();
-    var name = $('#name').val();
-    var area = $('#area_select').val();
+    var obj = {};
+    obj.short_name = $('#short_name').val();
+    obj.name = $('#name').val();
+    obj.area = $('#area_select').val();
     $.ajax({
-        url: 'ajax/leads.php',
-        data: 'short_name='+short_name+'&name='+name+'&area='+area,
-        type: 'post',
+        url: '../api/v1/leads',
+        data: JSON.stringify(obj),
+        type: 'POST',
+        processData: false,
         dataType: 'json',
         success: leads_post_done});
 }
@@ -96,7 +90,7 @@ function init_page()
 {
     $('#submit').on('click', submit_lead);
     $.ajax({
-        url: 'ajax/areas.php',
+        url: '../api/v1/areas',
         type: 'get',
         dataType: 'json',
         success: areas_done});

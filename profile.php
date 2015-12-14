@@ -8,7 +8,7 @@ if($_SERVER["HTTPS"] != "on")
     exit();
 }
 require_once("class.FlipSession.php");
-if(!FlipSession::is_logged_in())
+if(!FlipSession::isLoggedIn())
 {
     header("Location: login.php");
     exit();
@@ -16,18 +16,13 @@ if(!FlipSession::is_logged_in())
 require_once('class.ProfilesPage.php');
 $page = new ProfilesPage('Burning Flipside Profiles');
 
-//Add picture cropper
-
-$css_tag = $page->create_open_tag('link', array('rel'=>'stylesheet', 'href'=>'css/croppic.css', 'type'=>'text/css'), true);
-$page->add_head_tag($css_tag);
-
-$script_start_tag = $page->create_open_tag('script', array('src'=>'js/croppic.js'));
-$script_close_tag = $page->create_close_tag('script');
-$page->add_head_tag($script_start_tag.$script_close_tag);
-
-//Page specific JS
-$script_start_tag = $page->create_open_tag('script', array('src'=>'js/profile.js'));
-$page->add_head_tag($script_start_tag.$script_close_tag);
+$page->add_js(JS_BOOTSTRAP_FH);
+$page->add_css(CSS_BOOTSTRAP_FH);
+$page->add_js(JS_CRYPTO_MD5_JS);
+$page->add_js(JS_BOOTBOX);
+$page->add_js(JS_JCROP);
+$page->add_css(CSS_JCROP);
+$page->add_js_from_src('js/profile.js');
 
 $page->add_notification('All the information on this page is optional. However, it will make the process of signing up for Ticket Requests, Theme Camp Registrations, Art Project Registrations, and Volunteer Signup faster and easier. If you have any concerns with providing this information we suggest your read our <a href="http://www.burningflipside.com/about/privacy" class="alert-link" target="_new">Privacy Policy</a> or contact the <a href="http://www.burningflipside.com/contact/Website%20Feedback" class="alert-link" target="_new">Technology Team</a> or the <a href="http://www.burningflipside.com/contact/AAR-LLC" class="alert-link" target="_new">AAR Board of Directors</a> with your concerns.', $page::NOTIFICATION_INFO);
 
@@ -110,21 +105,25 @@ $page->body = '
             </div>
         </div>
         <div class="clearfix visible-sm visible-md visible-lg"></div>
-        <div class="form-group imgCropper">
-            <label for="jpegPhoto" class="col-sm-2 control-label">Profile Photo:</label>
-            <div class="col-sm-10">
-                <div id="jpegPhoto"></div>
+        <div class="form-group">
+            <label for="jpegPhotoBtn" class="col-sm-2 control-label">Profile Photo:</label>
+            <div class="col-sm-4">
+                <input class="form-control" id="jpegPhotoBtn" name="jpegPhotoBtn" type="file" accept="image/*"/>
+            </div>
+            <div class="col-sm-4">
+                <div id="gravatar"></div>
             </div>
         </div>
         <div class="clearfix visible-md visible-lg"></div>
         <div class="col-sm-2">
-            <input class="btn btn-default" type="submit" value="Save Changes" id="submit"/>
+            <button class="btn btn-default" type="button" id="submit" onclick="update_profile()">Save Changes</button>
         </div>
     </form>
     </fieldset>
     <fieldset>
         <legend>Other Options:</legend>
         <button class="btn btn-default" onclick="delete_user()">Delete My Account&hellip;</button>
+        <button class="btn btn-default" onclick="reset_password()">Reset My Password&hellip;</button>
     </fieldset>
 </div>';
 

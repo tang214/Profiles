@@ -1,3 +1,15 @@
+function render_name(data, type, row, meta)
+{
+    if(data === false)
+    {
+        return row['sn'];
+    }
+    else
+    {
+        return data+' '+row['sn'];
+    }
+}
+
 function render_email(data, type, row, meta)
 {
     return '<a href="mailto:'+data+'">'+data+'</a>';
@@ -5,7 +17,7 @@ function render_email(data, type, row, meta)
 
 function render_phone(data, type, row, meta)
 {
-    if(data == null)
+    if(data === null || data === false)
     {
         return '';
     }
@@ -112,10 +124,8 @@ function sort_position_desc(x, y)
     }
 }
 
-function hide_cols()
+function table_drawn()
 {
-    $('#directory td:nth-child(4)').hide();
-    $('#directory td:nth-child(5)').hide();
     $('#directory tbody tr').on('click', show_details);
 }
 
@@ -125,12 +135,22 @@ function show_details(e)
     var row   = $('#directory').DataTable().row(tr);
     var data  = row.data();
     var html  = '<table><tr>';
-    html +=     '<td style="text-align: center; padding: .5em;"><a href="mailto:'+data.email+'"><span class="glyphicon glyphicon-envelope" style="font-size: 2em"></span><br/>Email</a></td>';
-    html +=     '<td style="text-align: center; padding: .5em;"><a href="tel:'+data.phone+'"><span class="glyphicon glyphicon-earphone" style="font-size: 2em"></span><br/>Call</a></td>';
-    html +=     '<td style="text-align: center; padding: .5em;"><a href="sms:'+data.phone+'"><span class="glyphicon glyphicon-phone" style="font-size: 2em"></span><br/>Text</a></td>';
-    html +=     '<td style="text-align: center; padding: .5em;"><a href="vcard.php?data='+encodeURIComponent(JSON.stringify(data))+'"><span class="glyphicon glyphicon-download" style="font-size: 2em"></span><br/>Download</a></td>';
+    html +=     '<td style="text-align: center; padding: .5em;"><a href="mailto:'+data.mail+'"><span class="glyphicon glyphicon-envelope" style="font-size: 2em"></span><br/>Email</a></td>';
+    html +=     '<td style="text-align: center; padding: .5em;"><a href="tel:'+data.mobile+'"><span class="glyphicon glyphicon-earphone" style="font-size: 2em"></span><br/>Call</a></td>';
+    html +=     '<td style="text-align: center; padding: .5em;"><a href="sms:'+data.mobile+'"><span class="glyphicon glyphicon-phone" style="font-size: 2em"></span><br/>Text</a></td>';
+    html +=     '<td style="text-align: center; padding: .5em;"><a href="../api/v1/users/'+data.uid+'?fmt=vcard"><span class="glyphicon glyphicon-download" style="font-size: 2em"></span><br/>Download</a></td>';
     html +=     '</tr></table>';
-    var modal = create_modal(data.legalName, html, [{'close': true, 'text': 'OK'}]);
+    var title = data.givenName+' '+data.sn;
+    if(data.jpegPhoto !== null && data.jpegPhoto != '')
+    {
+        title = '<img src="data:image/jpeg;base64,'+data.jpegPhoto+'" style="width:64px; height: 64px;"/> '+title;
+    }
+    else
+    {
+        //Use Gravitar images if no local image
+        title = '<img src="//www.gravatar.com/avatar/'+CryptoJS.MD5(data.mail.toLowerCase())+'?d=identicon" style="width:64px; height: 64px;"/> '+title;
+    }
+    var modal = create_modal(title, html, [{'close': true, 'text': 'OK'}]);
     modal.modal();
     console.log(data);
 }
@@ -138,7 +158,7 @@ function show_details(e)
 function init_page()
 {
     var filter = getParameterByName('filter');
-    var data = '';
+    var data = '?fmt=data-table';
     if(filter != null)
     {
         if(filter == 'aar')
@@ -149,7 +169,7 @@ function init_page()
         {
             $('.page-header').html('Area Facilitator Directory');
         }
-        data = '?filter='+filter;
+        data+= '&type='+filter;
     }
     
     $.fn.dataTableExt.oSort['position-asc'] = sort_position_asc;
@@ -157,25 +177,18 @@ function init_page()
 
     $('#directory th:nth-child(3)').on('click', table_sorted);
     var table = $('#directory').dataTable({
-        'ajax': 'ajax/directory.php'+data,
+        'ajax': '../api/v1/leads'+data,
         'paging': false,
         'info': false,
-        'order': [[2, 'desc']],
+        'order': [[0, 'asc']],
         'columns': [
-            {'data':'legalName'},
-            {'data':'burnerName'},
-            {'data':'title', 'type': 'position', 'render': render_position},
-            {'data':'email', 'render': render_email, 'orderable': false},
-            {'data':'phone', 'render': render_phone, 'orderable': false},
-            {'data':'area', 'visible': false}
+            {'data':'givenName', 'render': render_name},
+            {'data':'displayName'},
+            {'data':'titlenames', 'type': 'position', 'render': render_position},
+            {'data':'ou', 'visible': false}
         ]
     });
-    if($(window).width() <= 768)
-    {
-        $('#directory th:nth-child(4)').hide();
-        $('#directory th:nth-child(5)').hide();
-        $('#directory').on('draw.dt', hide_cols);
-    }
+    $('#directory').on('draw.dt', table_drawn);
 }
 
 $(init_page)

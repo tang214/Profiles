@@ -3,7 +3,8 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 require_once('class.ProfilesAdminPage.php');
 $page = new ProfilesAdminPage('Burning Flipside Profiles - Admin');
-
+$page->add_js(JS_DATATABLE, false);
+$page->add_css(CSS_DATATABLE);
 $page->add_js_from_src('js/pending_users.js');
 
 $page->body .= '
@@ -19,8 +20,8 @@ $page->body .= '
     <table id="pending_table" class="table">
         <thead>
             <th>User Name</th>
-            <th>Legal Name</th>
             <th>Email</th>
+            <th>Registration Time</th>
         </thead>
         <tbody></tbody>
     </table>

@@ -14,7 +14,7 @@ $page->add_js_from_src('/js/zxcvbn-async.js');
 $page->add_js_from_src('/js/register.js');
 
 $captcha = new FlipsideCAPTCHA();
-FlipSession::set_var('captcha', $captcha);
+FlipSession::setVar('captcha', $captcha);
 
 if(isset($_GET['return']))
 {
@@ -25,21 +25,21 @@ else
     $return = '';
 }
 
-if(FlipSession::is_logged_in())
+if(FlipSession::isLoggedIn())
 {
     $page->add_notification('You are currently logged in to the system. Are you sure you want to register another account?');
 }
 
 $page->body = '
 <div id="content">
-    <form action="register.php" method="post" name="form" id="form" role="form">
+    <form name="form" id="form" role="form">
         <fieldset>
             <legend>Burning Flipside Profile Registration</legend>
         </fieldset>
         <div class="form-group">
             <label for="email" class="col-sm-2 control-label">Email:</label>
             <div class="col-sm-10">
-                <input class="form-control" type="text" name="email" id="email" data-toggle="tooltip" data-placement="top" title="The email to use for this account. NOTE: You must be able to verify you own this email address by responding to an email." required/>
+                <input class="form-control" type="email" name="mail" id="email" data-toggle="tooltip" data-placement="top" title="The email to use for this account. NOTE: You must be able to verify you own this email address by responding to an email." required/>
             </div>
         </div>
         <div class="clearfix visible-sm visible-md visible-lg"></div>
@@ -63,7 +63,7 @@ $page->body = '
         <div class="form-group">
             <label for="password2" class="col-sm-2 control-label">Confirm Password:</label>
             <div class="col-sm-10">
-                <input class="form-control" type="password" name="password2" required/>
+                <input class="form-control" type="password" name="password2" id="password2" required/>
             </div>
         </div>
         <div class="clearfix visible-sm visible-md visible-lg"></div>
@@ -71,6 +71,7 @@ $page->body = '
         <div class="form-group">
             '.$captcha->draw_captcha(true, true).'
         </div>
+        <div class="clearfix visible-sm visible-md visible-lg"></div>
         '.$return.'
         <div class="form-group">
             <div class="col-sm-2">

@@ -1,104 +1,151 @@
-function validate_email(value, element, params)
+function email_check_done(jqXHR)
 {
-    if(this.optional(element))
+    if(jqXHR.status != 200)
     {
-        return true;
+        $(this).data('valid', false);
+        $(this).parents('.form-group').addClass('has-error');
+        return;
     }
-    if((value.indexOf('+') > -1) && (value.indexOf('+') < value.indexOf('@')))
+    else if(jqXHR.responseJSON !== undefined)
     {
-        var is_valid = false;
-        var begin = value.substring(0, value.indexOf('+'));
-        var end = value.substring(value.indexOf('@'));
-        $.ajax({
-            url: '/ajax/valid_email.php',
-            data: 'email='+begin+end,
-            type: 'get',
-            dataType: 'json',
-            async: false,
-            success: function(data){is_valid = data;}});
-        return is_valid;
-    }
-    else
-    {
-        return true;
+        if(jqXHR.responseJSON === false || jqXHR.responseJSON.res === false)
+        {
+            $(this).data('valid', false);
+            $(this).parents('.form-group').addClass('has-error');
+            if(jqXHR.responseJSON.email !== undefined)
+            {
+               if(jqXHR.responseJSON.pending === true)
+               {
+                   $(this).parent().append('<div class="col-sm-10">The email address '+jqXHR.responseJSON.email+' is already registered, but the account is not yet active. Please check your email for a confirmation email.</div>');
+               }
+               else
+               {
+                   $(this).parent().append('<div class="col-sm-10">The email address '+jqXHR.responseJSON.email+' is already used. Please go <a href="reset.php">here</a> to reset the password for that account.</div>');
+               }
+            }
+            return;
+        }
+        else
+        {
+            $(this).data('valid', true);
+            $(this).parents('.form-group').removeClass('has-error');
+            $(this).next('div').remove();
+        }
     }
 }
 
-function validate_pass_len(value, element, params)
+function check_email(e)
 {
+    var control = e.target;
+    if(e.target.willValidate !== true)
+    {
+        var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+        if(re.test(email) === false)
+        {
+            $(control).data('valid', false);
+            $(control).parents('.form-group').addClass('has-error');
+            return;
+        }
+    }
+    $.ajax({
+        url: 'api/v1/users/Actions/check_email_available',
+        data: 'email='+encodeURIComponent(control.value),
+        type: 'POST',
+        dataType: 'json',
+        context: control,
+        complete: email_check_done
+    });
+}
+
+function uid_check_done(jqXHR)
+{
+    if(jqXHR.status != 200)
+    {
+        $(this).data('valid', false);
+        $(this).parents('.form-group').addClass('has-error');
+        return;
+    }
+    else if(jqXHR.responseJSON !== undefined)
+    {
+        if(jqXHR.responseJSON === false || jqXHR.responseJSON.res === false)
+        {
+            $(this).data('valid', false);
+            $(this).parents('.form-group').addClass('has-error');
+            if(jqXHR.responseJSON.uid !== undefined)
+            {
+               if(jqXHR.responseJSON.pending === true)
+               {
+                   $(this).parent().append('<div class="col-sm-10">The username '+jqXHR.responseJSON.uid+' is already registered, but the account is not yet active. Please check your email for a confirmation email.</div>');
+               }
+               else
+               {
+                   $(this).parent().append('<div class="col-sm-10">The username '+jqXHR.responseJSON.uid+' is already used. Please go <a href="reset.php">here</a> to reset the password for that account.</div>');
+               }
+            }
+            return;
+        }
+        else
+        {
+            $(this).data('valid', true);
+            $(this).parents('.form-group').removeClass('has-error');
+            $(this).next('div').remove();
+        }
+    }
+}
+
+function check_uid(e)
+{
+    var control = e.target;
+    if(control.value.indexOf(',') > -1)
+    {
+        $(control).data('valid', false);
+        $(control).parents('.form-group').addClass('has-error');
+        return;
+    }
+    if(control.value.indexOf('=') > -1)
+    {
+        $(control).data('valid', false);
+        $(control).parents('.form-group').addClass('has-error');
+        return;
+    }
+    $.ajax({
+        url: 'api/v1/users/Actions/check_uid_available',
+        data: 'uid='+encodeURIComponent(control.value),
+        type: 'POST',
+        dataType: 'json',
+        context: control,
+        complete: uid_check_done
+    });
+}
+
+function check_pass(e)
+{
+    var control = e.target;
+    var value = control.value;
     if(value.length < 4)
     {
-        return false;
+        $(control).data('valid', false);
+        $(control).parents('.form-group').addClass('has-error');
+        return;
     }
-    return true;
-}
-
-function validate_pass_lower(value, element, params)
-{
-    return (/[a-z]/.test(value));
-}
-
-function validate_pass_upper(value, element, params)
-{
-    return (/[A-Z]/.test(value));
-}
-
-function validate_pass_number(value, element, params)
-{
-    return (/[0-9]/.test(value));
-}
-
-var original_tooltip = null;
-
-function validate_complexity(value, element, params)
-{
-    if(this.optional(element))
+    if(/[a-z]/.test(value) === false)
     {
-        return true;
+        $(control).data('valid', false);
+        $(control).parents('.form-group').addClass('has-error');
+        return;
     }
-    var password = value;
-    var email = $('#email').val();
-    var uid = $('#uid').val();
-    var res = zxcvbn(password, [email, uid]);
-    var msg;
-    switch(res.score)
+    if(/[A-Z]/.test(value) === false)
     {
-       case 0:
-           msg = "Incredibly weak password";
-           break;
-       case 1:
-           msg = "Weak password";
-           break;
-       case 2:
-           msg = "Average password";
-           break;
-       case 3:
-           msg = "Strong password";
-           break;
-       case 4:
-           msg = "Very strong password";
-           break;
+        $(control).data('valid', false);
+        $(control).parents('.form-group').addClass('has-error');
+        return;
     }
-    $("#password").attr('title', msg+". Estimated password crack time is "+res.crack_time+"s");
-    $("#password").attr('data-original-title', original_tooltip+'\n'+msg+". Estimated password crack time is "+res.crack_time+"s");
-    return true;
-}
-
-function validate_uid(value, element, params)
-{
-    if(this.optional(element))
+    if(/[0-9]/.test(value) === false)
     {
-        return true;
+        $(control).data('valid', false);
+        $(control).parents('.form-group').addClass('has-error');
+        return;
     }
-    if(value.indexOf(',') > -1)
-    {
-        return false;
-    }
-    if(value.indexOf('=') > -1)
-    {
-        return false;
-    }
-    return true;
 }
 
 function validate_pass2(value, element, params)
@@ -115,8 +162,9 @@ function validate_pass2(value, element, params)
     }
 }
 
-function form_submit_done(data, textStatus, jqXHR)
+function form_submit_done(jqXHR)
 {
+    console.log(jqXHR);
     if(data.error === undefined)
     {
         window.location.replace('thanks.php');
@@ -130,59 +178,71 @@ function form_submit_done(data, textStatus, jqXHR)
 
 function submit_registration_form(form)
 {
+    var obj = form.serializeObject();
     $.ajax({
-        url: '/ajax/register.php',
-        data: $(form).serialize(),
-        type: 'post',
+        url: '/api/v1/users',
+        data: JSON.stringify(obj),
+        type: 'POST',
         dataType: 'json',
-        success: form_submit_done});
+        processData: false,
+        complete: form_submit_done});
 }
 
-function invalid_registration_form(event, validator)
+function validate_fields(index, value)
 {
-    if(validator.errorList.length > 0)
+    if($(value).val().length === 0)
     {
+        $(value).parents('.form-group').addClass('has-error');
+        $(value).parents('.form-group').removeClass('has-success');
+    }
+    else if(value.willValidate === true && value.checkValidity() === false)
+    {
+        $(value).parents('.form-group').addClass('has-error');
+        $(value).parents('.form-group').removeClass('has-success');
+    }
+    else if($(value).data('valid') === false)
+    {
+        $(value).parents('.form-group').addClass('has-error');
+        $(value).parents('.form-group').removeClass('has-success');
+    }
+    else
+    {
+        $(value).parents('.form-group').removeClass('has-error');
+        $(value).parents('.form-group').addClass('has-success');
     }
 }
 
-function submit_click()
+function submit_click(e)
 {
-    if($('#form').valid())
+    var required_fields = $('#form [required]');
+    $.each(required_fields, validate_fields);
+    var pass  = $('#password').val();
+    var pass2 = $('#password2').val();
+    if(pass !== pass2)
     {
-        submit_registration_form($('#form')[0]);
+        $('#password2').parents('.form-group').addClass('has-error');
+        $('#password2').parents('.form-group').removeClass('has-success');
     }
+    else
+    {
+        $('#password2').parents('.form-group').removeClass('has-error');
+        $('#password2').parents('.form-group').addClass('has-success');
+    }
+    if($('#form .form-group.has-error').length === 0)
+    {
+        submit_registration_form($('#form'));
+    }
+    e.preventDefault();
+    return false;
 }
 
 function init_register_page()
 {
-    jQuery.validator.addMethod("email", validate_email, 'An equivalent + address is already registered. Are you sure you need another one?');
-    jQuery.validator.addMethod("pass_length", validate_pass_len, 'Passwords must be at least 4 characters long');
-    jQuery.validator.addMethod("pass_lower", validate_pass_lower, 'Passwords must contain at least one lower case letter');
-    jQuery.validator.addMethod("pass_upper", validate_pass_upper, 'Passwords must contain at least one upper case letter');
-    jQuery.validator.addMethod("pass_number", validate_pass_number, 'Passwords must contain at least one number');
-    jQuery.validator.addMethod("pass_complex", validate_complexity, 'Password is not complex enough');
-    jQuery.validator.addMethod("uid", validate_uid, 'Uesernames cannot contain , or =');
-    jQuery.validator.addMethod("pass2", validate_pass2, 'Passwords are not the same');
-
-    jQuery.validator.addClassRules("pass", {pass_length: true, pass_lower: true, pass_upper: true, pass_number: true, pass_complex:true});
-
-    $('#form').validate({
-        submitHandler: submit_registration_form,
-        invalidHandler: invalid_registration_form,
-        rules: { 
-            email: { required: true, email: true, remote: 'ajax/valid_email.php'},
-            uid: { required: true, remote: 'ajax/valid_uid.php', uid: true},
-            password: { required: true },
-            password2: { required: true, pass2: true }
-        },
-        messages: {
-            email: { remote: jQuery.validator.format('Email address {0} is already registered. Please click <a href=\"/reset.php\">here</a> to request a password reset.') },
-            uid: { remote: jQuery.validator.format('The username {0} is already registered. Please try another.') }
-        }
-    });
-    
     $('[title]').tooltip();
     original_tooltip = $("#password").attr('data-original-title');
+    $('#email').on('change', check_email);
+    $('#uid').on('change', check_uid);
+    $('#password').on('change', check_pass);
     $('#submit').on('click', submit_click);
 }
 
