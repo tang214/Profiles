@@ -8,9 +8,9 @@ class ProfilesLeadPage extends FlipAdminPage
     function __construct($title)
     {
         parent::__construct($title);
-        if($this->user == FALSE)
+        if($this->user == false)
         {
-            $this->is_lead = FALSE;
+            $this->is_lead = false;
         }
         else
         {
@@ -19,6 +19,10 @@ class ProfilesLeadPage extends FlipAdminPage
             {
                 $this->is_lead = $this->user->isInGroupNamed('CC');
             }
+        }
+        if($this->is_lead)
+        {
+            $this->is_admin = $this->is_lead;
         }
         $this->add_leads_css();
         $this->add_links();
@@ -139,7 +143,7 @@ class ProfilesLeadPage extends FlipAdminPage
 
     function print_page($header=true)
     {
-        if($this->user == FALSE)
+        if($this->user == false)
         {
             $this->body = '
         <div class="row">
@@ -148,7 +152,7 @@ class ProfilesLeadPage extends FlipAdminPage
             </div>
         </div>';
         }
-        else if(!$this->is_lead)
+        else if($this->is_lead === false)
         {
             $this->body = '
         <div class="row">
