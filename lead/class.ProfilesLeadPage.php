@@ -38,14 +38,6 @@ class ProfilesLeadPage extends FlipAdminPage
 
     function add_links()
     {
-        if(!FlipSession::isLoggedIn())
-        {
-            $this->add_link('Login', '../login.php');
-        }
-        else
-        {
-            $this->add_link('Logout', '../logout.php');
-        }
         $about_menu = array(
             'Burning Flipside'=>'http://www.burningflipside.com/about/event',
             'AAR, LLC'=>'http://www.burningflipside.com/LLC',
