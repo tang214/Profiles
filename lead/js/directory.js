@@ -32,7 +32,6 @@ function render_position(data, type, row, meta)
 {
     if(data === false)
     {
-        console.log(row);
         return '';
     }
     if(data != null)
@@ -204,4 +203,4 @@ function init_page()
     $('#directory').on('draw.dt', table_drawn);
 }
 
-$(init_page)
+$(init_page);
