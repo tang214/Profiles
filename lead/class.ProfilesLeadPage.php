@@ -26,7 +26,7 @@ class ProfilesLeadPage extends FlipAdminPage
         }
         $this->add_leads_css();
         $this->add_links();
-        $this->add_js(JS_DATATABLE);
+        $this->add_js(JS_DATATABLE, false);
         $this->add_js(JQUERY_VALIDATE);
         $this->add_js(JS_METISMENU);
         $this->add_js_from_src('../_admin/js/admin.js');
