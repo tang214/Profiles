@@ -2,7 +2,6 @@ function render_name(data, type, row, meta)
 {
     if(data === undefined)
     {
-        console.log(meta);
         return '';
     }
     if(data === false)
@@ -31,6 +30,11 @@ function render_phone(data, type, row, meta)
 
 function render_position(data, type, row, meta)
 {
+    if(data === false)
+    {
+        console.log(row);
+        return '';
+    }
     if(data != null)
     {
         return data+'<span style="display: none;">'+row.area+'</span>';
