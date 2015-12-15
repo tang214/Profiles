@@ -5,7 +5,7 @@ require_once('class.ProfilesAdminPage.php');
 $page = new ProfilesAdminPage('Burning Flipside Profiles - Admin');
 
 $page->addJS(JS_BOOTSTRAP_FH);
-$page->addJSFromSrc('js/user_edit.js');
+$page->addJSByURI('js/user_edit.js');
 
 $hidden='';
 if(!isset($_GET['uid']))
