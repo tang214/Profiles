@@ -26,6 +26,7 @@ $app->group('/pending_users', 'pending_users');
 $app->group('/sessions', 'sessions');
 $app->group('/areas', 'areas');
 $app->get('/leads', 'leads');
+$app->post('/leads', 'addLead');
 
 function service_root()
 {
@@ -188,6 +189,25 @@ function postalcode()
 {
     global $app;
     $app->post('', 'validate_post_code');
+}
+
+function addLead()
+{
+    global $app;
+    if(!$app->user)
+    {
+        throw new Exception('Must be logged in', ACCESS_DENIED);
+    }
+    if(!$app->user->isInGroupNamed('LDAPAdmins'))
+    {
+        throw new Exception('Must be LDAPAdmins', ACCESS_DENIED);
+    }
+    $body = $app->request->getBody();
+    $obj  = json_decode($body);
+    $data_set = DataSetFactory::get_data_set('profiles');
+    $data_table = $data_set['position'];
+    $ret = $data_table->create($obj);
+    echo json_encode($ret);
 }
 
 $app->run();
