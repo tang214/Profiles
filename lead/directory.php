@@ -5,7 +5,7 @@ require_once('class.ProfilesLeadPage.php');
 $page = new ProfilesLeadPage('Burning Flipside Profiles - Lead');
 
 $page->add_js(JS_CRYPTO_MD5_JS);
-$page->add_js_from_src('js/directory.js');
+$page->add_js_from_src('js/directory.js', false);
 
 $query = '?fmt=csv';
 if(isset($_GET['filter']))
