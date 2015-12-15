@@ -38,12 +38,23 @@ class ProfilesLeadPage extends FlipAdminPage
 
     function add_links()
     {
-        $about_menu = array(
-            'Burning Flipside'=>'http://www.burningflipside.com/about/event',
-            'AAR, LLC'=>'http://www.burningflipside.com/LLC',
-            'Privacy Policy'=>'http://www.burningflipside.com/about/privacy'
-        );
-        $this->add_link('About', 'http://www.burningflipside.com/about', $about_menu);
+         $dirMenu = array(
+             'All' => 'directory.php',
+             'AAR' => 'directory.php?filter=aar',
+             'AFs' => 'directory.php?filter=af',
+             'CC'  => 'directory.php?filter=cc',
+             '360/24/7 Department' => 'directory.php?filter=360',
+             'Art' => 'directory.php?filter=Art',
+             'City Planning' => 'directory.php?filter=CityPlanning',
+             'Communications' => 'directory.php?filter=Comm',
+             'Safety' => 'directory.php?filter=Safety',
+             'Site-Ops' => 'directory.php?filter=site-ops',
+             'Site Prep' => 'directory.php?filter=siteprep',
+             'Site Sign-Off' => 'directory.php?filter=sign-off',
+             'Volunteer Coordinator' => 'directory.php?filter=vc'
+         );
+         $this->add_link('<span class="fa fa-dashboard"></span> Dashboard', 'index.php');
+         $this->add_link('<span class="fa fa-th-list"></span> Directory', false, $dirMenu);
     }
 
     function add_header()
