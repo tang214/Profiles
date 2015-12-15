@@ -1,5 +1,10 @@
 function render_name(data, type, row, meta)
 {
+    if(data === undefined)
+    {
+        console.log(meta);
+        return '';
+    }
     if(data === false)
     {
         return row['sn'];
@@ -126,6 +131,10 @@ function sort_position_desc(x, y)
 
 function table_drawn()
 {
+    $('#directory tbody tr').filter(
+    function(){
+        return $(this).find('td').length == $(this).find('td:empty').length;
+    }).hide();
     $('#directory tbody tr').on('click', show_details);
 }
 
@@ -183,9 +192,9 @@ function init_page()
         'order': [[0, 'asc']],
         'columns': [
             {'data':'givenName', 'render': render_name},
-            {'data':'displayName'},
+            {'data':'displayName', 'defaultContent':''},
             {'data':'titlenames', 'type': 'position', 'render': render_position},
-            {'data':'ou', 'visible': false}
+            {'data':'ou', 'visible': false, 'defaultContent':''}
         ]
     });
     $('#directory').on('draw.dt', table_drawn);

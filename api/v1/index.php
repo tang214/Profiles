@@ -150,10 +150,10 @@ function leads()
         $aarGroup  = $auth->getGroupByName('AAR');
         $afGroup   = $auth->getGroupByName('AFs');
         $ccGroup   = $auth->getGroupByName('CC');
-        $leads     = array_merge($leads, $leadGroup->members(true));
-        $leads     = array_merge($leads, $aarGroup->members(true));
-        $leads     = array_merge($leads, $afGroup->members(true));
-        $leads     = array_merge($leads, $ccGroup->members(true));
+        $leads     = array_merge($leads, $leadGroup->members(true, false));
+        $leads     = array_merge($leads, $aarGroup->members(true, false));
+        $leads     = array_merge($leads, $afGroup->members(true, false));
+        $leads     = array_merge($leads, $ccGroup->members(true, false));
     }
     else
     {
@@ -161,19 +161,19 @@ function leads()
         {
             case 'aar':
                 $aarGroup  = $auth->getGroupByName('AAR');
-                $leads     = array_merge($leads, $aarGroup->members(true));
+                $leads     = array_merge($leads, $aarGroup->members(true, false));
                 break;
             case 'af':
                 $afGroup   = $auth->getGroupByName('AFs');
-                $leads     = array_merge($leads, $afGroup->members(true));
+                $leads     = array_merge($leads, $afGroup->members(true, false));
                 break;
             case 'cc':
                 $ccGroup   = $auth->getGroupByName('CC');
-                $leads     = array_merge($leads, $ccGroup->members(true));
+                $leads     = array_merge($leads, $ccGroup->members(true, false));
                 break;
             case 'lead':
                 $leadGroup = $auth->getGroupByName('Leads');
-                $leads     = array_merge($leads, $leadGroup->members(true));
+                $leads     = array_merge($leads, $leadGroup->members(true, false));
                 break;
             default:
                 $filter    = new \Data\Filter('ou eq '.$params['type']);
