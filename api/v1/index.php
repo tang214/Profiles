@@ -138,7 +138,7 @@ function leads()
     {
         throw new Exception('Must be logged in', ACCESS_DENIED);
     }
-    if(!$app->user->isInGroupNamed("Leads") && !$app->user->isInGroupNamed("CC"))
+    if(!$app->user->isInGroupNamed('Leads') && !$app->user->isInGroupNamed('CC') && !$app->user->isInGroupNamed('AFs'))
     {
         throw new Exception('Must be Lead', ACCESS_DENIED);
     }
