@@ -257,7 +257,7 @@ function check_email_available()
     if(strpos($email, '@') === false)
     {
         //Not a valid email
-        return false;
+        echo 'false';
     }
     if(strstr($email, '+') !== false)
     {
@@ -296,10 +296,12 @@ function check_uid_available()
     {
         return false;
     }
-    $user = AuthProvider::getInstance()->getUsersByFilter(new \Data\Filter('uid eq '.$uid));
+    $auth = AuthProvider::getInstance();
+    $filter = new \Data\Filter('uid eq '.$uid);
+    $user = $auth->getUsersByFilter($filter);
     if($user === false || !isset($user[0]))
     {
-         $user = $auth->getPendingUsersByFilter($filter);
+        $user = $auth->getPendingUsersByFilter($filter);
         if($user === false || !isset($user[0]))
         {
             echo 'true';
