@@ -146,6 +146,8 @@ function check_pass(e)
         $(control).parents('.form-group').addClass('has-error');
         return;
     }
+    $(control).data('valid', true);
+    $(control).parents('.form-group').removeClass('has-error');
 }
 
 function validate_pass2(value, element, params)

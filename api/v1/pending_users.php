@@ -62,7 +62,8 @@ function delete_pending_user($hash)
     }
     else
     {
-        $res = \AuthProvider::getInstance()->delete_pending_users_by_filter(false, new \Data\Filter("hash eq '$hash'"));
+        $auth = \AuthProvider::getInstance();
+        $res = $auth->deletePendingUsersByFilter(new \Data\Filter("hash eq '$hash'"));
         echo json_encode($res);
     }
 }
