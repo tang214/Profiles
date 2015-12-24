@@ -11,6 +11,7 @@ function users()
     $app->get('/me', 'show_user');
     $app->get('/:uid', 'show_user');
     $app->patch('/:uid', 'edit_user');
+    $app->delete('/:uid', 'deleteUser');
     $app->get('/me/groups', 'list_groups_for_user');
     $app->get('/:uid/groups', 'list_groups_for_user');
     $app->post('/me/Actions/link', 'link_user');
@@ -177,6 +178,32 @@ function edit_user($uid = 'me')
         }
     }
     echo json_encode(array('success'=>true));
+}
+
+function deleteUser($uid = 'me')
+{
+    global $app;
+    if(!$app->user)
+    {
+        $app->response->setStatus(401);
+        return;
+    }
+    $user = false;
+    if($uid === 'me' || $uid === $app->user->getUid())
+    {
+        $user = $app->user;
+    }
+    else if($app->user->isInGroupNamed("LDAPAdmins"))
+    {
+        $auth = AuthProvider::getInstance();
+        $filter = new \Data\Filter("uid eq $uid");
+        $user = $auth->getUsersByFilter($filter);
+        if(isset($user[0]))
+        {
+            $user = $user[0];
+        }
+    }
+    return $user->delete();
 }
 
 function list_groups_for_user($uid = 'me')

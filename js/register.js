@@ -167,14 +167,14 @@ function validate_pass2(value, element, params)
 function form_submit_done(jqXHR)
 {
     console.log(jqXHR);
-    if(data.error === undefined)
+    if(jsQXHR.status === 200)
     {
         window.location.replace('thanks.php');
     }
     else
     {
         alert(data.error);
-        console.log(data);
+        console.log(jqXHR);
     }
 }
 
