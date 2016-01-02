@@ -96,10 +96,14 @@ function profile_submit_done(jqXHR)
         }
         window.scrollTo(0, 0);
     }
-    else(data.error)
+    else(jqXHR.responseJSON.message !== undefined)
     {
          alert(jqXHR.responseJSON.message);
          console.log(jqXHR);
+    }
+    else
+    {
+        alert('Unknown error saving profile');
     }
 }
 
