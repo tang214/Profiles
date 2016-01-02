@@ -134,7 +134,7 @@ function edit_user($uid = 'me')
     {
         if(isset($obj->hash))
         {
-            $app->user = $auth->getUserByResetHash(false, $obj->hash);
+            $app->user = $auth->getUserByResetHash($obj->hash);
         }
         if(!$app->user)
         {
@@ -172,7 +172,7 @@ function edit_user($uid = 'me')
         }
         $email_msg = new PasswordHasBeenResetEmail($user, $_SERVER['REMOTE_ADDR'], $forwarded_for);
         $email_provider = EmailProvider::getInstance();
-        if($email_provider->sendEmail(false, $email_msg) === false)
+        if($email_provider->sendEmail($email_msg) === false)
         {
             throw new \Exception('Unable to send password reset email!');
         }
