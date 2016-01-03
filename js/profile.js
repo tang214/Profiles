@@ -96,7 +96,7 @@ function profile_submit_done(jqXHR)
         }
         window.scrollTo(0, 0);
     }
-    else(jqXHR.responseJSON.message !== undefined)
+    else if(jqXHR.responseJSON.message !== undefined)
     {
          alert(jqXHR.responseJSON.message);
          console.log(jqXHR);

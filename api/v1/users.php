@@ -147,6 +147,7 @@ function edit_user($uid = 'me')
     {
         $app->user->editUser($obj);
         $user = $app->user;
+        \FlipSession::setUser($user);
     }
     else if($app->user->isInGroupNamed("LDAPAdmins"))
     {
