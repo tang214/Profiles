@@ -38,11 +38,11 @@ class ProfilesPage extends FlipPage
     {
         if($this->user !== false && $this->user !== null)
         {
-            if($this->user->isInGroupNamed('LDAPAdmins'))
+            if($this->user->isInGroupNamed('LDAPAdmins') || $this->user->isInGroupNamed('AFs'))
             {
                 $this->add_link('Admin', $this->profiles_root.'/_admin/index.php');
             }
-            if(($this->user->isInGroupNamed('Leads') || $this->user->isInGroupNamed('CC')))
+            if(($this->user->isInGroupNamed('Leads') || $this->user->isInGroupNamed('CC')) || $this->user->isInGroupNamed('AFs'))
             {
                 $this->add_link('Leads', $this->profiles_root.'/lead/index.php');
             }
