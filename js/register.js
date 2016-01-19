@@ -167,7 +167,7 @@ function validate_pass2(value, element, params)
 function form_submit_done(jqXHR)
 {
     console.log(jqXHR);
-    if(jsXHR.status === 200)
+    if(jqXHR.status === 200)
     {
         window.location.replace('thanks.php');
     }
