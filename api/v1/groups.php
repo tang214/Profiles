@@ -219,7 +219,7 @@ function getNonGroupMembers($name)
     {
         $app->notFound();
     }
-    $res = $group->getNonMemebers();
+    $res = $group->getNonMemebers($app->odata->select);
     if($app->odata->select !== false)
     {
         $count = count($res);
