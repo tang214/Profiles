@@ -169,11 +169,18 @@ function form_submit_done(jqXHR)
     console.log(jqXHR);
     if(jqXHR.status === 200)
     {
-        window.location.replace('thanks.php');
+        if(jqXHR.responseJSON === undefined)
+        {
+            window.location.replace('thanks.php');
+        }
+        else
+        {
+            alert(jqXHR.responseJSON.message);
+        }
     }
     else
     {
-        alert(data.error);
+        alert(jqXHR.responseJSON);
         console.log(jqXHR);
     }
 }
