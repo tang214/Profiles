@@ -13,6 +13,7 @@ require('pending_users.php');
 require('sessions.php');
 require('areas.php');
 require('groups.php');
+require('aws.php');
 
 $app = new FlipREST();
 $app->get('(/)', 'service_root');
@@ -25,6 +26,7 @@ $app->group('/zip', 'postalcode');
 $app->group('/pending_users', 'pending_users');
 $app->group('/sessions', 'sessions');
 $app->group('/areas', 'areas');
+$app->group('/aws', 'aws');
 $app->get('/leads', 'leads');
 $app->post('/leads', 'addLead');
 
