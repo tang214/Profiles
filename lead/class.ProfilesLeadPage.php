@@ -51,6 +51,7 @@ class ProfilesLeadPage extends FlipAdminPage
              'Art' => 'directory.php?filter=Art',
              'City Planning' => 'directory.php?filter=CityPlanning',
              'Communications' => 'directory.php?filter=Comm',
+             'Genesis' => 'directory.php?filter=Genesis',
              'Safety' => 'directory.php?filter=Safety',
              'Site-Ops' => 'directory.php?filter=site-ops',
              'Site Prep' => 'directory.php?filter=siteprep',
