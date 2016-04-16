@@ -138,11 +138,13 @@ function table_drawn()
     function(){
         return $(this).find('td').length == $(this).find('td:empty').length;
     }).hide();
+    $('#directory tbody tr').off('click', show_details);
     $('#directory tbody tr').on('click', show_details);
 }
 
 function show_details(e)
 {
+    console.log(e);
     var tr    = $(this).closest('tr');
     var row   = $('#directory').DataTable().row(tr);
     var data  = row.data();
