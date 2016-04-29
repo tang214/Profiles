@@ -169,7 +169,7 @@ function form_submit_done(jqXHR)
     console.log(jqXHR);
     if(jqXHR.status === 200)
     {
-        if(jqXHR.responseJSON === undefined)
+        if(jqXHR.responseJSON === undefined || jqXHR.responseJSON.message === undefined)
         {
             window.location.replace('thanks.php');
         }
