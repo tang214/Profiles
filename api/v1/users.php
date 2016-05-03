@@ -145,7 +145,23 @@ function edit_user($uid = 'me')
     $user = false;
     if($uid === 'me' || $uid === $app->user->getUid())
     {
-        $app->user->editUser($obj);
+        try
+        {
+            $app->user->editUser($obj);
+        }
+        catch(\Exception $e)
+        {
+            if($e->getCode() === 3)
+            {
+                $app->response->setStatus(401);
+                echo json_encode($e);
+            }
+            else
+            {
+                $app->response->setStatus(500);
+                echo json_encode($e);
+            }
+        }
         $user = $app->user;
         \FlipSession::setUser($user);
     }
