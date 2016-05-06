@@ -9,6 +9,17 @@ if($_SERVER["HTTPS"] != "on")
 }
 require_once('class.ProfilesPage.php');
 $page = new ProfilesPage('Burning Flipside Profiles Login');
+if($page->user !== false && $page->user !== null)
+{
+    if(isset($_GET['return']))
+    {
+        header('Location: '.$_GET['return']);
+    }
+    else
+    {
+        header('Location: /index.php');
+    }
+}
 
 if(isset($_GET['return']))
 {
