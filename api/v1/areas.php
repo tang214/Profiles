@@ -19,7 +19,7 @@ function list_areas()
     }
     $data_set = DataSetFactory::getDataSetByName('profiles');
     $data_table = $data_set['area'];
-    $areas = $data_table->read($app->odata->filter, $app->odata->select, $app->odata->top, $app->odata->skip=false, $app->odata->orderby);
+    $areas = $data_table->read($app->odata->filter, $app->odata->select, $app->odata->top, $app->odata->skip, $app->odata->orderby);
     echo json_encode($areas);
 }
 
