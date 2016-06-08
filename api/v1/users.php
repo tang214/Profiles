@@ -43,6 +43,23 @@ function list_users()
     }
 }
 
+function validateCanCreateUser($proposedUser, $auth, &$message)
+{
+    $user = $auth->getUsersByFilter(new \Data\Filter('mail eq '.$proposedUser->mail));
+    if($user !== false && isset($user[0]))
+    {
+        $message = 'Email already exists!';
+        return false;
+    }
+    $user = $auth->getUsersByFilter(new \Data\Filter('uid eq '.$proposedUser->uid));
+    if($user !== false && isset($user[0]))
+    {
+        $message = 'Username already exists!';
+        return false;
+    }
+    return true;
+}
+
 function create_user()
 {
     global $app;
@@ -71,16 +88,11 @@ function create_user()
         return;
     }
     $auth = AuthProvider::getInstance();
-    $user = $auth->getUsersByFilter(new \Data\Filter('mail eq '.$obj->mail));
-    if($user !== false && isset($user[0]))
+    $message = false;
+    if(validateCanCreateUser($obj, $auth, $message) === false)
     {
-        echo json_encode(array('res'=>false, 'message'=>'Email already exists!'));
+        echo json_encode(array('res'=>false, 'message'=>$message));
         return;
-    }
-    $user = $auth->getUsersByFilter(new \Data\Filter('uid eq '.$obj->uid));
-    if($user !== false && isset($user[0]))
-    {
-        echo json_encode(array('res'=>false, 'message'=>'Username already exists!'));
     }
     $ret = $auth->createPendingUser($obj);
     echo json_encode($ret);
