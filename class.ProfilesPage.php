@@ -26,12 +26,12 @@ class ProfilesPage extends FlipPage
 
     function add_profiles_css()
     {
-        $this->add_css_from_src($this->profiles_root.'/css/profiles.css');
+        $this->addCSSByURI($this->profiles_root.'/css/profiles.css');
     }
 
     function add_profiles_script()
     {
-        $this->add_js(JS_LOGIN);
+        $this->addWellKnownJS(JS_LOGIN);
     }
 
     function add_links()
@@ -40,13 +40,13 @@ class ProfilesPage extends FlipPage
         {
             if($this->user->isInGroupNamed('LDAPAdmins') || $this->user->isInGroupNamed('AFs'))
             {
-                $this->add_link('Admin', $this->profiles_root.'/_admin/index.php');
+                $this->addLink('Admin', $this->profiles_root.'/_admin/index.php');
             }
             if(($this->user->isInGroupNamed('Leads') || $this->user->isInGroupNamed('CC')) || $this->user->isInGroupNamed('AFs'))
             {
-                $this->add_link('Leads', $this->profiles_root.'/lead/index.php');
+                $this->addLink('Leads', $this->profiles_root.'/lead/index.php');
             }
-            $this->add_link('My Profile', $this->profiles_root.'/profile.php');
+            $this->addLink('My Profile', $this->profiles_root.'/profile.php');
         }
     }
 }

@@ -215,7 +215,7 @@ function addLead()
     }
     $body = $app->request->getBody();
     $obj  = json_decode($body);
-    $data_set = DataSetFactory::get_data_set('profiles');
+    $data_set = DataSetFactory::getDataSetByName('profiles');
     $data_table = $data_set['position'];
     $ret = $data_table->create($obj);
     echo json_encode($ret);

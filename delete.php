@@ -17,7 +17,7 @@ require_once('class.ProfilesPage.php');
 $page = new ProfilesPage('Burning Flipside Profiles');
 
 //Page specific JS
-$page->add_js_from_src('js/delete.js');
+$page->addJSByURI('js/delete.js');
 
 $page->body = '
 <div id="content">
@@ -39,6 +39,6 @@ $page->body = '
     <button type="button" class="btn btn-danger" disabled>Delete My Account</button> 
 </div>';
 
-$page->print_page();
+$page->printPage();
 /* vim: set tabstop=4 shiftwidth=4 expandtab:*/
 ?>

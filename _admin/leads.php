@@ -3,7 +3,7 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 require_once('class.ProfilesAdminPage.php');
 $page = new ProfilesAdminPage('Burning Flipside Profiles - Admin');
-$page->add_js_from_src('js/leads.js');
+$page->addJSByURI('js/leads.js');
 
     $page->body .= '
 <div class="row">

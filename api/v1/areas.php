@@ -17,7 +17,7 @@ function list_areas()
     {
         throw new Exception('Must be logged in', ACCESS_DENIED);
     }
-    $data_set = DataSetFactory::get_data_set('profiles');
+    $data_set = DataSetFactory::getDataSetByName('profiles');
     $data_table = $data_set['area'];
     $areas = $data_table->read($app->odata->filter, $app->odata->select, $app->odata->top, $app->odata->skip=false, $app->odata->orderby);
     echo json_encode($areas);
@@ -36,7 +36,7 @@ function create_area()
     }
     $body = $app->request->getBody();
     $obj  = json_decode($body);
-    $data_set = DataSetFactory::get_data_set('profiles');
+    $data_set = DataSetFactory::getDataSetByName('profiles');
     $data_table = $data_set['area'];
     $ret = $data_table->create($obj);
     echo json_encode($ret);
@@ -49,7 +49,7 @@ function get_area($name)
     {
         throw new Exception('Must be logged in', ACCESS_DENIED);
     }
-    $data_set = DataSetFactory::get_data_set('profiles');
+    $data_set = DataSetFactory::getDataSetByName('profiles');
     $data_table = $data_set['area'];
     $areas = $data_table->read(new \Data\Filter("short_name eq '$name'"), $app->odata->select, $app->odata->top, $app->odata->skip, $app->odata->orderby);
     if($areas === false) $app->notFound();
@@ -69,7 +69,7 @@ function update_area($name)
     }
     $body = $app->request->getBody();
     $obj  = json_decode($body);
-    $data_set = DataSetFactory::get_data_set('profiles');
+    $data_set = DataSetFactory::getDataSetByName('profiles');
     $data_table = $data_set['area'];
     $ret = $data_table->update(new \Data\Filter("short_name eq $name"), $obj);
     echo json_encode($ret);
@@ -82,7 +82,7 @@ function get_area_leads($name)
     {
         throw new Exception('Must be logged in', ACCESS_DENIED);
     }
-    $data_set = DataSetFactory::get_data_set('profiles');
+    $data_set = DataSetFactory::getDataSetByName('profiles');
     $data_table = $data_set['position'];
     $leads = $data_table->read(new \Data\Filter("area eq '$name'"), $app->odata->select, $app->odata->top, $app->odata->skip, $app->odata->orderby);
     if($leads === false) $app->notFound();
