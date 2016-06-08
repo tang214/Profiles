@@ -1,37 +1,40 @@
+function flagInvalid(item)
+{
+    item.data('valid', false);
+    item.parents('.form-group').addClass('has-error');
+}
+
+function flagValid(item)
+{
+    item.data('valid', true);
+    item.parents('.form-group').removeClass('has-error');
+    item.next('div').remove();
+}
+
 function email_check_done(jqXHR)
 {
-    if(jqXHR.status != 200)
+    if(jqXHR.status !== 200 || jqXHR.responseJSON === undefined)
     {
-        $(this).data('valid', false);
-        $(this).parents('.form-group').addClass('has-error');
+        flagInvalid($(this));
         return;
     }
-    else if(jqXHR.responseJSON !== undefined)
+    if(jqXHR.responseJSON === false || jqXHR.responseJSON.res === false)
     {
-        if(jqXHR.responseJSON === false || jqXHR.responseJSON.res === false)
+        flagInvalid($(this));
+        if(jqXHR.responseJSON.email !== undefined)
         {
-            $(this).data('valid', false);
-            $(this).parents('.form-group').addClass('has-error');
-            if(jqXHR.responseJSON.email !== undefined)
-            {
-               if(jqXHR.responseJSON.pending === true)
-               {
-                   $(this).parent().append('<div class="col-sm-10">The email address '+jqXHR.responseJSON.email+' is already registered, but the account is not yet active. Please check your email for a confirmation email.</div>');
-               }
-               else
-               {
-                   $(this).parent().append('<div class="col-sm-10">The email address '+jqXHR.responseJSON.email+' is already used. Please go <a href="reset.php">here</a> to reset the password for that account.</div>');
-               }
-            }
-            return;
+           if(jqXHR.responseJSON.pending === true)
+           {
+               $(this).parent().append('<div class="col-sm-10">The email address '+jqXHR.responseJSON.email+' is already registered, but the account is not yet active. Please check your email for a confirmation email.</div>');
+           }
+           else
+           {
+               $(this).parent().append('<div class="col-sm-10">The email address '+jqXHR.responseJSON.email+' is already used. Please go <a href="reset.php">here</a> to reset the password for that account.</div>');
+           }
         }
-        else
-        {
-            $(this).data('valid', true);
-            $(this).parents('.form-group').removeClass('has-error');
-            $(this).next('div').remove();
-        }
+        return;
     }
+    flagValid($(this));
 }
 
 function check_email(e)
@@ -59,38 +62,28 @@ function check_email(e)
 
 function uid_check_done(jqXHR)
 {
-    if(jqXHR.status != 200)
+    if(jqXHR.status !== 200 || jqXHR.responseJSON === undefined)
     {
-        $(this).data('valid', false);
-        $(this).parents('.form-group').addClass('has-error');
+        flagInvalid($(this));
         return;
     }
-    else if(jqXHR.responseJSON !== undefined)
+    if(jqXHR.responseJSON === false || jqXHR.responseJSON.res === false)
     {
-        if(jqXHR.responseJSON === false || jqXHR.responseJSON.res === false)
+        flagInvalid($(this));
+        if(jqXHR.responseJSON.uid !== undefined)
         {
-            $(this).data('valid', false);
-            $(this).parents('.form-group').addClass('has-error');
-            if(jqXHR.responseJSON.uid !== undefined)
-            {
-               if(jqXHR.responseJSON.pending === true)
-               {
-                   $(this).parent().append('<div class="col-sm-10">The username '+jqXHR.responseJSON.uid+' is already registered, but the account is not yet active. Please check your email for a confirmation email.</div>');
-               }
-               else
-               {
-                   $(this).parent().append('<div class="col-sm-10">The username '+jqXHR.responseJSON.uid+' is already used. Please go <a href="reset.php">here</a> to reset the password for that account.</div>');
-               }
-            }
-            return;
+           if(jqXHR.responseJSON.pending === true)
+           {
+               $(this).parent().append('<div class="col-sm-10">The username '+jqXHR.responseJSON.uid+' is already registered, but the account is not yet active. Please check your email for a confirmation email.</div>');
+           }
+           else
+           {
+               $(this).parent().append('<div class="col-sm-10">The username '+jqXHR.responseJSON.uid+' is already used. Please go <a href="reset.php">here</a> to reset the password for that account.</div>');
+           }
         }
-        else
-        {
-            $(this).data('valid', true);
-            $(this).parents('.form-group').removeClass('has-error');
-            $(this).next('div').remove();
-        }
+        return;
     }
+    flagValid($(this));
 }
 
 function check_uid(e)
