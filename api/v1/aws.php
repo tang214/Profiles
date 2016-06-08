@@ -79,7 +79,7 @@ function endswith($string, $test)
 {
     $strlen = strlen($string);
     $testlen = strlen($test);
-    if ($testlen > $strlen)
+    if($testlen > $strlen)
     {
         return false;
     }
@@ -88,7 +88,7 @@ function endswith($string, $test)
 
 function getDestinationsForID($id)
 {
-    if(strcasecmp($id,'pboyd') === 0)
+    if(strcasecmp($id, 'pboyd') === 0)
     {
         return array('pboyd04@gmail.com');
     }
