@@ -17,33 +17,16 @@ function flagValid(item)
     item.next('div').remove();
 }
 
-function getEmailErrorMessage(json)
+function getErrorMessage(text, pending)
 {
-    if(json.email === undefined)
+    if(pending === true)
     {
-        return '';
+        return 'The '+text+' is already registered, but the account is not yet active. Please check your email for a confirmation email.';
     }
-    if(json.pending === true)
-    {
-        return 'The email address '+json.email+' is already registered, but the account is not yet active. Please check your email for a confirmation email.';
-    }
-    return 'The email address '+json.email+' is already used. Please go <a href="reset.php">here</a> to reset the password for that account.';
+    return 'The '+text+' is already used. Please go <a href="reset.php">here</a> to reset the password for that account.';
 }
 
-function getUIDErrorMessage(json)
-{
-    if(json.uid === undefined)
-    {
-        return '';
-    }
-    if(json.pending === true)
-    {
-        return 'The username '+json.uid+' is already registered, but the account is not yet active. Please check your email for a confirmation email.';
-    }
-    return 'The username '+json.uid+' is already used. Please go <a href="reset.php">here</a> to reset the password for that account.';
-}
-
-function email_check_done(jqXHR)
+function backendCheckDone(jqXHR)
 {
     if(jqXHR.status !== 200 || jqXHR.responseJSON === undefined)
     {
@@ -52,23 +35,15 @@ function email_check_done(jqXHR)
     }
     if(jqXHR.responseJSON === false || jqXHR.responseJSON.res === false)
     {
-        var message = getEmailErrorMessage(jqXHR.responseJSON);
-        flagInvalid($(this), message);
-        return;
-    }
-    flagValid($(this));
-}
-
-function uid_check_done(jqXHR)
-{
-    if(jqXHR.status !== 200 || jqXHR.responseJSON === undefined)
-    {
-        flagInvalid($(this));
-        return;
-    }
-    if(jqXHR.responseJSON === false || jqXHR.responseJSON.res === false)
-    {
-        var message = getUIDErrorMessage(jqXHR.responseJSON);
+        var message = '';
+        if(jqXHR.responseJSON.uid !== undefined)
+        {
+            message = getErrorMessage('username '+json.uid, jqXHR.responseJSON.pending);
+        }
+        else if(jqXHR.responseJSON.email !== undefined)
+        {
+            message = getErrorMessage('email address '+json.email, jqXHR.responseJSON.pending);
+        }
         flagInvalid($(this), message);
         return;
     }
@@ -94,7 +69,7 @@ function check_email(e)
         type: 'POST',
         dataType: 'json',
         context: control,
-        complete: email_check_done
+        complete: backendCheckDone
     });
 }
 
@@ -119,7 +94,7 @@ function check_uid(e)
         type: 'POST',
         dataType: 'json',
         context: control,
-        complete: uid_check_done
+        complete: backendCheckDone
     });
 }
 
