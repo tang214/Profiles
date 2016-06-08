@@ -21,7 +21,7 @@ class ProfilesPage extends FlipPage
         $this->add_profiles_css();
         $this->add_profiles_script();
         $this->add_login_form();
-        $this->body_tags='data-login-url="'.$this->profiles_root.'/api/v1/login"';
+        $this->body_tags = 'data-login-url="'.$this->profiles_root.'/api/v1/login"';
     }
 
     function add_profiles_css()

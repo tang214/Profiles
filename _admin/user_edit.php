@@ -7,10 +7,10 @@ $page = new ProfilesAdminPage('Burning Flipside Profiles - Admin');
 $page->addWellKnownJS(JS_BOOTSTRAP_FH);
 $page->addJSByURI('js/user_edit.js');
 
-$hidden='';
+$hidden = '';
 if(!isset($_GET['uid']))
 {
-    $hidden='style="display: none"';
+    $hidden = 'style="display: none"';
 }
 
     $page->body .= '

@@ -14,8 +14,8 @@ if(!isset($_GET['src']))
 $provider = $auth->getSuplementalProviderByHost($_GET['src']);
 if($provider !== false)
 {
-   $user = $provider->getUserFromToken(false);
-   $email = $user->getEmail();
+    $user = $provider->getUserFromToken(false);
+    $email = $user->getEmail();
 }
 
 $page->body .= '

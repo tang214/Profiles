@@ -8,10 +8,10 @@ $page->addWellKnownJS(JS_DATATABLE, false);
 $page->addWellKnownCSS(CSS_DATATABLE);
 $page->addJSByURI('js/group_edit.js');
 
-$hidden='';
+$hidden = '';
 if(!isset($_GET['gid']))
 {
-    $hidden='style="display: none"';
+    $hidden = 'style="display: none"';
 }
 
     $page->body .= '

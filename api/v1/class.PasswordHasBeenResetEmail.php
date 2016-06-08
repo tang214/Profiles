@@ -6,7 +6,7 @@ class PasswordHasBeenResetEmail extends FlipsideProfileEmail
     protected $ip_addr;
     protected $forwarded_for;
  
-    public function __construct($user, $ip_addr, $forwarded_for=false)
+    public function __construct($user, $ip_addr, $forwarded_for = false)
     {
         parent::__construct($user);
         $this->ip_addr = $ip_addr;
