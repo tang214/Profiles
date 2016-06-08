@@ -4,7 +4,7 @@ error_reporting(E_ALL);
 require_once('class.ProfilesAdminPage.php');
 $page = new ProfilesAdminPage('Burning Flipside Profiles - Admin');
 
-$page->add_js_from_src('js/index.js');
+$page->addJSByURI('js/index.js');
 
 $auth = AuthProvider::getInstance();
 $user_count = $auth->getActiveUserCount(false);

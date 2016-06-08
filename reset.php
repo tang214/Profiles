@@ -3,8 +3,8 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 require_once('class.ProfilesPage.php');
 $page = new ProfilesPage('Burning Flipside Profiles Reset');
-$page->add_js(JS_BOOTBOX);
-$page->add_js_from_src('js/reset.js');
+$page->addWellKnownJS(JS_BOOTBOX);
+$page->addJSByURI('js/reset.js');
 
 if($page->user !== false && $page->user !== null)
 {
@@ -59,7 +59,7 @@ else
         </div>';
 }
 
-$page->print_page();
+$page->printPage();
 // vim: set tabstop=4 shiftwidth=4 expandtab:
 ?>
 

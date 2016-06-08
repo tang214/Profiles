@@ -28,7 +28,7 @@ $page->add_card('fa-bullhorn', $af_count, 'AFs', 'directory.php?filter=af', $pag
 $page->add_card('fa-cc', $cc_count, 'Combustion Chamger', 'directory.php?filter=cc', $page::CARD_YELLOW);
 $page->add_card('fa-fire', $aar_count, 'Board Members', 'directory.php?filter=aar', $page::CARD_RED);
 
-$page->body .='</div>';
+$page->body .= '</div>';
 
 $page->print_page();
 ?>

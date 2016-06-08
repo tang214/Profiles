@@ -4,7 +4,7 @@ error_reporting(E_ALL);
 //Redirect users to https
 if($_SERVER["HTTPS"] != "on")
 {
-    header("Location: https://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"]);
+    header("Location: https://".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"]);
     exit();
 }
 require_once("class.FlipSession.php");
@@ -16,15 +16,15 @@ if(!FlipSession::isLoggedIn())
 require_once('class.ProfilesPage.php');
 $page = new ProfilesPage('Burning Flipside Profiles');
 
-$page->add_js(JS_BOOTSTRAP_FH);
-$page->add_css(CSS_BOOTSTRAP_FH);
-$page->add_js(JS_CRYPTO_MD5_JS);
-$page->add_js(JS_BOOTBOX);
-$page->add_js(JS_JCROP);
-$page->add_css(CSS_JCROP);
-$page->add_js_from_src('js/profile.js', false);
+$page->addWellKnownJS(JS_BOOTSTRAP_FH);
+$page->addWellKnownCSS(CSS_BOOTSTRAP_FH);
+$page->addWellKnownJS(JS_CRYPTO_MD5_JS);
+$page->addWellKnownJS(JS_BOOTBOX);
+$page->addWellKnownJS(JS_JCROP);
+$page->addWellKnownCSS(CSS_JCROP);
+$page->addJSByURI('js/profile.js', false);
 
-$page->add_notification('All the information on this page is optional. However, it will make the process of signing up for Ticket Requests, Theme Camp Registrations, Art Project Registrations, and Volunteer Signup faster and easier. If you have any concerns with providing this information we suggest your read our <a href="http://www.burningflipside.com/about/privacy" class="alert-link" target="_new">Privacy Policy</a> or contact the <a href="http://www.burningflipside.com/contact/" class="alert-link" target="_new">Technology Team</a> or the <a href="http://www.burningflipside.com/contact/" class="alert-link" target="_new">AAR Board of Directors</a> with your concerns.', $page::NOTIFICATION_INFO);
+$page->addNotification('All the information on this page is optional. However, it will make the process of signing up for Ticket Requests, Theme Camp Registrations, Art Project Registrations, and Volunteer Signup faster and easier. If you have any concerns with providing this information we suggest your read our <a href="http://www.burningflipside.com/about/privacy" class="alert-link" target="_new">Privacy Policy</a> or contact the <a href="http://www.burningflipside.com/contact/" class="alert-link" target="_new">Technology Team</a> or the <a href="http://www.burningflipside.com/contact/" class="alert-link" target="_new">AAR Board of Directors</a> with your concerns.', $page::NOTIFICATION_INFO);
 
 $page->body = '
 <div id="content">
@@ -127,6 +127,6 @@ $page->body = '
     </fieldset>
 </div>';
 
-$page->print_page();
+$page->printPage();
 /* vim: set tabstop=4 shiftwidth=4 expandtab:*/
 ?>
