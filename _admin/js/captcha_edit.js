@@ -15,7 +15,7 @@ function getCID()
 function captchas_done(data)
 {
     var captchas = data;
-    for(i = 0; i < captchas.length; i++)
+    for(var i = 0; i < captchas.length; i++)
     {
         $('#captcha_select').append('<option value="'+captchas[i].id+'">'+captchas[i].question+'</option>');
     }
@@ -86,7 +86,6 @@ function captcha_submit_done(data)
     if(data.error)
     {
          alert(data.error);
-         console.log(data.error);
     }
     else
     {
@@ -99,11 +98,11 @@ function captcha_submit_done(data)
     }
 }
 
-function captcha_data_submitted(e)
+function captcha_data_submitted()
 {
     $.ajax({
         url: '../api/v1/captchas',
-        data: $(form).serialize(),
+        data: $('#form').serialize(),
         type: 'post',
         dataType: 'json',
         success: captcha_submit_done});
