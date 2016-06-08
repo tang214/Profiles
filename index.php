@@ -3,6 +3,8 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 require_once('class.ProfilesPage.php');
 $page = new ProfilesPage('Burning Flipside Profiles');
+$page->addWellKnownJS(JS_CHEET, false);
+$page->addJSByURI('js/index.js');
 
 $page->body .= '
 <div id="content">
