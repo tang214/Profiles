@@ -17,6 +17,11 @@ function flagValid(item)
     item.next('div').remove();
 }
 
+function responseIsInvalid(jqXHR)
+{
+    return (jqXHR.status !== 200 || jqXHR.responseJSON === undefined);
+}
+
 function getErrorMessage(text, pending)
 {
     if(pending === true)
@@ -28,7 +33,7 @@ function getErrorMessage(text, pending)
 
 function backendCheckDone(jqXHR)
 {
-    if(jqXHR.status !== 200 || jqXHR.responseJSON === undefined)
+    if(responseIsInvalid(jqXHR))
     {
         flagInvalid($(this));
         return;
@@ -58,8 +63,7 @@ function check_email(e)
         var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
         if(re.test(email) === false)
         {
-            $(control).data('valid', false);
-            $(control).parents('.form-group').addClass('has-error');
+            flagInvalid($(control));
             return;
         }
     }
@@ -78,14 +82,12 @@ function check_uid(e)
     var control = e.target;
     if(control.value.indexOf(',') > -1)
     {
-        $(control).data('valid', false);
-        $(control).parents('.form-group').addClass('has-error');
+        flagInvalid($(control));
         return;
     }
     if(control.value.indexOf('=') > -1)
     {
-        $(control).data('valid', false);
-        $(control).parents('.form-group').addClass('has-error');
+        flagInvalid($(control));
         return;
     }
     $.ajax({
@@ -104,30 +106,25 @@ function check_pass(e)
     var value = control.value;
     if(value.length < 4)
     {
-        $(control).data('valid', false);
-        $(control).parents('.form-group').addClass('has-error');
+        flagInvalid($(control));
         return;
     }
     if(/[a-z]/.test(value) === false)
     {
-        $(control).data('valid', false);
-        $(control).parents('.form-group').addClass('has-error');
+        flagInvalid($(control));
         return;
     }
     if(/[A-Z]/.test(value) === false)
     {
-        $(control).data('valid', false);
-        $(control).parents('.form-group').addClass('has-error');
+        flagInvalid($(control));
         return;
     }
     if(/[0-9]/.test(value) === false)
     {
-        $(control).data('valid', false);
-        $(control).parents('.form-group').addClass('has-error');
+        flagInvalid($(control));
         return;
     }
-    $(control).data('valid', true);
-    $(control).parents('.form-group').removeClass('has-error');
+    flagValid($(control));
 }
 
 function validate_pass2(value, element, params)
