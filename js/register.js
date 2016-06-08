@@ -2,6 +2,7 @@ function flagInvalid(item, message)
 {
     item.data('valid', false);
     item.parents('.form-group').addClass('has-error');
+    item.parents('.form-group').removeClass('has-success');
     if(message !== undefined)
     {
         item.parent().append('<div class="col-sm-10">'+message+'</div>');
@@ -12,6 +13,7 @@ function flagValid(item)
 {
     item.data('valid', true);
     item.parents('.form-group').removeClass('has-error');
+    item.parents('.form-group').addClass('has-success');
     item.next('div').remove();
 }
 
@@ -204,23 +206,19 @@ function validate_fields(index, value)
 {
     if($(value).val().length === 0)
     {
-        $(value).parents('.form-group').addClass('has-error');
-        $(value).parents('.form-group').removeClass('has-success');
+        flagInvalid($(value));
     }
     else if(value.willValidate === true && value.checkValidity() === false)
     {
-        $(value).parents('.form-group').addClass('has-error');
-        $(value).parents('.form-group').removeClass('has-success');
+        flagInvalid($(value));
     }
     else if($(value).data('valid') === false)
     {
-        $(value).parents('.form-group').addClass('has-error');
-        $(value).parents('.form-group').removeClass('has-success');
+        flagInvalid($(value));
     }
     else
     {
-        $(value).parents('.form-group').removeClass('has-error');
-        $(value).parents('.form-group').addClass('has-success');
+        flagValid($(value));
     }
 }
 
@@ -232,13 +230,11 @@ function submit_click(e)
     var pass2 = $('#password2').val();
     if(pass !== pass2)
     {
-        $('#password2').parents('.form-group').addClass('has-error');
-        $('#password2').parents('.form-group').removeClass('has-success');
+        flagInvalid($('#password2'));
     }
     else
     {
-        $('#password2').parents('.form-group').removeClass('has-error');
-        $('#password2').parents('.form-group').addClass('has-success');
+        flagValid($('#password2'));
     }
     if($('#form .form-group.has-error').length === 0)
     {
