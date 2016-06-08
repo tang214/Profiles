@@ -4,7 +4,7 @@ error_reporting(E_ALL);
 //Redirect users to https
 if($_SERVER["HTTPS"] != "on")
 {
-    header("Location: https://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"]);
+    header("Location: https://".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"]);
     exit();
 }
 require_once('class.ProfilesPage.php');
@@ -37,7 +37,7 @@ else
 {
     $page->addJSByURI('js/zxcvbn-async.js');
     $page->addJSByURI('js/change.js');
-    $current ='';
+    $current = '';
     if($require_current_pass)
     {
         $current = '<div class="form-group"><input class="form-control" type="password" id="current" name="current" placeholder="Current Password" required autofocus/></div>';

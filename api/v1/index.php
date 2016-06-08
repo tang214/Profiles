@@ -109,7 +109,7 @@ function validate_post_code()
     }
     if($obj['c'] == 'US')
     {
-        if(preg_match("/^([0-9]{5})(-[0-9]{4})?$/i",$obj['postalCode']))
+        if(preg_match("/^([0-9]{5})(-[0-9]{4})?$/i", $obj['postalCode']))
         {
             $contents = file_get_contents('http://ziptasticapi.com/'.$obj['postalCode']);
             $resp = json_decode($contents);
@@ -146,7 +146,7 @@ function leads()
     }
     $params = $app->request->params();
     $auth = AuthProvider::getInstance();
-    $leads     = array();
+    $leads = array();
     if(!isset($params['type']))
     {
         $leadGroup = $auth->getGroupByName('Leads');

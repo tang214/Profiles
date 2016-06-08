@@ -4,7 +4,7 @@ error_reporting(E_ALL);
 //Redirect users to https
 if($_SERVER["HTTPS"] != "on")
 {
-    header("Location: https://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"]);
+    header("Location: https://".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"]);
     exit();
 }
 require_once('class.ProfilesPage.php');

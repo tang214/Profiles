@@ -107,7 +107,10 @@ function show_user($uid = 'me')
     {
         $user = \AuthProvider::getInstance()->getUsersByFilter(new \Data\Filter("uid eq $uid"));
     }
-    if($user === false) $app->halt(404);
+    if($user === false)
+    {
+        $app->halt(404);
+    }
     if(!is_object($user) && isset($user[0]))
     {
         $user = $user[0];

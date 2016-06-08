@@ -52,7 +52,10 @@ function get_area($name)
     $data_set = DataSetFactory::getDataSetByName('profiles');
     $data_table = $data_set['area'];
     $areas = $data_table->read(new \Data\Filter("short_name eq '$name'"), $app->odata->select, $app->odata->top, $app->odata->skip, $app->odata->orderby);
-    if($areas === false) $app->notFound();
+    if($areas === false)
+    {
+        $app->notFound();
+    }
     echo json_encode($areas);
 }
 
@@ -85,7 +88,10 @@ function get_area_leads($name)
     $data_set = DataSetFactory::getDataSetByName('profiles');
     $data_table = $data_set['position'];
     $leads = $data_table->read(new \Data\Filter("area eq '$name'"), $app->odata->select, $app->odata->top, $app->odata->skip, $app->odata->orderby);
-    if($leads === false) $app->notFound();
+    if($leads === false)
+    {
+        $app->notFound();
+    }
     echo json_encode($leads);
 }
 

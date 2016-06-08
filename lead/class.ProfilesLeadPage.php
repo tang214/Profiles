@@ -139,10 +139,10 @@ class ProfilesLeadPage extends FlipAdminPage
 
     function current_url()
     {
-        return 'http'.(isset($_SERVER['HTTPS'])?'s':'').'://'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}";
+        return 'http'.(isset($_SERVER['HTTPS']) ? 's' : '').'://'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}";
     }
 
-    function print_page($header=true)
+    function print_page($header = true)
     {
         if($this->user == false)
         {
