@@ -30,6 +30,16 @@ $app->group('/aws', 'aws');
 $app->get('/leads', 'leads');
 $app->post('/leads', 'addLead');
 
+function hasUser($app)
+{
+    return ($app->user || $app->isLocal);
+}
+
+function isAdmin($app)
+{
+    return ($app->isLocal || $app->user->isInGroupNamed('LDAPAdmins'));
+}
+
 function service_root()
 {
     global $app;

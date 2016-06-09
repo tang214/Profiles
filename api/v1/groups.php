@@ -29,16 +29,6 @@ function listGroups()
     }
 }
 
-function hasUser($app)
-{
-    return ($app->user || $app->isLocal);
-}
-
-function isAdmin($app)
-{
-    return ($app->isLocal || $app->user->isInGroupNamed('LDAPAdmins'));
-}
-
 function expandGroupMembers($group, $odata, $directOnly)
 {
     if($odata->expand !== false && in_array('member', $odata->expand))
@@ -165,20 +155,52 @@ function updateGroup($name)
     echo json_encode($group->editGroup($obj));
 }
 
+function getTypeOfEntity($entity)
+{
+    if(is_subclass_of($entity, 'Auth\Group'))
+    {
+        return 'Group';
+    }
+    else
+    {
+        return 'User';
+    }
+}
+
+function getAllGroupsAndUsers($keys)
+{
+    $res = array();
+    $groups = $auth->getGroupsByFilter(false);
+    $count  = count($groups);
+    for($i = 0; $i < $count; $i++)
+    {
+        $tmp = json_decode(json_encode($groups[$i]), true);
+        $tmp['type'] = 'Group';
+        if($keys !== false)
+        {
+            $tmp = array_intersect_key($tmp, $keys);
+        }
+        $res[] = $tmp;
+    }
+    $users  = $auth->getUsersByFilter(false);
+    $count  = count($users);
+    for($i = 0; $i < $count; $i++)
+    {
+        $tmp = json_decode(json_encode($users[$i]), true);
+        $tmp['type'] = 'User';
+        if($keys !== false)
+        {
+            $tmp = array_intersect_key($tmp, $keys);
+        }
+        $res[] = $tmp;
+    }
+    return $res;
+}
+
 function getNonGroupMembers($name)
 {
     global $app;
-    $isLocal = false;
-    if($_SERVER['SERVER_ADDR'] === $_SERVER['REMOTE_ADDR'])
-    {
-        $isLocal = true;
-    }
-    if(!$app->user && !$isLocal)
-    {
-        $app->response->setStatus(401);
-        return;
-    }
-    if(($isLocal === false) && !$app->user->isInGroupNamed('LDAPAdmins'))
+    if(!hasUser($app) || !isAdmin($app))
     {
         $app->response->setStatus(401);
         return;
@@ -186,36 +208,12 @@ function getNonGroupMembers($name)
     $auth = AuthProvider::getInstance();
     if($name === 'none')
     {
-        $res = array();
-        $groups = $auth->getGroupsByFilter(false);
-        $count  = count($groups);
         $keys   = false;
         if($app->odata->select !== false)
         {
             $keys = array_flip($app->odata->select);
         }
-        for($i = 0; $i < $count; $i++)
-        {
-            $tmp = json_decode(json_encode($groups[$i]), true);
-            $tmp['type'] = 'Group';
-            if($keys !== false)
-            {
-                $tmp = array_intersect_key($tmp, $keys);
-            } 
-            array_push($res, $tmp);
-        }
-        $users  = $auth->getUsersByFilter(false);
-        $count  = count($users);
-        for($i = 0; $i < $count; $i++)
-        {
-            $tmp = json_decode(json_encode($users[$i]), true);
-            $tmp['type'] = 'User';
-            if($keys !== false)
-            {
-                $tmp = array_intersect_key($tmp, $keys);
-            }
-            array_push($res, $tmp);
-        }
+        $res = getAllGroupsAndUsers($keys);
         echo json_encode($res);
         return;
     }
@@ -232,14 +230,7 @@ function getNonGroupMembers($name)
         for($i = 0; $i < $count; $i++)
         {
             $tmp = json_decode(json_encode($res[$i]), true);
-            if(is_subclass_of($res[$i], 'Auth\Group'))
-            {
-                $tmp['type'] = 'Group';
-            }
-            else
-            {
-                $tmp['type'] = 'User';
-            }
+            $tmp['type'] = getTypeOfEntity($res[$i]);
             $res[$i] = array_intersect_key($tmp, $keys);
         }
     }
