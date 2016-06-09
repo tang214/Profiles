@@ -98,7 +98,7 @@ function create_user()
     echo json_encode($ret);
 }
 
-function getUserByUID($app, $uid)
+function getUserByUIDReadOnly($app, $uid)
 {
     if($uid === 'me' || $uid === $app->user->getUid())
     {
@@ -108,7 +108,30 @@ function getUserByUID($app, $uid)
     {
         $auth = \AuthProvider::getInstance();
         $filter = new \Data\Filter("uid eq $uid");
-        return $auth->getUsersByFilter($filter);
+        $users = $auth->getUsersByFilter($filter);
+        if($users !== false && isset($users[0]))
+        {
+            return $users[0];
+        }
+    }
+    return false;
+}
+
+function getUserByUID($app, $uid)
+{
+    if($uid === 'me' || $uid === $app->user->getUid())
+    {
+        return $app->user;
+    }
+    if($app->user->isInGroupNamed('LDAPAdmins'))
+    {
+        $auth = \AuthProvider::getInstance();
+        $filter = new \Data\Filter("uid eq $uid");
+        $users = $auth->getUsersByFilter($filter);
+        if($users !== false && isset($users[0]))
+        {
+            return $users[0];
+        }
     }
     return false;
 }
@@ -121,7 +144,7 @@ function show_user($uid = 'me')
         $app->response->setStatus(401);
         return;
     }
-    $user = getUserByUID($app, $uid);
+    $user = getUserByUIDReadOnly($app, $uid);
     if($user === false)
     {
         $app->halt(404);
@@ -142,11 +165,25 @@ function show_user($uid = 'me')
     }
 }
 
+function sendPasswordResetEmail($user)
+{
+    $forwardedFor = false;
+    if(isset($_SERVER['HTTP_X_FORWARDED_FOR']))
+    {
+        $forwardedFor = $_SERVER['HTTP_X_FORWARDED_FOR'];
+    }
+    $emailMsg = new PasswordHasBeenResetEmail($user, $_SERVER['REMOTE_ADDR'], $forwardedFor);
+    $emailProvider = EmailProvider::getInstance();
+    if($emailProvider->sendEmail($emailMsg) === false)
+    {
+        throw new \Exception('Unable to send password reset email!');
+    }
+}
+
 function edit_user($uid = 'me')
 {
     global $app;
-    $body = $app->request->getBody();
-    $obj  = json_decode($body);
+    $obj = $app->request->getJsonBody();
     $auth = AuthProvider::getInstance();
     if(!$app->user)
     {
@@ -160,57 +197,37 @@ function edit_user($uid = 'me')
             return;
         }
     }
-    $user = false;
-    if($uid === 'me' || $uid === $app->user->getUid())
-    {
-        try
-        {
-            $app->user->editUser($obj);
-        }
-        catch(\Exception $e)
-        {
-            if($e->getCode() === 3)
-            {
-                $app->response->setStatus(401);
-                echo json_encode($e);
-            }
-            else
-            {
-                $app->response->setStatus(500);
-                echo json_encode($e);
-            }
-        }
-        $user = $app->user;
-        \FlipSession::setUser($user);
-    }
-    else if($app->user->isInGroupNamed("LDAPAdmins"))
-    {
-        $user = $auth->getUsersByFilter(new \Data\Filter("uid eq $uid"));
-        if($user === false || !isset($user[0]))
-        {
-            $app->response->setStatus(404);
-            return;
-        }
-        $user[0]->editUser($obj);
-    }
-    else
+    $user = getUserByUID($app, $uid);
+    if($user === false)
     {
         $app->response->setStatus(404);
         return;
     }
+    try
+    {
+        $user->editUser($obj);
+    }
+    catch(\Exception $e)
+    {
+        if($e->getCode() === 3)
+        {
+            $app->response->setStatus(401);
+            echo json_encode($e);
+        }
+        else
+        {
+            $app->response->setStatus(500);
+            echo json_encode($e);
+        }
+        return;
+    }
+    if($uid === 'me' || $uid === $app->user->getUid())
+    {
+        \FlipSession::setUser($user);
+    }
     if(isset($obj->password))
     {
-        $forwarded_for = false;
-        if(isset($_SERVER['HTTP_X_FORWARDED_FOR']))
-        {
-            $forwarded_for = $_SERVER['HTTP_X_FORWARDED_FOR'];
-        }
-        $email_msg = new PasswordHasBeenResetEmail($user, $_SERVER['REMOTE_ADDR'], $forwarded_for);
-        $email_provider = EmailProvider::getInstance();
-        if($email_provider->sendEmail($email_msg) === false)
-        {
-            throw new \Exception('Unable to send password reset email!');
-        }
+        sendPasswordResetEmail($user);
     }
     echo json_encode(array('success'=>true));
 }
@@ -249,26 +266,13 @@ function list_groups_for_user($uid = 'me')
         $app->response->setStatus(401);
         return;
     }
-    $groups = false;
-    if($uid === 'me' || $uid === $app->user->getUid())
-    {
-        $groups = $app->user->getGroups();
-    }
-    else if($app->user->isInGroupNamed("LDAPAdmins"))
-    {
-        $user = AuthProvider::getInstance()->getUser($uid);
-        if($user === false)
-        {
-            $app->response->setStatus(404);
-            return;
-        }
-        $groups = $user->getGroups();
-    }
-    else
+    $user = getUserByUID($app, $uid);
+    if($user === false)
     {
         $app->response->setStatus(404);
         return;
     }
+    $groups = $user->getGroups();
     if($groups === false)
     {
         echo json_encode(array());
@@ -312,6 +316,24 @@ function link_user($uid = 'me')
     echo json_encode(array('success'=>true));
 }
 
+function getAllUsersByFilter($filter, &$pending)
+{
+    $auth = AuthProvider::getInstance();
+    $user = $auth->getUsersByFilter($filter);
+    if($user !== false && isset($user[0]))
+    {
+        $pending = false;
+        return $user[0];
+    }
+    $user = $auth->getPendingUsersByFilter($filter);
+    if($user !== false && isset($user[0]))
+    {
+        $pending = true;
+        return $user[0];
+    }
+    return false;
+}
+
 function check_email_available()
 {
     global $app;
@@ -329,25 +351,15 @@ function check_email_available()
         $to_delete = substr($email, $begining, $end - $begining);
         $email = str_replace($to_delete, '', $email);
     }
-    $auth = AuthProvider::getInstance();
     $filter = new \Data\Filter('mail eq '.$email);
-    $user = $auth->getUsersByFilter($filter);
-    if($user === false || !isset($user[0]))
+    $pending = false;
+    $user = getAllUsersByFilter($filter, $pending);
+    if($user === false)
     {
-        $user = $auth->getPendingUsersByFilter($filter);
-        if($user === false || !isset($user[0]))
-        {
-            echo 'true';
-        }
-        else
-        {
-            echo json_encode(array('res'=>false, 'email'=>$user[0]->getEmail(), 'pending'=>true));
-        }
+        echo 'true';
+        return;
     }
-    else
-    {
-        echo json_encode(array('res'=>false, 'email'=>$user[0]->getEmail()));
-    }
+    echo json_encode(array('res'=>false, 'email'=>$user->getEmail(), 'pending'=>$pending));
 }
 
 function check_uid_available()
@@ -358,25 +370,15 @@ function check_uid_available()
     {
         return false;
     }
-    $auth = AuthProvider::getInstance();
     $filter = new \Data\Filter('uid eq '.$uid);
-    $user = $auth->getUsersByFilter($filter);
-    if($user === false || !isset($user[0]))
+    $pending = false;
+    $user = getAllUsersByFilter($filter, $pending);
+    if($user === false)
     {
-        $user = $auth->getPendingUsersByFilter($filter);
-        if($user === false || !isset($user[0]))
-        {
-            echo 'true';
-        }
-        else
-        {
-            echo json_encode(array('res'=>false, 'uid'=>$user[0]->getUid(), 'pending'=>true));
-        }
+        echo 'true';
+        return;
     }
-    else
-    {
-        echo json_encode(array('res'=>false, 'uid'=>$user[0]->getUid()));
-    }
+    echo json_encode(array('res'=>false, 'uidl'=>$user->getUid(), 'pending'=>$pending));
 }
 
 function reset_pass($uid)
