@@ -197,6 +197,21 @@ function getAllGroupsAndUsers($keys)
     return $res;
 }
 
+function getNonMemberEntities($nonMembers, $keys)
+{
+    if($keys !== false)
+    {
+        $count = count($nonMembers;
+        for($i = 0; $i < $count; $i++)
+        {
+            $tmp = json_decode(json_encode($nonMembers[$i]), true);
+            $tmp['type'] = getTypeOfEntity($nonMembers[$i]);
+            $nonMembers[$i] = array_intersect_key($tmp, $keys);
+        }
+    }
+    return $nonMembers;
+}
+
 function getNonGroupMembers($name)
 {
     global $app;
@@ -205,14 +220,14 @@ function getNonGroupMembers($name)
         $app->response->setStatus(401);
         return;
     }
+    $keys = false;
+    if($app->odata->select !== false)
+    {
+        $keys = array_flip($app->odata->select);
+    }
     $auth = AuthProvider::getInstance();
     if($name === 'none')
     {
-        $keys   = false;
-        if($app->odata->select !== false)
-        {
-            $keys = array_flip($app->odata->select);
-        }
         $res = getAllGroupsAndUsers($keys);
         echo json_encode($res);
         return;
@@ -223,17 +238,7 @@ function getNonGroupMembers($name)
         $app->notFound();
     }
     $res = $group->getNonMemebers($app->odata->select);
-    if($app->odata->select !== false)
-    {
-        $count = count($res);
-        $keys = array_flip($app->odata->select);
-        for($i = 0; $i < $count; $i++)
-        {
-            $tmp = json_decode(json_encode($res[$i]), true);
-            $tmp['type'] = getTypeOfEntity($res[$i]);
-            $res[$i] = array_intersect_key($tmp, $keys);
-        }
-    }
+    $res = getNonMemberEntities($res, $keys);
     echo json_encode($res);
 }
 /* vim: set tabstop=4 shiftwidth=4 expandtab: */

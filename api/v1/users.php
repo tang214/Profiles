@@ -98,6 +98,21 @@ function create_user()
     echo json_encode($ret);
 }
 
+function getUserByUID($app, $uid)
+{
+    if($uid === 'me' || $uid === $app->user->getUid())
+    {
+        return $app->user;
+    }
+    if($app->user->isInGroupNamed('LDAPAdmins') || $app->user->isInGroupNamed('Leads') || $app->user->isInGroupNamed('CC'))
+    {
+        $auth = \AuthProvider::getInstance();
+        $filter = new \Data\Filter("uid eq $uid");
+        return $auth->getUsersByFilter($filter);
+    }
+    return false;
+}
+
 function show_user($uid = 'me')
 {
     global $app;
@@ -106,19 +121,7 @@ function show_user($uid = 'me')
         $app->response->setStatus(401);
         return;
     }
-    $user = false;
-    if($uid === 'me' || $uid === $app->user->getUid())
-    {
-        $user = $app->user;
-    }
-    else if($app->user->isInGroupNamed("LDAPAdmins"))
-    {
-        $user = \AuthProvider::getInstance()->getUsersByFilter(new \Data\Filter("uid eq $uid"));
-    }
-    else if($app->user->isInGroupNamed("Leads") || $app->user->isInGroupNamed("CC"))
-    {
-        $user = \AuthProvider::getInstance()->getUsersByFilter(new \Data\Filter("uid eq $uid"));
-    }
+    $user = getUserByUID($app, $uid);
     if($user === false)
     {
         $app->halt(404);
