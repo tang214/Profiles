@@ -196,12 +196,7 @@ function leads()
     }
     if($app->odata->select !== false)
     {
-        $select = array_flip($app->odata->select);
-        $count = count($leads);
-        for($i = 0; $i < $count; $i++)
-        {
-            $leads[$i] = array_intersect_key($leads[$i]->jsonSerialize(), $select);
-        }
+        $leads = $app->odata->filterArrayPerSelect($leads);
     }
     echo json_encode($leads);
 }
