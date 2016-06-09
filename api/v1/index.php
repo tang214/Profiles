@@ -143,6 +143,28 @@ function validate_post_code()
     }
 }
 
+function getLeadsByType($type, $auth)
+{
+    switch($params['type'])
+    {
+        case 'aar':
+            $aarGroup = $auth->getGroupByName('AAR');
+            return $aarGroup->members(true, false);
+        case 'af':
+            $afGroup = $auth->getGroupByName('AFs');
+            return $afGroup->members(true, false);
+        case 'cc':
+            $ccGroup = $auth->getGroupByName('CC');
+            return $ccGrnup->members(true, false);
+        case 'lead':
+            $leadGroup = $auth->getGroupByName('Leads');
+            return $leadGroup->members(true, false);
+        default:
+            $filter = new \Data\Filter('ou eq '.$params['type']);
+            return $auth->getUsersByFilter($filter);
+    }
+}
+
 function leads()
 {
     global $app;
@@ -170,29 +192,7 @@ function leads()
     }
     else
     {
-        switch($params['type'])
-        {
-            case 'aar':
-                $aarGroup  = $auth->getGroupByName('AAR');
-                $leads     = array_merge($leads, $aarGroup->members(true, false));
-                break;
-            case 'af':
-                $afGroup   = $auth->getGroupByName('AFs');
-                $leads     = array_merge($leads, $afGroup->members(true, false));
-                break;
-            case 'cc':
-                $ccGroup   = $auth->getGroupByName('CC');
-                $leads     = array_merge($leads, $ccGroup->members(true, false));
-                break;
-            case 'lead':
-                $leadGroup = $auth->getGroupByName('Leads');
-                $leads     = array_merge($leads, $leadGroup->members(true, false));
-                break;
-            default:
-                $filter    = new \Data\Filter('ou eq '.$params['type']);
-                $leads     = $auth->getUsersByFilter($filter);
-                break;
-        }
+        $leads = getLeadsByType($params['type'], $auth);
     }
     if($app->odata->select !== false)
     {
@@ -232,4 +232,4 @@ function addLead()
 }
 
 $app->run();
-?>
+/* vim: set tabstop=4 shiftwidth=4 expandtab: */

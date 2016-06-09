@@ -30,7 +30,7 @@ function list_users()
         $app->response->setStatus(401);
         return;
     }
-    if($app->user && !$app->user->isInGroupNamed("LDAPAdmins"))
+    if($app->user && !$app->user->isInGroupNamed('LDAPAdmins'))
     {
         //Only return this user. This user doesn't have access to other accounts
         echo json_encode(array($app->user));
@@ -98,9 +98,14 @@ function create_user()
     echo json_encode($ret);
 }
 
+function userIsMe($app, $uid)
+{
+    return ($uid === 'me' || $uid === $app->user->getUid());
+}
+
 function getUserByUIDReadOnly($app, $uid)
 {
-    if($uid === 'me' || $uid === $app->user->getUid())
+    if(userIsMe($app, $uid))
     {
         return $app->user;
     }
@@ -119,7 +124,7 @@ function getUserByUIDReadOnly($app, $uid)
 
 function getUserByUID($app, $uid)
 {
-    if($uid === 'me' || $uid === $app->user->getUid())
+    if(userIsMe($app, $uid))
     {
         return $app->user;
     }
@@ -180,6 +185,15 @@ function sendPasswordResetEmail($user)
     }
 }
 
+function exceptionCodeToHttpCode($e)
+{
+    if($e->getCode() === 3)
+    {
+        return 401;
+    }
+    return 500;
+}
+
 function edit_user($uid = 'me')
 {
     global $app;
@@ -209,19 +223,11 @@ function edit_user($uid = 'me')
     }
     catch(\Exception $e)
     {
-        if($e->getCode() === 3)
-        {
-            $app->response->setStatus(401);
-            echo json_encode($e);
-        }
-        else
-        {
-            $app->response->setStatus(500);
-            echo json_encode($e);
-        }
+        $app->response->setStatus(exceptionCodeToHttpCode($e));
+        echo json_encode($e);
         return;
     }
-    if($uid === 'me' || $uid === $app->user->getUid())
+    if(userIsMe($app, $uid))
     {
         \FlipSession::setUser($user);
     }
@@ -241,7 +247,7 @@ function deleteUser($uid = 'me')
         return;
     }
     $user = false;
-    if($uid === 'me' || $uid === $app->user->getUid())
+    if(userIsMe($app, $uid))
     {
         $user = $app->user;
     }
