@@ -201,7 +201,7 @@ function getNonMemberEntities($nonMembers, $keys)
 {
     if($keys !== false)
     {
-        $count = count($nonMembers;
+        $count = count($nonMembers);
         for($i = 0; $i < $count; $i++)
         {
             $tmp = json_decode(json_encode($nonMembers[$i]), true);
