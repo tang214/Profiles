@@ -109,7 +109,7 @@ function getUserByUIDReadOnly($app, $uid)
     {
         return $app->user;
     }
-    if($app->user->isInGroupNamed('LDAPAdmins') || $app->user->isInGroupNamed('Leads') || $app->user->isInGroupNamed('CC'))
+    if($app->user->isInGroupNamed('LDAPAdmins') || hasLeadAccess($app))
     {
         $auth = \AuthProvider::getInstance();
         $filter = new \Data\Filter("uid eq $uid");
