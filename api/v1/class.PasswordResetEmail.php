@@ -6,7 +6,7 @@ class PasswordResetEmail extends FlipsideProfileEmail
     public function __construct($user)
     {
         parent::__construct($user);
-        $this->addToAddress($user->getEmail(), $user->getDisplayName());
+        $this->addToAddress($user->mail, $user->displayName);
     }
 
     public function getSubject()

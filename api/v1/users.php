@@ -100,7 +100,7 @@ function create_user()
 
 function userIsMe($app, $uid)
 {
-    return ($uid === 'me' || $uid === $app->user->getUid());
+    return ($uid === 'me' || $uid === $app->user->uid);
 }
 
 function getUserByUIDReadOnly($app, $uid)
@@ -299,7 +299,7 @@ function link_user($uid = 'me')
     }
     $body = $app->request->getBody();
     $obj  = json_decode($body);
-    if($uid === 'me' || $uid === $app->user->getUid())
+    if(userIsMe($uid))
     {
         $app->user->addLoginProvider($obj->provider);
         AuthProvider::getInstance()->impersonateUser($app->user);
@@ -365,7 +365,7 @@ function check_email_available()
         echo 'true';
         return;
     }
-    echo json_encode(array('res'=>false, 'email'=>$user->getEmail(), 'pending'=>$pending));
+    echo json_encode(array('res'=>false, 'email'=>$user->mail, 'pending'=>$pending));
 }
 
 function check_uid_available()
@@ -384,7 +384,7 @@ function check_uid_available()
         echo 'true';
         return;
     }
-    echo json_encode(array('res'=>false, 'uidl'=>$user->getUid(), 'pending'=>$pending));
+    echo json_encode(array('res'=>false, 'uidl'=>$user->uid, 'pending'=>$pending));
 }
 
 function reset_pass($uid)

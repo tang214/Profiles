@@ -18,7 +18,7 @@ class PasswordHasBeenResetEmail extends FlipsideProfileEmail
         {
             $this->forwarded_for = '';
         }
-        $this->addToAddress($user->getEmail(), $user->getDisplayName());
+        $this->addToAddress($user->mail, $user->displayName);
     }
 
     public function getSubject()
