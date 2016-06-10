@@ -10,7 +10,7 @@ function users()
     $app->post('', 'create_user');
     $app->get('/me', 'show_user');
     $app->get('/:uid', 'show_user');
-    $app->patch('/:uid', 'edit_user');
+    $app->patch('/:uid', 'editUser');
     $app->delete('/:uid', 'deleteUser');
     $app->get('/me/groups', 'list_groups_for_user');
     $app->get('/:uid/groups', 'list_groups_for_user');
@@ -194,24 +194,25 @@ function exceptionCodeToHttpCode($e)
     return 500;
 }
 
-function edit_user($uid = 'me')
+function getUser($app, $uid, $payload)
+{
+    if(!$app->user)
+    {
+        if(isset($payload->hash))
+        {
+            $auth = AuthProvider::getInstance();
+            $app->user = $auth->getUserByResetHash($payload->hash);
+        }
+        return false;
+    }
+    return getUserByUID($app, $uid);
+}
+
+function editUser($uid = 'me')
 {
     global $app;
     $obj = $app->request->getJsonBody();
-    $auth = AuthProvider::getInstance();
-    if(!$app->user)
-    {
-        if(isset($obj->hash))
-        {
-            $app->user = $auth->getUserByResetHash($obj->hash);
-        }
-        if(!$app->user)
-        {
-            $app->response->setStatus(401);
-            return;
-        }
-    }
-    $user = getUserByUID($app, $uid);
+    $user = getUser($app, $uid, $obj);
     if($user === false)
     {
         $app->response->setStatus(404);
