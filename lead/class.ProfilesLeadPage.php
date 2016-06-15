@@ -137,11 +137,6 @@ class ProfilesLeadPage extends FlipAdminPage
         $this->add_login_form();
     }
 
-    function current_url()
-    {
-        return 'http'.(isset($_SERVER['HTTPS']) ? 's' : '').'://'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}";
-    }
-
     function print_page($header = true)
     {
         if($this->user == false)
@@ -149,7 +144,7 @@ class ProfilesLeadPage extends FlipAdminPage
             $this->body = '
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header">You must <a href="/login.php?return='.$this->current_url().'">log in <span class="glyphicon glyphicon-log-in"></span></a> to access the Burning Flipside Profile Admin system!</h1>
+                <h1 class="page-header">You must <a href="/login.php?return='.$this->currentURL().'">log in <span class="glyphicon glyphicon-log-in"></span></a> to access the Burning Flipside Profile Admin system!</h1>
             </div>
         </div>';
         }
