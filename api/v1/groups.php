@@ -99,6 +99,20 @@ function selectFieldsFromGroup($group, $select)
     return $group;
 }
 
+function getGroupForUserByName($name, $app)
+{
+    $groups = $app->user->getGroups();
+    $count = count($groups);
+    for($i = 0; $i < $count; $i++)
+    {
+        if(strcasecmp($groups[$i]->getGroupName(), $name) === 0)
+        {
+            return $groups[$i];
+        }
+    }
+    return false;
+}
+
 function getGroup($name)
 {
     global $app;
@@ -123,16 +137,13 @@ function getGroup($name)
     }
     else
     {
-        $groups = $app->user->getGroups();
-        foreach($groups as $group)
+        $group = getGroupForUserByName($name, $app);
+        if($group === false)
         {
-            if($group->getGroupName() === $name)
-            {
-                echo json_encode($group);
-                die();
-            }
+            $app->notFound();
+            return;
         }
-        $app->notFound();
+        echo json_encode($group);
     }
 }
 
@@ -201,7 +212,7 @@ function getNonMemberEntities($nonMembers, $keys)
 {
     if($keys !== false)
     {
-        $count = count($nonMembers;
+        $count = count($nonMembers);
         for($i = 0; $i < $count; $i++)
         {
             $tmp = json_decode(json_encode($nonMembers[$i]), true);

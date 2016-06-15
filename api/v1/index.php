@@ -40,6 +40,11 @@ function isAdmin($app)
     return ($app->isLocal || $app->user->isInGroupNamed('LDAPAdmins'));
 }
 
+function hasLeadAccess($app)
+{
+    return ($app->user->isInGroupNamed('Leads') || $app->user->isInGroupNamed('CC') || $app->user->isInGroupNamed('AFs'));
+}
+
 function service_root()
 {
     global $app;
@@ -165,6 +170,25 @@ function getLeadsByType($type, $auth)
     }
 }
 
+function getLeadsWithParams($params)
+{
+    $auth = AuthProvider::getInstance();
+    if(isset($params['type']))
+    {
+        return getLeadsByType($params['type'], $auth);
+    }
+    $leads = array();
+    $leadGroup = $auth->getGroupByName('Leads');
+    $aarGroup  = $auth->getGroupByName('AAR');
+    $afGroup   = $auth->getGroupByName('AFs');
+    $ccGroup   = $auth->getGroupByName('CC');
+    $leads     = array_merge($leads, $leadGroup->members(true, false));
+    $leads     = array_merge($leads, $aarGroup->members(true, false));
+    $leads     = array_merge($leads, $afGroup->members(true, false));
+    $leads     = array_merge($leads, $ccGroup->members(true, false));
+    return $leads;
+}
+
 function leads()
 {
     global $app;
@@ -172,36 +196,15 @@ function leads()
     {
         throw new Exception('Must be logged in', ACCESS_DENIED);
     }
-    if(!$app->user->isInGroupNamed('Leads') && !$app->user->isInGroupNamed('CC') && !$app->user->isInGroupNamed('AFs'))
+    if(!hasLeadAccess($app))
     {
         throw new Exception('Must be Lead', ACCESS_DENIED);
     }
     $params = $app->request->params();
-    $auth = AuthProvider::getInstance();
-    $leads = array();
-    if(!isset($params['type']))
-    {
-        $leadGroup = $auth->getGroupByName('Leads');
-        $aarGroup  = $auth->getGroupByName('AAR');
-        $afGroup   = $auth->getGroupByName('AFs');
-        $ccGroup   = $auth->getGroupByName('CC');
-        $leads     = array_merge($leads, $leadGroup->members(true, false));
-        $leads     = array_merge($leads, $aarGroup->members(true, false));
-        $leads     = array_merge($leads, $afGroup->members(true, false));
-        $leads     = array_merge($leads, $ccGroup->members(true, false));
-    }
-    else
-    {
-        $leads = getLeadsByType($params['type'], $auth);
-    }
+    $leads = getLeadsWithParams($params);
     if($app->odata->select !== false)
     {
-        $select = array_flip($app->odata->select);
-        $count = count($leads);
-        for($i = 0; $i < $count; $i++)
-        {
-            $leads[$i] = array_intersect_key($leads[$i]->jsonSerialize(), $select);
-        }
+        $leads = $app->odata->filterArrayPerSelect($leads);
     }
     echo json_encode($leads);
 }

@@ -10,7 +10,7 @@ function users()
     $app->post('', 'create_user');
     $app->get('/me', 'show_user');
     $app->get('/:uid', 'show_user');
-    $app->patch('/:uid', 'edit_user');
+    $app->patch('/:uid', 'editUser');
     $app->delete('/:uid', 'deleteUser');
     $app->get('/me/groups', 'list_groups_for_user');
     $app->get('/:uid/groups', 'list_groups_for_user');
@@ -100,7 +100,7 @@ function create_user()
 
 function userIsMe($app, $uid)
 {
-    return ($uid === 'me' || $uid === $app->user->getUid());
+    return ($uid === 'me' || $uid === $app->user->uid);
 }
 
 function getUserByUIDReadOnly($app, $uid)
@@ -109,7 +109,7 @@ function getUserByUIDReadOnly($app, $uid)
     {
         return $app->user;
     }
-    if($app->user->isInGroupNamed('LDAPAdmins') || $app->user->isInGroupNamed('Leads') || $app->user->isInGroupNamed('CC'))
+    if($app->user->isInGroupNamed('LDAPAdmins') || hasLeadAccess($app))
     {
         $auth = \AuthProvider::getInstance();
         $filter = new \Data\Filter("uid eq $uid");
@@ -194,24 +194,25 @@ function exceptionCodeToHttpCode($e)
     return 500;
 }
 
-function edit_user($uid = 'me')
+function getUser($app, $uid, $payload)
+{
+    if(!$app->user)
+    {
+        if(isset($payload->hash))
+        {
+            $auth = AuthProvider::getInstance();
+            $app->user = $auth->getUserByResetHash($payload->hash);
+        }
+        return false;
+    }
+    return getUserByUID($app, $uid);
+}
+
+function editUser($uid = 'me')
 {
     global $app;
     $obj = $app->request->getJsonBody();
-    $auth = AuthProvider::getInstance();
-    if(!$app->user)
-    {
-        if(isset($obj->hash))
-        {
-            $app->user = $auth->getUserByResetHash($obj->hash);
-        }
-        if(!$app->user)
-        {
-            $app->response->setStatus(401);
-            return;
-        }
-    }
-    $user = getUserByUID($app, $uid);
+    $user = getUser($app, $uid, $obj);
     if($user === false)
     {
         $app->response->setStatus(404);
@@ -299,7 +300,7 @@ function link_user($uid = 'me')
     }
     $body = $app->request->getBody();
     $obj  = json_decode($body);
-    if($uid === 'me' || $uid === $app->user->getUid())
+    if(userIsMe($uid))
     {
         $app->user->addLoginProvider($obj->provider);
         AuthProvider::getInstance()->impersonateUser($app->user);
@@ -365,7 +366,7 @@ function check_email_available()
         echo 'true';
         return;
     }
-    echo json_encode(array('res'=>false, 'email'=>$user->getEmail(), 'pending'=>$pending));
+    echo json_encode(array('res'=>false, 'email'=>$user->mail, 'pending'=>$pending));
 }
 
 function check_uid_available()
@@ -384,7 +385,7 @@ function check_uid_available()
         echo 'true';
         return;
     }
-    echo json_encode(array('res'=>false, 'uidl'=>$user->getUid(), 'pending'=>$pending));
+    echo json_encode(array('res'=>false, 'uidl'=>$user->uid, 'pending'=>$pending));
 }
 
 function reset_pass($uid)
