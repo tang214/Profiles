@@ -91,6 +91,16 @@ function show_user($uid = 'me')
     global $app;
     if(!$app->user)
     {
+        if($_SERVER['SERVER_ADDR'] === $_SERVER['REMOTE_ADDR'])
+        {
+            $user = \AuthProvider::getInstance()->getUsersByFilter(new \Data\Filter("uid eq $uid"));
+            if($user === false || !isset($user[0]))
+            {
+                $app->notFound();
+            }
+            echo $user[0]->serializeObject();
+            return;
+        } 
         $app->response->setStatus(401);
         return;
     }
