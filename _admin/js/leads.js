@@ -1,4 +1,4 @@
-function area_change(control)
+function area_change()
 {
     $.ajax({
         url: '../api/v1/areas/'+$('#area_select').val()+'/leads',
@@ -36,17 +36,17 @@ function leads_done(data)
     opt.appendTo($('#lead_select'));
     opt = $('<option/>', {value: '_new'}).html('New...');
     opt.appendTo($('#lead_select'));
-    for(i = 0; i < data.length; i++)
+    for(var i = 0; i < data.length; i++)
     {
-        var opt = $('<option/>', {value: data[i].short_name}).html(data[i].name);
-            opt.appendTo($('#lead_select'));
-            opt.data('lead', data[i]);
+        opt = $('<option/>', {value: data[i].short_name}).html(data[i].name);
+        opt.appendTo($('#lead_select'));
+        opt.data('lead', data[i]);
     }
 }
 
 function areas_done(data)
 {
-    for(i = 0; i < data.length; i++)
+    for(var i = 0; i < data.length; i++)
     {
         var opt = $('<option/>', {value: data[i].short_name}).html(data[i].name);
         opt.appendTo($('#area_select'));
@@ -71,7 +71,7 @@ function leads_post_done(data)
     }
 }
 
-function submit_lead(event)
+function submit_lead()
 {
     var obj = {};
     obj.short_name = $('#short_name').val();

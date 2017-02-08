@@ -4,7 +4,7 @@ error_reporting(E_ALL);
 //Redirect users to https
 if($_SERVER["HTTPS"] != "on")
 {
-    header("Location: https://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"]);
+    header("Location: https://".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"]);
     exit();
 }
 require_once('class.ProfilesPage.php');
@@ -31,7 +31,7 @@ else
 }
 if(isset($_GET['failed']))
 {
-    $page->add_notification('Login Failed! <a href="/reset.php" class="alert-link">Click here to reset your password.</a>', $page::NOTIFICATION_FAILED);
+    $page->addNotification('Login Failed! <a href="/reset.php" class="alert-link">Click here to reset your password.</a>', $page::NOTIFICATION_FAILED);
 }
 
 $auth = \AuthProvider::getInstance();
@@ -57,7 +57,7 @@ $page->body = '
     </div>
 </div>';
 
-$page->print_page();
+$page->printPage();
 // vim: set tabstop=4 shiftwidth=4 expandtab:
 ?>
 

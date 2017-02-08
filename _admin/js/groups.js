@@ -4,6 +4,7 @@ function groupExecute()
     var selected = [];
     switch($("#group_action")[0].value)
     {
+        default:
         case "none":
             return;
         case "del":
@@ -18,7 +19,7 @@ function groupExecute()
     {
         return;
     }
-    for(i = 0; i < selected_rows.length; i++)
+    for(var i = 0; i < selected_rows.length; i++)
     {
         selected.push(selected_rows[i].childNodes[0].innerHTML);
     }
@@ -30,7 +31,7 @@ function groupExecute()
         success: session_exec_done});
 }
 
-function renderGroupName(data, type, row)
+function renderGroupName(data)
 {
     return '<a href="group_edit.php?gid='+data+'">'+data+'</a>';
 }

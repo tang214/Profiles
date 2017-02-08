@@ -17,11 +17,10 @@ function groupsDone(jqXHR)
     if(jqXHR.status !== 200)
     {
         alert('Unable to obtain group list!');
-        console.log(jqXHR);
         return;
     }
     var groups = jqXHR.responseJSON;
-    for(i = 0; i < groups.length; i++)
+    for(var i = 0; i < groups.length; i++)
     {
         $('#group_select').append('<option value="'+groups[i].cn+'">'+groups[i].cn+'</option>');
     }
@@ -46,9 +45,14 @@ function add_clicked()
     var row = non_members.row(tr);
     var data = row.data();
     row.remove().draw(false);
-    try{
+    try
+    {
         members.row.add(data).draw(false);
-    } catch(TypeError) {}
+    }
+    catch(TypeError)
+    {
+        /*Ignore Type errors when adding aata*/
+    }
 }
 
 function remove_clicked()
@@ -59,9 +63,14 @@ function remove_clicked()
     var row = members.row(tr);
     var data = row.data();
     row.remove().draw(false);
-    try{
+    try
+    {
         non_members.row.add(data).draw(false);
-    } catch(TypeError) {}
+    }
+    catch(TypeError)
+    {
+        /*Ignore Type errors when adding aata*/
+    }
 }
 
 function groupDataDone(jqXHR)
@@ -69,7 +78,6 @@ function groupDataDone(jqXHR)
     if(jqXHR.status !== 200)
     {
         alert('Unable to obtain group list!');
-        console.log(jqXHR);
         return;
     }
     var group = jqXHR.responseJSON;
@@ -148,9 +156,9 @@ function groupDataSubmitted(e)
     var group = $('#form :input:not(select)').serializeObject();
     var members = $('#members').DataTable().data();
     group.member = [];
-    for(i = 0; i < members.length; i++)
+    for(var i = 0; i < members.length; i++)
     {
-       child = {};
+       var child = {};
        child.type = members[i].type;
        if(members[i].type === 'Group')
        {

@@ -25,9 +25,14 @@ function add_clicked()
     var row = non_members.row(tr);
     var data = row.data();
     row.remove().draw(false);
-    try{
+    try
+    {
         members.row.add(data).draw(false);
-    } catch(TypeError) {}
+    }
+    catch(TypeError)
+    {
+        /*Ignore Type errors when adding aata*/
+    }
 }
 
 function remove_clicked()
@@ -38,16 +43,21 @@ function remove_clicked()
     var row = members.row(tr);
     var data = row.data();
     row.remove().draw(false);
-    try{
+    try
+    {
         non_members.row.add(data).draw(false);
-    } catch(TypeError) {}
+    }
+    catch(TypeError)
+    {
+        /*Ignore Type errors when adding aata*/
+    }
 }
 
 function non_member_groups_done(data)
 {
-    tbody = $('#non_members tbody');
+    var tbody = $('#non_members tbody');
     var groups = {'count':0};
-    for(i = 0; i < data.data.length; i++)
+    for(var i = 0; i < data.data.length; i++)
     {
         groups[groups.count] = "cn="+data.data[i][0];
         groups.count++;
@@ -65,7 +75,6 @@ function groupSubmitDone(jqXHR)
     if(jqXHR.status !== 200)
     {
         alert('Unable to update group!');
-        console.log(jqXHR);
         return;
     }
     alert('Success!');
@@ -78,9 +87,9 @@ function groupDataSubmitted(e)
     var group = $('#form :input:not(select)').serializeObject();
     var members = $('#members').DataTable().data();
     group.member = [];
-    for(i = 0; i < members.length; i++)
+    for(var i = 0; i < members.length; i++)
     {
-       child = {};
+       var child = {};
        child.type = members[i].type;
        if(members[i].type === 'Group')
        {

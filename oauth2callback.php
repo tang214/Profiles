@@ -44,7 +44,7 @@ switch($src)
                     header('Location: login.php');
                     die();
                 case \Auth\Authenticator::ALREADY_PRESENT:
-                    header('Location: user_exists.php?src=google&uid='.$current_user->getUid());
+                    header('Location: user_exists.php?src=google&uid='.$current_user->uid);
                     die();
             }
         }
@@ -69,7 +69,7 @@ switch($src)
                     header('Location: login.php');
                     die();
                 case \Auth\Authenticator::ALREADY_PRESENT:
-                    header('Location: user_exists.php?src=twitter&uid='.$current_user->getUid());
+                    header('Location: user_exists.php?src=twitter&uid='.$current_user->uid);
                     die();
             }
         }
@@ -94,7 +94,7 @@ switch($src)
                     header('Location: login.php');
                     die();
                 case \Auth\Authenticator::ALREADY_PRESENT:
-                    header('Location: user_exists.php?src=gitlab&uid='.$current_user->getUid());
+                    header('Location: user_exists.php?src=gitlab&uid='.$current_user->uid);
                     die();
             }
         }

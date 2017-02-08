@@ -1,8 +1,6 @@
-var pendingTable;
-
 function execute_complete(jqXHR)
 {
-    console.log(jqXHR);
+    var data = jqXHR.responseJSON;
     if(data.overall == true)
     {
         $("#pending_table").dataTable().api().ajax.reload();
@@ -10,7 +8,6 @@ function execute_complete(jqXHR)
     else
     {
         alert("One or more delete operation failed");
-        console.log(data);
     }
 }
 

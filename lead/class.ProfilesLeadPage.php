@@ -26,18 +26,18 @@ class ProfilesLeadPage extends FlipAdminPage
         }
         $this->add_leads_css();
         $this->add_links();
-        $this->add_js(JS_DATATABLE, false);
-        $this->add_js(JQUERY_VALIDATE);
-        $this->add_js(JS_METISMENU);
-        $this->add_js_from_src('../_admin/js/admin.js');
-        $this->add_js(JS_LOGIN);
+        $this->addWellKnownJS(JS_DATATABLE, false);
+        $this->addWellKnownJS(JQUERY_VALIDATE);
+        $this->addWellKnownJS(JS_METISMENU);
+        $this->addJSByURI('../_admin/js/admin.js');
+        $this->addWellKnownJS(JS_LOGIN);
     }
 
     function add_leads_css()
     {
-        $this->add_css(CSS_DATATABLE);
-        $this->add_css_from_src('../css/profiles.css');
-        $this->add_css_from_src('css/lead.css');
+        $this->addWellKnownCSS(CSS_DATATABLE);
+        $this->addCSSByURI('../css/profiles.css');
+        $this->addCSSByURI('css/lead.css');
     }
 
     function add_links()
@@ -58,8 +58,8 @@ class ProfilesLeadPage extends FlipAdminPage
              'Site Sign-Off' => 'directory.php?filter=sign-off',
              'Volunteer Coordinator' => 'directory.php?filter=vc'
          );
-         $this->add_link('<span class="fa fa-dashboard"></span> Dashboard', 'index.php');
-         $this->add_link('<span class="fa fa-th-list"></span> Directory', false, $dirMenu);
+         $this->addLink('<span class="fa fa-dashboard"></span> Dashboard', 'index.php');
+         $this->addLink('<span class="fa fa-th-list"></span> Directory', false, $dirMenu);
     }
 
     function add_header()
@@ -137,19 +137,14 @@ class ProfilesLeadPage extends FlipAdminPage
         $this->add_login_form();
     }
 
-    function current_url()
-    {
-        return 'http'.(isset($_SERVER['HTTPS'])?'s':'').'://'."{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}";
-    }
-
-    function print_page($header=true)
+    function print_page($header = true)
     {
         if($this->user == false)
         {
             $this->body = '
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header">You must <a href="/login.php?return='.$this->current_url().'">log in <span class="glyphicon glyphicon-log-in"></span></a> to access the Burning Flipside Profile Admin system!</h1>
+                <h1 class="page-header">You must <a href="/login.php?return='.$this->currentURL().'">log in <span class="glyphicon glyphicon-log-in"></span></a> to access the Burning Flipside Profile Admin system!</h1>
             </div>
         </div>';
         }
@@ -162,7 +157,7 @@ class ProfilesLeadPage extends FlipAdminPage
             </div>
         </div>';
         }
-        parent::print_page(true);
+        parent::printPage(true);
     }
 
     function add_login_form()

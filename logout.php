@@ -16,5 +16,5 @@ $page->body .= '
     setTimeout(send_to_index, 5000);
 </script>';
 
-$page->print_page();
+$page->printPage();
 ?>

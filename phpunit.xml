@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit colors="true" verbose="true" stderr="true" backupGlobals="false" backupStaticAttributes="false">
+    <testsuites>
+        <testsuite name="Profiles Test Suite">
+            <directory>./tests/</directory>
+            <exclude>./tests/travis</exclude>
+        </testsuite>
+    </testsuites>
+
+    <filter>
+        <whitelist>
+            <directory suffix=".php">./</directory>
+            <exclude>
+                <directory>./tests</directory>
+                <directory>./libs</directory>
+                <directory>./js</directory>
+                <directory>./vendor</directory>
+            </exclude>
+        </whitelist>
+    </filter>
+</phpunit>

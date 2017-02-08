@@ -30,6 +30,21 @@ $app->group('/aws', 'aws');
 $app->get('/leads', 'leads');
 $app->post('/leads', 'addLead');
 
+function hasUser($app)
+{
+    return ($app->user || $app->isLocal);
+}
+
+function isAdmin($app)
+{
+    return ($app->isLocal || $app->user->isInGroupNamed('LDAPAdmins'));
+}
+
+function hasLeadAccess($app)
+{
+    return ($app->user->isInGroupNamed('Leads') || $app->user->isInGroupNamed('CC') || $app->user->isInGroupNamed('AFs'));
+}
+
 function service_root()
 {
     global $app;
@@ -109,7 +124,7 @@ function validate_post_code()
     }
     if($obj['c'] == 'US')
     {
-        if(preg_match("/^([0-9]{5})(-[0-9]{4})?$/i",$obj['postalCode']))
+        if(preg_match("/^([0-9]{5})(-[0-9]{4})?$/i", $obj['postalCode']))
         {
             $contents = file_get_contents('http://ziptasticapi.com/'.$obj['postalCode']);
             $resp = json_decode($contents);
@@ -133,6 +148,47 @@ function validate_post_code()
     }
 }
 
+function getLeadsByType($type, $auth)
+{
+    switch($params['type'])
+    {
+        case 'aar':
+            $aarGroup = $auth->getGroupByName('AAR');
+            return $aarGroup->members(true, false);
+        case 'af':
+            $afGroup = $auth->getGroupByName('AFs');
+            return $afGroup->members(true, false);
+        case 'cc':
+            $ccGroup = $auth->getGroupByName('CC');
+            return $ccGrnup->members(true, false);
+        case 'lead':
+            $leadGroup = $auth->getGroupByName('Leads');
+            return $leadGroup->members(true, false);
+        default:
+            $filter = new \Data\Filter('ou eq '.$params['type']);
+            return $auth->getUsersByFilter($filter);
+    }
+}
+
+function getLeadsWithParams($params)
+{
+    $auth = AuthProvider::getInstance();
+    if(isset($params['type']))
+    {
+        return getLeadsByType($params['type'], $auth);
+    }
+    $leads = array();
+    $leadGroup = $auth->getGroupByName('Leads');
+    $aarGroup  = $auth->getGroupByName('AAR');
+    $afGroup   = $auth->getGroupByName('AFs');
+    $ccGroup   = $auth->getGroupByName('CC');
+    $leads     = array_merge($leads, $leadGroup->members(true, false));
+    $leads     = array_merge($leads, $aarGroup->members(true, false));
+    $leads     = array_merge($leads, $afGroup->members(true, false));
+    $leads     = array_merge($leads, $ccGroup->members(true, false));
+    return $leads;
+}
+
 function leads()
 {
     global $app;
@@ -140,58 +196,15 @@ function leads()
     {
         throw new Exception('Must be logged in', ACCESS_DENIED);
     }
-    if(!$app->user->isInGroupNamed('Leads') && !$app->user->isInGroupNamed('CC') && !$app->user->isInGroupNamed('AFs'))
+    if(!hasLeadAccess($app))
     {
         throw new Exception('Must be Lead', ACCESS_DENIED);
     }
     $params = $app->request->params();
-    $auth = AuthProvider::getInstance();
-    $leads     = array();
-    if(!isset($params['type']))
-    {
-        $leadGroup = $auth->getGroupByName('Leads');
-        $aarGroup  = $auth->getGroupByName('AAR');
-        $afGroup   = $auth->getGroupByName('AFs');
-        $ccGroup   = $auth->getGroupByName('CC');
-        $leads     = array_merge($leads, $leadGroup->members(true, false));
-        $leads     = array_merge($leads, $aarGroup->members(true, false));
-        $leads     = array_merge($leads, $afGroup->members(true, false));
-        $leads     = array_merge($leads, $ccGroup->members(true, false));
-    }
-    else
-    {
-        switch($params['type'])
-        {
-            case 'aar':
-                $aarGroup  = $auth->getGroupByName('AAR');
-                $leads     = array_merge($leads, $aarGroup->members(true, false));
-                break;
-            case 'af':
-                $afGroup   = $auth->getGroupByName('AFs');
-                $leads     = array_merge($leads, $afGroup->members(true, false));
-                break;
-            case 'cc':
-                $ccGroup   = $auth->getGroupByName('CC');
-                $leads     = array_merge($leads, $ccGroup->members(true, false));
-                break;
-            case 'lead':
-                $leadGroup = $auth->getGroupByName('Leads');
-                $leads     = array_merge($leads, $leadGroup->members(true, false));
-                break;
-            default:
-                $filter    = new \Data\Filter('ou eq '.$params['type']);
-                $leads     = $auth->getUsersByFilter($filter);
-                break;
-        }
-    }
+    $leads = getLeadsWithParams($params);
     if($app->odata->select !== false)
     {
-        $select = array_flip($app->odata->select);
-        $count = count($leads);
-        for($i = 0; $i < $count; $i++)
-        {
-            $leads[$i] = array_intersect_key($leads[$i]->jsonSerialize(), $select);
-        }
+        $leads = $app->odata->filterArrayPerSelect($leads);
     }
     echo json_encode($leads);
 }
@@ -215,11 +228,11 @@ function addLead()
     }
     $body = $app->request->getBody();
     $obj  = json_decode($body);
-    $data_set = DataSetFactory::get_data_set('profiles');
+    $data_set = DataSetFactory::getDataSetByName('profiles');
     $data_table = $data_set['position'];
     $ret = $data_table->create($obj);
     echo json_encode($ret);
 }
 
 $app->run();
-?>
+/* vim: set tabstop=4 shiftwidth=4 expandtab: */

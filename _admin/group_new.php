@@ -4,9 +4,9 @@ error_reporting(E_ALL);
 require_once('class.ProfilesAdminPage.php');
 $page = new ProfilesAdminPage('Burning Flipside Profiles - Admin');
 
-$page->add_js(JS_DATATABLE, false);
-$page->add_css(CSS_DATATABLE);
-$page->add_js_from_src('js/group_new.js');
+$page->addWellKnownJS(JS_DATATABLE, false);
+$page->addWellKnownCSS(CSS_DATATABLE);
+$page->addJSByURI('js/group_new.js');
 
 $page->body .= '
 <div id="content">

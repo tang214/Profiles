@@ -38,13 +38,16 @@ function snsEndpoint()
     global $app;
     $array = $app->getJSONBody(true);
 
-    try{
+    try
+    {
         $message = Message::fromArray($array);
 
         // Validate the message
         $validator = new MessageValidator();
         $validator->validate($message);
-    } catch(\Exception $e) {
+    }
+    catch(\Exception $e)
+    {
         $app->notFound();
     }
 
@@ -76,13 +79,16 @@ function endswith($string, $test)
 {
     $strlen = strlen($string);
     $testlen = strlen($test);
-    if ($testlen > $strlen) return false;
+    if($testlen > $strlen)
+    {
+        return false;
+    }
     return substr_compare($string, $test, $strlen - $testlen, $testlen) === 0;
 }
 
 function getDestinationsForID($id)
 {
-    if(strcasecmp($id,'pboyd') === 0)
+    if(strcasecmp($id, 'pboyd') === 0)
     {
         return array('pboyd04@gmail.com');
     }

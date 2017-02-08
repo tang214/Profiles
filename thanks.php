@@ -8,5 +8,5 @@ $page->body .= '
     <p>You should receive an email shortly. This email will contain instructions needed to complete your registration.</p>
 </div>';
 
-$page->print_page();
+$page->printPage();
 ?>
