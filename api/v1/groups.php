@@ -61,7 +61,7 @@ function getFlippedKeys($keys)
         {
             $parts = explode('.', $key);
             $tmp = array_shift($parts);
-            if(!isset($flipped[$tmp]))
+            if(!isset($ret[$tmp]))
             {
                 $ret[$tmp] = array();
             }
@@ -88,7 +88,10 @@ function selectFieldsFromGroup($group, $select)
                     $count = count($group[$key]);
                     for($i = 0; $i < $count; $i++)
                     {
-                        $group[$key][$i] = array_intersect_key($group[$key][$i], $tmp);
+                        if(is_array($group[$key][$i]))
+                        {
+                            $group[$key][$i] = array_intersect_key($group[$key][$i], $tmp);
+                        }
                     }
                     continue;
                 }
