@@ -212,6 +212,7 @@ function getUser($app, $uid, $payload)
         {
             $auth = AuthProvider::getInstance();
             $app->user = $auth->getUserByResetHash($payload->hash);
+            return $app->user;
         }
         return false;
     }
@@ -221,7 +222,7 @@ function getUser($app, $uid, $payload)
 function editUser($uid = 'me')
 {
     global $app;
-    $obj = $app->request->getJsonBody();
+    $obj = $app->getJsonBody();
     $user = getUser($app, $uid, $obj);
     if($user === false)
     {
