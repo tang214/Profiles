@@ -60,6 +60,25 @@ function validateCanCreateUser($proposedUser, $auth, &$message)
     return true;
 }
 
+function validEmail($email)
+{
+    if(filter_var($email) === false)
+    {
+        return false;
+    }
+    $pos = strpos($email, '@');
+    if($pos === false)
+    {
+        return false;
+    }
+    $domain = substr($email, $pos+1);
+    if(checkdnsrr($domain, 'MX') === false)
+    {
+        return false;
+    }
+    return true;
+}
+
 function create_user()
 {
     global $app;
@@ -92,6 +111,11 @@ function create_user()
     if(validateCanCreateUser($obj, $auth, $message) === false)
     {
         echo json_encode(array('res'=>false, 'message'=>$message));
+        return;
+    }
+    else if(validEmail($obj->mail) === false)
+    {
+        echo json_encode(array('res'=>false, 'message'=>'Invalid Email Address!'));
         return;
     }
     $ret = $auth->createPendingUser($obj);
