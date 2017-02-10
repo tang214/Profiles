@@ -25,7 +25,7 @@ if(isset($_SERVER['HTTP_REFERER']) && strstr($_SERVER['HTTP_REFERER'], 'google.c
 switch($src)
 {
     case 'google':
-        $google = $auth->getAuthenticator('Auth\GoogleAuthenticator');
+        $google = $auth->getMethodByName('Auth\GoogleAuthenticator');
         if(!isset($_GET['code']))
         {
             $google->redirect();
@@ -50,7 +50,7 @@ switch($src)
         }
         break;
     case 'twitter':
-        $twitter = $auth->getAuthenticator('Auth\TwitterAuthenticator');
+        $twitter = $auth->getMethodByName('Auth\TwitterAuthenticator');
         if(!isset($_GET['oauth_token']) || !isset($_GET['oauth_verifier']))
         {
             $twitter->redirect();
@@ -75,7 +75,7 @@ switch($src)
         }
         break;
     case 'gitlab':
-        $gitlab = $auth->getAuthenticator('Auth\OAuth2\GitLabAuthenticator');
+        $gitlab = $auth->getMethodByName('Auth\OAuth2\GitLabAuthenticator');
         if(!isset($_GET['code']))
         {
             $google->redirect();
