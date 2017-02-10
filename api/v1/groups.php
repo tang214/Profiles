@@ -251,7 +251,7 @@ function getNonGroupMembers($name)
     {
         $app->notFound();
     }
-    $res = $group->getNonMemebers($app->odata->select);
+    $res = $group->getNonMembers($app->odata->select);
     $res = getNonMemberEntities($res, $keys);
     echo json_encode($res);
 }

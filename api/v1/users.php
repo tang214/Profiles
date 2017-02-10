@@ -231,6 +231,10 @@ function editUser($uid = 'me')
     }
     try
     {
+        if(isset($obj->old_uid))
+        {
+            unset($obj->old_uid);
+        }
         $user->editUser($obj);
     }
     catch(\Exception $e)
