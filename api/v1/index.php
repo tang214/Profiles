@@ -165,7 +165,7 @@ function getLeadsByType($type, $auth)
             $leadGroup = $auth->getGroupByName('Leads');
             return $leadGroup->members(true, false);
         default:
-            $filter = new \Data\Filter('ou eq '.$params['type']);
+            $filter = new \Data\Filter('ou eq '.$type);
             return $auth->getUsersByFilter($filter);
     }
 }
