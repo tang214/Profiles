@@ -150,7 +150,7 @@ function validate_post_code()
 
 function getLeadsByType($type, $auth)
 {
-    switch($params['type'])
+    switch($type)
     {
         case 'aar':
             $aarGroup = $auth->getGroupByName('AAR');
