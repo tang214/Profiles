@@ -119,6 +119,11 @@ function create_user()
         return;
     }
     $ret = $auth->createPendingUser($obj);
+    if($ret == false)
+    {
+        echo json_encode(array('res'=>false, 'message'=>'Failed to save user registration!'));
+        return;
+    }
     echo json_encode($ret);
 }
 
