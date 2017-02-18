@@ -34,7 +34,13 @@ class ProfilesAdminPage extends FlipAdminPage
             $this->body = '
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header">You must <a href="https://profiles.burningflipside.com/login.php?return='.$this->currentUrl().'">log in <span class="glyphicon glyphicon-log-in"></span></a> to access the Burning Flipside Profile Admin system!</h1>
+                <h1 class="page-header">
+                  You must
+                  <a href="'.$this->profilesUrl.'/login.php?return='.$this->currentUrl().'">log in
+                    <span class="glyphicon glyphicon-log-in"></span>
+                  </a>
+                  to access the Burning Flipside Profile Admin system!
+                </h1>
             </div>
         </div>';
         }

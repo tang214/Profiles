@@ -13,7 +13,7 @@ function login_submit_done(data)
     {
          var failed = getParameterByName('failed')*1;
          failed++;
-         window.location = 'https://profiles.burningflipside.com/login.php?failed='+failed;
+         window.location = window.profilesUrl+'/login.php?failed='+failed;
     }
     else
     {
@@ -27,7 +27,7 @@ function login_submit_done(data)
 function login_submitted(form)
 {
     $.ajax({
-        url: 'https://profiles.burningflipside.com/ajax/login.php',
+        url: window.profilesUrl+'/ajax/login.php',
         data: $(form).serialize(),
         type: 'post',
         dataType: 'json',
