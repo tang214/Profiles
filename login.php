@@ -31,7 +31,7 @@ else
 }
 if(isset($_GET['failed']))
 {
-    $page->addNotification('Login Failed! <a href="/reset.php" class="alert-link">Click here to reset your password.</a>', $page::NOTIFICATION_FAILED);
+    $page->addNotification('Login Failed! <a href="'.$page->resetUrl.'" class="alert-link">Click here to reset your password.</a>', $page::NOTIFICATION_FAILED);
 }
 
 $auth = \AuthProvider::getInstance();
@@ -60,5 +60,3 @@ $page->body = '
 $page->printPage();
 // vim: set tabstop=4 shiftwidth=4 expandtab:
 ?>
-
-

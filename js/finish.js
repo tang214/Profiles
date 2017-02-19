@@ -6,7 +6,7 @@ function time_dec()
     $('#secs').html(time_left);
     if(time_left == 0)
     {
-        window.location = 'https://profiles.burningflipside.com/login.php';
+        window.location = window.profilesUrl+'/login.php';
     }
 }
 

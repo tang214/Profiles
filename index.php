@@ -17,21 +17,21 @@ if($page->user !== null)
 {
     if(!$page->user->isProfileComplete())
     {
-        $page->addNotification('Your profile is not yet complete. Click <a href="/profile.php" class="alert-link">here</a> to complete your profile.', $page::NOTIFICATION_WARNING);
+        $page->addNotification('Your profile is not yet complete. Click <a href="'.$page->profilesUrl.'/profile.php" class="alert-link">here</a> to complete your profile.', $page::NOTIFICATION_WARNING);
     }
     $page->body .= '<h1>Need to reset your password?</h1>
-    <p>You can reset your password <a href="reset.php">here.</a></p>
+    <p>You can reset your password <a href="'.$page->resetUrl.'">here.</a></p>
 </div>';
 }
 else
 {
     $page->body .= '
     <h1>Need to register for the first time?</h1>
-    <p>You can sign up for an account <a href="register.php">here</a>.
+    <p>You can sign up for an account <a href="'.$page->registerUrl.'">here</a>.
     <h1>Forgot your username or password?</h1>
-    <p>You can lookup a forgotten username or reset your password <a href="reset.php">here.</a></p>
+    <p>You can lookup a forgotten username or reset your password <a href="'.$page->resetUrl.'">here.</a></p>
 </div>
-<script async src="'.$page->profiles_root.'/js/index.min.js"></script>';
+<script async src="'.$page->profilesUrl.'/js/index.min.js"></script>';
 }
 
 $page->printPage();
