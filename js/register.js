@@ -43,11 +43,11 @@ function backendCheckDone(jqXHR)
         var message = '';
         if(jqXHR.responseJSON.uid !== undefined)
         {
-            message = getErrorMessage('username '+json.uid, jqXHR.responseJSON.pending);
+            message = getErrorMessage('username '+jqXHR.responseJSON.uid, jqXHR.responseJSON.pending);
         }
         else if(jqXHR.responseJSON.email !== undefined)
         {
-            message = getErrorMessage('email address '+json.email, jqXHR.responseJSON.pending);
+            message = getErrorMessage('email address '+jqXHR.responseJSON.email, jqXHR.responseJSON.pending);
         }
         flagInvalid($(this), message);
         return;
