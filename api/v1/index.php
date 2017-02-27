@@ -160,7 +160,7 @@ function getLeadsByType($type, $auth)
             return $afGroup->members(true, false);
         case 'cc':
             $ccGroup = $auth->getGroupByName('CC');
-            return $ccGrnup->members(true, false);
+            return $ccGroup->members(true, false);
         case 'lead':
             $leadGroup = $auth->getGroupByName('Leads');
             return $leadGroup->members(true, false);
