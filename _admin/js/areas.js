@@ -54,7 +54,7 @@ function submit_areas()
         $.ajax({
             url: '../api/v1/areas',
             data: JSON.stringify(obj),
-            type: method,
+            type: 'POST',
             processData: false,
             dataType: 'json',
             success: areas_post_done});
