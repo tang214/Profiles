@@ -183,9 +183,10 @@ function getTypeOfEntity($entity)
 
 function getAllGroupsAndUsers($keys)
 {
-    $res = array();
+    $auth = AuthProvider::getInstance();
     $groups = $auth->getGroupsByFilter(false);
     $count  = count($groups);
+    $res = array();
     for($i = 0; $i < $count; $i++)
     {
         $tmp = json_decode(json_encode($groups[$i]), true);
