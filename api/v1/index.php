@@ -1,4 +1,29 @@
 <?php
+
+require_once('class.Singleton.php');
+require_once('class.Settings.php');
+$settings = \Settings::getInstance();
+
+// array holding allowed Origin domains
+$allowedOrigins = array(
+  $settings->getGlobalSetting('www_url', 'https://www.burningflipside.com/'),
+  $settings->getGlobalSetting('wiki_url', 'https://wiki.burningflipside.com/'),
+  $settings->getGlobalSetting('profiles_url', 'https://profiles.burningflipside.com/'),
+  $settings->getGlobalSetting('secure_url', 'https://secure.burningflipside.com/')
+);
+
+if (isset($_SERVER['HTTP_ORIGIN']) && $_SERVER['HTTP_ORIGIN'] != '') {
+  foreach ($allowedOrigins as $allowedOrigin) {
+    if (preg_match('#' . $allowedOrigin . '#', $_SERVER['HTTP_ORIGIN'])) {
+        header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
+        header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+        header('Access-Control-Allow-Credentials: true');
+        header('Access-Control-Allow-Headers: Authorization,Cookie,apikey');
+        break;
+    }
+  }
+}
+
 require_once('class.FlipREST.php');
 require_once('class.AuthProvider.php');
 
