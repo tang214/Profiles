@@ -72,7 +72,7 @@ class ProfilesLeadPage extends FlipAdminPage
         }
         if(!FlipSession::isLoggedIn())
         {
-            $log = '<a href="../login.php?return='.$this->current_url().'"><span class="glyphicon glyphicon-log-in"></span></a>';
+            $log = '<a href="'.$this->loginUrl.'?return='.$this->current_url().'"><span class="glyphicon glyphicon-log-in"></span></a>';
         }
         else
         {
@@ -144,7 +144,7 @@ class ProfilesLeadPage extends FlipAdminPage
             $this->body = '
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header">You must <a href="/login.php?return='.$this->currentURL().'">log in <span class="glyphicon glyphicon-log-in"></span></a> to access the Burning Flipside Profile Admin system!</h1>
+                <h1 class="page-header">You must <a href="'.$this->loginUrl.'?return='.$this->currentURL().'">log in <span class="glyphicon glyphicon-log-in"></span></a> to access the Burning Flipside Profile Admin system!</h1>
             </div>
         </div>';
         }

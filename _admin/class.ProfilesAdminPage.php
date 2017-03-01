@@ -36,7 +36,7 @@ class ProfilesAdminPage extends FlipAdminPage
             <div class="col-lg-12">
                 <h1 class="page-header">
                   You must
-                  <a href="'.$this->profilesUrl.'/login.php?return='.$this->currentUrl().'">log in
+                  <a href="'.$this->loginUrl.'?return='.$this->currentUrl().'">log in
                     <span class="glyphicon glyphicon-log-in"></span>
                   </a>
                   to access the Burning Flipside Profile Admin system!

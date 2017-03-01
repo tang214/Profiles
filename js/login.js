@@ -13,7 +13,7 @@ function login_submit_done(data)
     {
          var failed = getParameterByName('failed')*1;
          failed++;
-         window.location = window.profilesUrl+'/login.php?failed='+failed;
+         window.location = window.loginUrl+'?failed='+failed;
     }
     else
     {
