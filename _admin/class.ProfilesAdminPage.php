@@ -26,25 +26,5 @@ class ProfilesAdminPage extends FlipAdminPage
         $this->addLink('<span class="glyphicon glyphicon-briefcase"></span> Positions', '#', $pos_menu);
         $this->addLink('<span class="glyphicon glyphicon-cloud"></span> Sessions', 'sessions.php');
     }
-
-    function print_page($header = true)
-    {
-        if(!$this->is_admin)
-        {
-            $this->body = '
-        <div class="row">
-            <div class="col-lg-12">
-                <h1 class="page-header">
-                  You must
-                  <a href="'.$this->loginUrl.'?return='.$this->currentUrl().'">log in
-                    <span class="glyphicon glyphicon-log-in"></span>
-                  </a>
-                  to access the Burning Flipside Profile Admin system!
-                </h1>
-            </div>
-        </div>';
-        }
-        parent::printPage($header);
-    }
 }
 ?>
