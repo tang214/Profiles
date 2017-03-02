@@ -6,10 +6,10 @@ $settings = \Settings::getInstance();
 
 // array holding allowed Origin domains
 $allowedOrigins = array(
-  $settings->getGlobalSetting('www_url', 'https://www.burningflipside.com/'),
-  $settings->getGlobalSetting('wiki_url', 'https://wiki.burningflipside.com/'),
-  $settings->getGlobalSetting('profiles_url', 'https://profiles.burningflipside.com/'),
-  $settings->getGlobalSetting('secure_url', 'https://secure.burningflipside.com/')
+  $settings->getGlobalSetting('www_url', 'https://www.burningflipside.com'),
+  $settings->getGlobalSetting('wiki_url', 'https://wiki.burningflipside.com'),
+  $settings->getGlobalSetting('profiles_url', 'https://profiles.burningflipside.com'),
+  $settings->getGlobalSetting('secure_url', 'https://secure.burningflipside.com')
 );
 
 if (isset($_SERVER['HTTP_ORIGIN']) && $_SERVER['HTTP_ORIGIN'] != '') {
