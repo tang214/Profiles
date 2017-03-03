@@ -3,10 +3,13 @@ require_once('class.FlipsideProfileEmail.php');
 
 class PasswordResetEmail extends FlipsideProfileEmail
 {
+    private $hash;
+
     public function __construct($user)
     {
         parent::__construct($user);
         $this->addToAddress($user->mail, $user->displayName);
+        $this->hash = $this->user->getPasswordResetHash();
     }
 
     public function getSubject()
@@ -18,7 +21,7 @@ class PasswordResetEmail extends FlipsideProfileEmail
     {
         $settings = \Settings::getInstance();
         $profilesUrl = $settings->getGlobalSetting('profiles_url', 'https://profiles.burningflipside.com/');
-        return $profilesUrl.'/change.php?hash='.$this->user->getPasswordResetHash();
+        return $profilesUrl.'/change.php?hash='.$this->hash;
     }
 
     public function getHTMLBody()
