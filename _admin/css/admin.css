@@ -77,14 +77,6 @@ body {
     float: right;
 }
 
-.glyphicon.arrow:before {
-    content: "\e079";
-}
-
-.active > a > .glyphicon.arrow:before {
-    content: "\e114";
-}
-
 @media(min-width:768px) {
     .sidebar {
         z-index: 1;
