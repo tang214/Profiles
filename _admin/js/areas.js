@@ -20,7 +20,7 @@ function area_change(control)
 
 function areas_done(data)
 {
-    for(i = 0; i < data.length; i++)
+    for(var i = 0; i < data.length; i++)
     {
         var opt = $('<option/>', {value: data[i].short_name}).html(data[i].name);
         opt.appendTo($('#area_select'));
@@ -28,12 +28,12 @@ function areas_done(data)
     }
 }
 
-function areas_post_done(data)
+function areas_post_done()
 {
     location.reload();
 }
 
-function submit_areas(event)
+function submit_areas()
 {
     var obj = {};
     var old_name = $('#area_name').html();
@@ -48,14 +48,13 @@ function submit_areas(event)
             processData: false,
             dataType: 'json',
             success: areas_post_done});
-            method = 'PATCH';
     }
     else
     {
         $.ajax({
             url: '../api/v1/areas',
             data: JSON.stringify(obj),
-            type: method,
+            type: 'POST',
             processData: false,
             dataType: 'json',
             success: areas_post_done});

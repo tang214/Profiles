@@ -96,10 +96,14 @@ function profile_submit_done(jqXHR)
         }
         window.scrollTo(0, 0);
     }
-    else(data.error)
+    else if(jqXHR.responseJSON.message !== undefined)
     {
          alert(jqXHR.responseJSON.message);
          console.log(jqXHR);
+    }
+    else
+    {
+        alert('Unknown error saving profile');
     }
 }
 
@@ -112,7 +116,7 @@ function update_profile()
     }
     $.ajax({
         url: 'api/v1/users/me',
-        data: obj,
+        data: JSON.stringify(obj),
         type: 'PATCH',
         dataType: 'json',
         processData: false,

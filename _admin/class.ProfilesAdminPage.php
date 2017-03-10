@@ -7,7 +7,7 @@ class ProfilesAdminPage extends FlipAdminPage
     function __construct($title)
     {
         parent::__construct($title, 'LDAPAdmins');
-        $this->add_js_from_src('js/admin.js');
+        $this->addJSByURI('js/admin.js');
     }
 
     function add_links()
@@ -25,20 +25,6 @@ class ProfilesAdminPage extends FlipAdminPage
         $this->add_link('<i class="fa fa-users"></i> Groups', 'groups.php');
         $this->add_link('<i class="fa fa-briefcase"></i> Positions', '#', $pos_menu);
         $this->add_link('<i class="fa fa-cloud"></i> Sessions', 'sessions.php');
-    }
-
-    function print_page($header = true)
-    {
-        if(!$this->is_admin)
-        {
-            $this->body = '
-        <div class="row">
-            <div class="col-lg-12">
-                <h1 class="page-header">You must <a href="https://profiles.burningflipside.com/login.php?return='.$this->current_url().'">log in <span class="glyphicon glyphicon-log-in"></span></a> to access the Burning Flipside Profile Admin system!</h1>
-            </div>
-        </div>';
-        }
-        parent::print_page($header);
     }
 }
 ?>

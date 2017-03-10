@@ -41,7 +41,10 @@ function show_pending_user($hash)
     {
         $user = \AuthProvider::getInstance()->getPendingUsersByFilter(new \Data\Filter("hash eq '$hash'"));
     }
-    if($user === false) $app->halt(404);
+    if($user === false)
+    {
+        $app->halt(404);
+    }
     if(!is_object($user) && isset($user[0]))
     {
         $user = $user[0];
@@ -62,7 +65,8 @@ function delete_pending_user($hash)
     }
     else
     {
-        $res = \AuthProvider::getInstance()->delete_pending_users_by_filter(false, new \Data\Filter("hash eq '$hash'"));
+        $auth = \AuthProvider::getInstance();
+        $res = $auth->deletePendingUsersByFilter(new \Data\Filter("hash eq '$hash'"));
         echo json_encode($res);
     }
 }
@@ -78,13 +82,16 @@ function activate_user($hash)
     {
         $auth = \AuthProvider::getInstance();
         $user = $auth->getPendingUsersByFilter(new \Data\Filter("hash eq '$hash'"));
-        if($user === false || !isset($user[0])) $app->halt(404);
+        if($user === false || !isset($user[0]))
+        {
+            $app->halt(404);
+        }
         $res = $auth->activatePendingUser($user[0]);
         if($app->request->isGet())
         {
             if($res)
             {
-            	$app->redirect('../../');
+                $app->redirect('../../');
             }
             else
             {

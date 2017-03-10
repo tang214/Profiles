@@ -3,7 +3,7 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 require_once('class.ProfilesPage.php');
 $page = new ProfilesPage('Burning Flipside Profiles');
-$page->add_js_from_src('js/user_exists.js');
+$page->addJSByURI('js/user_exists.js');
 
 $auth = AuthProvider::getInstance();
 $email = false;
@@ -14,8 +14,8 @@ if(!isset($_GET['src']))
 $provider = $auth->getSuplementalProviderByHost($_GET['src']);
 if($provider !== false)
 {
-   $user = $provider->getUserFromToken(false);
-   $email = $user->getEmail();
+    $user = $provider->getUserFromToken(false);
+    $email = $user->mail;
 }
 
 $page->body .= '
@@ -41,5 +41,5 @@ $page->body .= '
     </div>
 ';
 
-$page->print_page();
+$page->printPage();
 ?>

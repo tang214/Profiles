@@ -4,14 +4,14 @@ error_reporting(E_ALL);
 //Redirect users to https
 if($_SERVER["HTTPS"] != "on")
 {
-    header("Location: https://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"]);
+    header("Location: https://".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"]);
     exit();
 }
 require_once('class.FlipsideCAPTCHA.php');
 require_once('class.ProfilesPage.php');
 $page = new ProfilesPage('Burning Flipside Profiles Registration');
-$page->add_js_from_src('/js/zxcvbn-async.js');
-$page->add_js_from_src('/js/register.js');
+$page->addJSByURI('/js/zxcvbn-async.js');
+$page->addJSByURI('/js/register.js');
 
 $captcha = new FlipsideCAPTCHA();
 FlipSession::setVar('captcha', $captcha);
@@ -27,7 +27,7 @@ else
 
 if(FlipSession::isLoggedIn())
 {
-    $page->add_notification('You are currently logged in to the system. Are you sure you want to register another account?');
+    $page->addNotification('You are currently logged in to the system. Are you sure you want to register another account?');
 }
 
 $page->body = '
@@ -81,7 +81,7 @@ $page->body = '
     </form>
 </div>';
 
-$page->print_page();
+$page->printPage();
 // vim: set tabstop=4 shiftwidth=4 expandtab:
 ?>
 

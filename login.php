@@ -4,11 +4,22 @@ error_reporting(E_ALL);
 //Redirect users to https
 if($_SERVER["HTTPS"] != "on")
 {
-    header("Location: https://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"]);
+    header("Location: https://".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"]);
     exit();
 }
 require_once('class.ProfilesPage.php');
 $page = new ProfilesPage('Burning Flipside Profiles Login');
+if($page->user !== false && $page->user !== null)
+{
+    if(isset($_GET['return']))
+    {
+        header('Location: '.$_GET['return']);
+    }
+    else
+    {
+        header('Location: /index.php');
+    }
+}
 
 if(isset($_GET['return']))
 {
@@ -20,11 +31,11 @@ else
 }
 if(isset($_GET['failed']))
 {
-    $page->add_notification('Login Failed! <a href="/reset.php" class="alert-link">Click here to reset your password.</a>', $page::NOTIFICATION_FAILED);
+    $page->addNotification('Login Failed! <a href="'.$page->resetUrl.'" class="alert-link">Click here to reset your password.</a>', $page::NOTIFICATION_FAILED);
 }
 
 $auth = \AuthProvider::getInstance();
-$auth_links = $auth->get_supplementary_links();
+$auth_links = $auth->getSupplementaryLinks();
 $auth_links_str = '';
 $count = count($auth_links);
 for($i = 0; $i < $count; $i++)
@@ -46,8 +57,6 @@ $page->body = '
     </div>
 </div>';
 
-$page->print_page();
+$page->printPage();
 // vim: set tabstop=4 shiftwidth=4 expandtab:
 ?>
-
-

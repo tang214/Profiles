@@ -11,6 +11,10 @@ function change_password_done(jqXHR)
             alert('Unknown error changing password!');
         }
     }
+    else if(jqXHR.status === 401)
+    {
+        alert('Unable to change password. Make sure the current password is valid or the request a new password reset link.');
+    }
     else if(jqXHR.status === 200)
     {
         window.location = '/index.php';

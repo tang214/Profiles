@@ -25,9 +25,14 @@ function add_clicked()
     var row = non_members.row(tr);
     var data = row.data();
     row.remove().draw(false);
-    try{
+    try
+    {
         members.row.add(data).draw(false);
-    } catch(TypeError) {}
+    }
+    catch(TypeError)
+    {
+        /*Ignore Type errors when adding aata*/
+    }
 }
 
 function remove_clicked()
@@ -38,16 +43,21 @@ function remove_clicked()
     var row = members.row(tr);
     var data = row.data();
     row.remove().draw(false);
-    try{
+    try
+    {
         non_members.row.add(data).draw(false);
-    } catch(TypeError) {}
+    }
+    catch(TypeError)
+    {
+        /*Ignore Type errors when adding aata*/
+    }
 }
 
 function non_member_groups_done(data)
 {
-    tbody = $('#non_members tbody');
+    var tbody = $('#non_members tbody');
     var groups = {'count':0};
-    for(i = 0; i < data.data.length; i++)
+    for(var i = 0; i < data.data.length; i++)
     {
         groups[groups.count] = "cn="+data.data[i][0];
         groups.count++;
@@ -60,50 +70,69 @@ function non_member_groups_done(data)
             success: non_member_users_done});
 }
 
-function group_submit_done(data)
+function groupSubmitDone(jqXHR)
 {
-    if(data.error)
+    if(jqXHR.status !== 200)
     {
-         if(data.invalid)
-         {
-             var label = $('[for="'+data.invalid+'"]');
-             if(label.length > 0)
-             {
-                 label.html(data.error);
-                 label.show();
-             }
-             else
-             {
-                 alert(data.error);
-             }
-         }
-         else
-         {
-             alert(data.error);
-         }
-         console.log(data.error);
+        alert('Unable to update group!');
+        return;
+    }
+    alert('Success!');
+    location = 'group_edit.php?gid='+getGID();
+}
+
+function groupDataSubmitted(e)
+{
+    e.preventDefault();
+    var group = $('#form :input:not(select)').serializeObject();
+    var members = $('#members').DataTable().data();
+    group.member = [];
+    for(var i = 0; i < members.length; i++)
+    {
+       var child = {};
+       child.type = members[i].type;
+       if(members[i].type === 'Group')
+       {
+           child.cn = members[i].cn;
+       }
+       else
+       {
+           child.uid = members[i].uid;
+       }
+       group.member.push(child);
+    }
+    $.ajax({
+        url: '../api/v1/groups',
+        data: JSON.stringify(group),
+        type: 'POST',
+        dataType: 'json',
+        processData: false,
+        complete: groupSubmitDone});
+    return false;
+}
+
+function renderID(data, type, row)
+{
+    if(row.uid !== undefined)
+    {
+        return row.uid;
     }
     else
     {
-        console.log(data);
-        window.location = 'index.php';
+        return row.cn;
     }
 }
 
-function group_data_submitted(form)
+function renderName(data, type, row)
 {
-    var members = $('#members').DataTable().data();
-    var members_str = "";
-    for(i = 0; i < members.length; i++)
+    if(row.sn !== undefined)
     {
-        members_str += "&members[]="+members[i].dn;
-    } 
-    $.ajax({
-        url: 'ajax/groups.php',
-        data: $(form).serialize()+members_str+'&action=new',
-        type: 'post',
-        dataType: 'json',
-        success: group_submit_done});
+        return row.givenName+' '+row.sn;
+    }
+    else
+    {
+        return row.description;
+    }
 }
 
 function do_group_edit_init()
@@ -113,20 +142,21 @@ function do_group_edit_init()
     $('#members').dataTable({
         'columns': [
             {'className':'removeControl','data':null,'defaultContent':'','orderable':false},
-            {'data': "username", 'defaultContent':''},
-            {'data': 'email', 'defaultContent':''},
-            {'data': 'name', 'defaultContent':''}],
+            {'data': 'uid', 'defaultContent':'', 'render': renderID},
+            {'data': 'mail', 'defaultContent':'N/A'},
+            {'data': 'name', 'defaultContent':'', 'render': renderName}],
         'order': [[1, 'asc']]
     });
     $('#non-members').dataTable({
-        'columns':[{'className':'addControl','data':null,'defaultContent':'','orderable':false},{'data': "username"},{'data': 'email'},{'data': 'name'}],
+        'columns':[
+            {'className':'addControl','data':null,'defaultContent':'','orderable':false},
+            {'data': 'uid', 'defaultContent':'', 'render': renderID},
+            {'data': 'mail', 'defaultContent':'N/A'},
+            {'data': 'name', 'defaultContent':'', 'render': renderName}],
         'order': [[1, 'asc']],
-        'ajax': 'ajax/groups.php?gid=null&nonMembersOnly=true'
+        'ajax': '../api/v1/groups/none/non-members?$select=cn,mail,description,givenName,sn,uid,type&fmt=data-table'
     });
-    $("#form").validate({
-        debug: true,
-        submitHandler: group_data_submitted
-    });
+    $("#form").submit(groupDataSubmitted);
     $('#members tbody').on('click', 'td.removeControl', remove_clicked);
     $('#non-members tbody').on('click', 'td.addControl', add_clicked);
     $('#submit').removeAttr("disabled");

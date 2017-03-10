@@ -4,21 +4,13 @@ error_reporting(E_ALL);
 require_once('class.ProfilesAdminPage.php');
 $page = new ProfilesAdminPage('Burning Flipside Profiles - Admin');
 
-$page->add_js(JS_BOOTSTRAP_FH);
-$page->add_css(CSS_BOOTSTRAP_FH);
+$page->addWellKnownJS(JS_BOOTSTRAP_FH);
+$page->addJSByURI('js/user_edit.js');
 
-$script_start_tag = $page->create_open_tag('script', array('src'=>'js/user_edit.js'));
-$script_close_tag = $page->create_close_tag('script');
-$page->add_head_tag($script_start_tag.$script_close_tag);
-
-//Add Jquery validator
-$script_start_tag = $page->create_open_tag('script', array('src'=>'/js/jquery.validate.js'));
-$page->add_head_tag($script_start_tag.$script_close_tag);
-
-$hidden='';
+$hidden = '';
 if(!isset($_GET['uid']))
 {
-    $hidden='style="display: none"';
+    $hidden = 'style="display: none"';
 }
 
     $page->body .= '

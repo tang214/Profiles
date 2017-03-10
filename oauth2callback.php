@@ -17,7 +17,7 @@ else if(strstr($_SERVER['HTTP_REFERER'], 'gitlab.com') !== false)
 }
 
 $ref = '.';
-if(strstr($_SERVER['HTTP_REFERER'], 'google.com') === false)
+if(isset($_SERVER['HTTP_REFERER']) && strstr($_SERVER['HTTP_REFERER'], 'google.com') === false)
 {
     $ref = $_SERVER['HTTP_REFERER'];
 }
@@ -25,7 +25,7 @@ if(strstr($_SERVER['HTTP_REFERER'], 'google.com') === false)
 switch($src)
 {
     case 'google':
-        $google = $auth->getAuthenticator('Auth\GoogleAuthenticator');
+        $google = $auth->getMethodByName('Auth\GoogleAuthenticator');
         if(!isset($_GET['code']))
         {
             $google->redirect();
@@ -44,13 +44,13 @@ switch($src)
                     header('Location: login.php');
                     die();
                 case \Auth\Authenticator::ALREADY_PRESENT:
-                    header('Location: user_exists.php?src=google&uid='.$current_user['uid']);
+                    header('Location: user_exists.php?src=google&uid='.$current_user->uid);
                     die();
             }
         }
         break;
     case 'twitter':
-        $twitter = $auth->getAuthenticator('Auth\TwitterAuthenticator');
+        $twitter = $auth->getMethodByName('Auth\TwitterAuthenticator');
         if(!isset($_GET['oauth_token']) || !isset($_GET['oauth_verifier']))
         {
             $twitter->redirect();
@@ -69,13 +69,13 @@ switch($src)
                     header('Location: login.php');
                     die();
                 case \Auth\Authenticator::ALREADY_PRESENT:
-                    header('Location: user_exists.php?src=twitter&uid='.$current_user['uid']);
+                    header('Location: user_exists.php?src=twitter&uid='.$current_user->uid);
                     die();
             }
         }
         break;
     case 'gitlab':
-        $gitlab = $auth->getAuthenticator('Auth\OAuth2\GitLabAuthenticator');
+        $gitlab = $auth->getMethodByName('Auth\OAuth2\GitLabAuthenticator');
         if(!isset($_GET['code']))
         {
             $google->redirect();
@@ -94,7 +94,7 @@ switch($src)
                     header('Location: login.php');
                     die();
                 case \Auth\Authenticator::ALREADY_PRESENT:
-                    header('Location: user_exists.php?src=gitlab&uid='.$current_user['uid']);
+                    header('Location: user_exists.php?src=gitlab&uid='.$current_user->uid);
                     die();
             }
         }

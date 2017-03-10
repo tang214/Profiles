@@ -12,9 +12,15 @@ function getUID()
     }
 }
 
-function users_done(data)
+function usersDone(jqXHR)
 {
-    var users = data;
+    if(jqXHR.status !== 200)
+    {
+        alert('Unable to obtain user list!');
+        console.log(jqXHR);
+        return;
+    }
+    var users = jqXHR.responseJSON;
     for(i = 0; i < users.length; i++)
     {
         $('#user_select').append('<option value="'+users[i].uid+'">'+users[i].uid+'</option>');
@@ -29,12 +35,24 @@ function users_done(data)
 var leads = null;
 var user = null;
 
-function areas_done(data)
+function areasDone(jqXHR)
 {
-    var areas = data;
+    if(jqXHR.status !== 200)
+    {
+        alert('Unable to obtain area list!');
+        console.log(jqXHR);
+        return;
+    }
+    var areas = jqXHR.responseJSON;
     for(i = 0; i < areas.length; i++)
     {
         $('#ou').append('<option value="'+areas[i].short_name+'">'+areas[i].name+'</option>');
+        $.ajax({
+            url: '../api/v1/areas/'+areas[i].short_name+'/leads',
+            type: 'get',
+            dataType: 'json',
+            context: areas[i].short_name,
+            success: leadsDone});
     }
     if(user != null)
     {
@@ -43,9 +61,14 @@ function areas_done(data)
     }
 }
 
-function leads_done(data)
+function leadsDone(data)
 {
     leads = data;
+    if(leads === null)
+    {
+        leads = {};
+    }
+    leads[this] = data;
     area_change($('#ou'));
 }
 
@@ -59,68 +82,74 @@ function area_change(control)
     if(leads != null)
     {
         $('#title').html('<option></option>');
-        for(i = 0; i < leads.length; i++)
+        var areaLeads = leads[val];
+        if(areaLeads === undefined) return;
+        for(i = 0; i < areaLeads.length; i++)
         {
-            if(leads[i].area == val)
+            var option = $('<option value="'+areaLeads[i].short_name+'">'+areaLeads[i].name+'</option>');
+            if(user !== null && user.title[0] == areaLeads[i].short_name)
             {
-                $('#title').append('<option value="'+leads[i].short_name+'">'+leads[i].name+'</option>');
+                option.attr('selected', 'true');
             }
+            $('#title').append(option);
         }
     }
 }
 
-function user_data_done(data)
+function userDataDone(jqXHR)
 {
-    user = data;
-    $('#uid').html(data.uid);
-    $('#uid_x').val(data.uid);
-    $('#old_uid').val(data.uid);
-    $('#dn').html(data.dn);
-    $('#givenName').val(data.givenName);
-    $('#sn').val(data.sn);
-    $('#displayName').val(data.displayName);
-    $('#mail').val(data.mail);
-    $('#mobile').val(data.mobile);
-    $('#postalAddress').val(data.postalAddress);
-    $('#postalCode').val(data.postalCode);
-    $('#l').val(data.l);
-    $('#st').val(data.st);
-    $('#ou').val(data.ou);
+    if(jqXHR.status !== 200)
+    {
+        alert('Unable to obtain user data!');
+        console.log(jqXHR);
+        return;
+    }
+    user = jqXHR.responseJSON;
+    $('#uid').html(user.uid);
+    $('#uid_x').val(user.uid);
+    $('#old_uid').val(user.uid);
+    $('#dn').html(user.dn);
+    $('#givenName').val(user.givenName);
+    $('#sn').val(user.sn);
+    $('#displayName').val(user.displayName);
+    $('#mail').val(user.mail);
+    $('#mobile').val(user.mobile);
+    $('#postalAddress').val(user.postalAddress);
+    $('#postalCode').val(user.postalCode);
+    $('#l').val(user.l);
+    $('#st').val(user.st);
+    $('#ou').val(user.ou);
     area_change($('#ou'));
-    $('#title').val(data.title);
+    $('#title').val(user.title[0]);
     $('#user_data').show(); 
 }
 
-function populate_user_dropdown()
+function populateUserDropdown()
 {
     //Turn off events on the dropdown
     $('#user_select').change(null);
+    $('#user_select').empty();
     $.ajax({
         url: '../api/v1/users?$select=uid',
         type: 'get',
         dataType: 'json',
-        success: users_done});
+        complete: usersDone});
     //Enable events on the dropdown
     $('#user_select').change(userSelectChange);
 }
 
-function populate_area_dropdown()
+function populateAreaDropdown()
 {
     $.when(
         $.ajax({
             url: '../api/v1/areas',
             type: 'get',
             dataType: 'json',
-            success: areas_done}),
-        $.ajax({
-            url: '../api/v1/leads',
-            type: 'get',
-            dataType: 'json',
-            success: leads_done})
-    ).done(populate_user_data);
+            complete: areasDone})
+    ).done(populateUserData);
 }
 
-function populate_user_data()
+function populateUserData()
 {
     var uid = getUID();
     if(($('#user_data').length > 0) && (uid != null))
@@ -129,47 +158,47 @@ function populate_user_data()
             url: '../api/v1/users/'+uid,
             type: 'get',
             dataType: 'json',
-            success: user_data_done});
+            complete: userDataDone});
     }
 }
 
 function userSelectChange()
 {
     _uid = $(this).val();
-    populate_user_data(); 
+    populateUserData(); 
 }
 
-function user_submit_done(data)
+function userSubmitDone(jqXHR)
 {
-    if(data.error)
+    if(jqXHR.status !== 200)
     {
-         alert(data.error);
-         console.log(data.error);
+        alert('Unable to set user data!');
+        console.log(jqXHR);
+        return;
     }
-    else
-    {
-        alert("Success!");
-    }
+    alert("Success!");
+    location = 'user_edit.php?uid='+getUID();
 }
 
-function user_data_submitted(form)
+function userDataSubmitted(e)
 {
+    e.preventDefault();
+    var obj = $(e.target).serializeObject();
     $.ajax({
-        url: '/ajax/user.php',
-        data: $(form).serialize(),
-        type: 'post',
+        url: '../api/v1/users/'+getUID(),
+        data: JSON.stringify(obj),
+        type: 'PATCH',
         dataType: 'json',
-        success:user_submit_done});
+        processData: false,
+        complete: userSubmitDone});
+    return false;
 }
 
 function do_user_edit_init()
 {
-    populate_user_dropdown();
-    populate_area_dropdown();
-    $("#form").validate({
-        debug: true,
-        submitHandler: user_data_submitted
-    });
+    populateUserDropdown();
+    populateAreaDropdown();
+    $("#form").submit(userDataSubmitted);
 }
 
 $(do_user_edit_init);

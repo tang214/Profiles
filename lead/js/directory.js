@@ -1,5 +1,9 @@
 function render_name(data, type, row, meta)
 {
+    if(data === undefined)
+    {
+        return '';
+    }
     if(data === false)
     {
         return row['sn'];
@@ -26,6 +30,10 @@ function render_phone(data, type, row, meta)
 
 function render_position(data, type, row, meta)
 {
+    if(data === false)
+    {
+        return '';
+    }
     if(data != null)
     {
         return data+'<span style="display: none;">'+row.area+'</span>';
@@ -126,11 +134,17 @@ function sort_position_desc(x, y)
 
 function table_drawn()
 {
+    $('#directory tbody tr').filter(
+    function(){
+        return $(this).find('td').length == $(this).find('td:empty').length;
+    }).hide();
+    $('#directory tbody tr').off('click', show_details);
     $('#directory tbody tr').on('click', show_details);
 }
 
 function show_details(e)
 {
+    console.log(e);
     var tr    = $(this).closest('tr');
     var row   = $('#directory').DataTable().row(tr);
     var data  = row.data();
@@ -183,12 +197,12 @@ function init_page()
         'order': [[0, 'asc']],
         'columns': [
             {'data':'givenName', 'render': render_name},
-            {'data':'displayName'},
+            {'data':'displayName', 'defaultContent':''},
             {'data':'titlenames', 'type': 'position', 'render': render_position},
-            {'data':'ou', 'visible': false}
+            {'data':'ou', 'visible': false, 'defaultContent':''}
         ]
     });
     $('#directory').on('draw.dt', table_drawn);
 }
 
-$(init_page)
+$(init_page);

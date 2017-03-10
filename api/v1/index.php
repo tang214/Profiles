@@ -1,4 +1,29 @@
 <?php
+
+require_once('class.Singleton.php');
+require_once('class.Settings.php');
+$settings = \Settings::getInstance();
+
+// array holding allowed Origin domains
+$allowedOrigins = array(
+  $settings->getGlobalSetting('www_url', 'https://www.burningflipside.com/'),
+  $settings->getGlobalSetting('wiki_url', 'https://wiki.burningflipside.com/'),
+  $settings->getGlobalSetting('profiles_url', 'https://profiles.burningflipside.com/'),
+  $settings->getGlobalSetting('secure_url', 'https://secure.burningflipside.com/')
+);
+
+if (isset($_SERVER['HTTP_ORIGIN']) && $_SERVER['HTTP_ORIGIN'] != '') {
+  foreach ($allowedOrigins as $allowedOrigin) {
+    if (preg_match('#' . $allowedOrigin . '#', $_SERVER['HTTP_ORIGIN'])) {
+        header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
+        header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+        header('Access-Control-Allow-Credentials: true');
+        header('Access-Control-Allow-Headers: Authorization,Cookie,apikey');
+        break;
+    }
+  }
+}
+
 require_once('class.FlipREST.php');
 require_once('class.AuthProvider.php');
 
@@ -12,6 +37,8 @@ require('users.php');
 require('pending_users.php');
 require('sessions.php');
 require('areas.php');
+require('groups.php');
+require('aws.php');
 
 $app = new FlipREST();
 $app->get('(/)', 'service_root');
@@ -24,7 +51,14 @@ $app->group('/zip', 'postalcode');
 $app->group('/pending_users', 'pending_users');
 $app->group('/sessions', 'sessions');
 $app->group('/areas', 'areas');
+$app->group('/aws', 'aws');
 $app->get('/leads', 'leads');
+$app->post('/leads', 'addLead');
+
+function hasUser($app)
+{
+    return ($app->user || $app->isLocal);
+}
 
 function service_root()
 {
@@ -123,7 +157,7 @@ function validate_post_code()
     }
     if($obj['c'] == 'US')
     {
-        if(preg_match("/^([0-9]{5})(-[0-9]{4})?$/i",$obj['postalCode']))
+        if(preg_match("/^([0-9]{5})(-[0-9]{4})?$/i", $obj['postalCode']))
         {
             $contents = file_get_contents('http://ziptasticapi.com/'.$obj['postalCode']);
             $resp = json_decode($contents);
@@ -147,6 +181,47 @@ function validate_post_code()
     }
 }
 
+function getLeadsByType($type, $auth)
+{
+    switch($type)
+    {
+        case 'aar':
+            $aarGroup = $auth->getGroupByName('AAR');
+            return $aarGroup->members(true, false);
+        case 'af':
+            $afGroup = $auth->getGroupByName('AFs');
+            return $afGroup->members(true, false);
+        case 'cc':
+            $ccGroup = $auth->getGroupByName('CC');
+            return $ccGroup->members(true, false);
+        case 'lead':
+            $leadGroup = $auth->getGroupByName('Leads');
+            return $leadGroup->members(true, false);
+        default:
+            $filter = new \Data\Filter('ou eq '.$type);
+            return $auth->getUsersByFilter($filter);
+    }
+}
+
+function getLeadsWithParams($params)
+{
+    $auth = AuthProvider::getInstance();
+    if(isset($params['type']))
+    {
+        return getLeadsByType($params['type'], $auth);
+    }
+    $leads = array();
+    $leadGroup = $auth->getGroupByName('Leads');
+    $aarGroup  = $auth->getGroupByName('AAR');
+    $afGroup   = $auth->getGroupByName('AFs');
+    $ccGroup   = $auth->getGroupByName('CC');
+    $leads     = array_merge($leads, $leadGroup->members(true, false));
+    $leads     = array_merge($leads, $aarGroup->members(true, false));
+    $leads     = array_merge($leads, $afGroup->members(true, false));
+    $leads     = array_merge($leads, $ccGroup->members(true, false));
+    return $leads;
+}
+
 function leads()
 {
     global $app;
@@ -154,57 +229,17 @@ function leads()
     {
         throw new Exception('Must be logged in', ACCESS_DENIED);
     }
-    if(!$app->user->isInGroupNamed("Leads") && !$app->user->isInGroupNamed("CC"))
+    if(!hasLeadAccess($app))
     {
         throw new Exception('Must be Lead', ACCESS_DENIED);
     }
     $params = $app->request->params();
-    $auth = AuthProvider::getInstance();
-    $leads     = array();
-    if(!isset($params['type']))
+    $leads = getLeadsWithParams($params);
+    if($app->odata->select !== false)
     {
-        $leadGroup = $auth->getGroupByName('Leads');
-        $aarGroup  = $auth->getGroupByName('AAR');
-        $afGroup   = $auth->getGroupByName('AFs');
-        $ccGroup   = $auth->getGroupByName('CC');
-        $leads     = array_merge($leads, $leadGroup->members(true));
-        $leads     = array_merge($leads, $aarGroup->members(true));
-        $leads     = array_merge($leads, $afGroup->members(true));
-        $leads     = array_merge($leads, $ccGroup->members(true));
-    }
-    else
-    {
-        switch($params['type'])
-        {
-            case 'aar':
-                $aarGroup  = $auth->getGroupByName('AAR');
-                $leads     = array_merge($leads, $aarGroup->members(true));
-                break;
-            case 'af':
-                $afGroup   = $auth->getGroupByName('AFs');
-                $leads     = array_merge($leads, $afGroup->members(true));
-                break;
-            case 'cc':
-                $ccGroup   = $auth->getGroupByName('CC');
-                $leads     = array_merge($leads, $ccGroup->members(true));
-                break;
-            case 'lead':
-                $leadGroup = $auth->getGroupByName('Leads');
-                $leads     = array_merge($leads, $leadGroup->members(true));
-                break;
-            default:
-                $filter    = new \Data\Filter('ou eq '.$params['type']);
-                $leads     = $auth->getUsersByFilter($filter);
-                break;
-        }
+        $leads = $app->odata->filterArrayPerSelect($leads);
     }
     echo json_encode($leads);
-}
-
-function groups()
-{
-    global $app;
-    $app->get('', 'list_groups');
 }
 
 function postalcode()
@@ -213,5 +248,24 @@ function postalcode()
     $app->post('', 'validate_post_code');
 }
 
+function addLead()
+{
+    global $app;
+    if(!$app->user)
+    {
+        throw new Exception('Must be logged in', ACCESS_DENIED);
+    }
+    if(!$app->user->isInGroupNamed('LDAPAdmins'))
+    {
+        throw new Exception('Must be LDAPAdmins', ACCESS_DENIED);
+    }
+    $body = $app->request->getBody();
+    $obj  = json_decode($body);
+    $data_set = DataSetFactory::getDataSetByName('profiles');
+    $data_table = $data_set['position'];
+    $ret = $data_table->create($obj);
+    echo json_encode($ret);
+}
+
 $app->run();
-?>
+/* vim: set tabstop=4 shiftwidth=4 expandtab: */

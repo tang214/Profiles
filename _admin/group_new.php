@@ -4,15 +4,11 @@ error_reporting(E_ALL);
 require_once('class.ProfilesAdminPage.php');
 $page = new ProfilesAdminPage('Burning Flipside Profiles - Admin');
 
-$script_start_tag = $page->create_open_tag('script', array('src'=>'js/group_new.js'));
-$script_close_tag = $page->create_close_tag('script');
-$page->add_head_tag($script_start_tag.$script_close_tag);
+$page->addWellKnownJS(JS_DATATABLE, false);
+$page->addWellKnownCSS(CSS_DATATABLE);
+$page->addJSByURI('js/group_new.js');
 
-//Add Jquery validator
-$script_start_tag = $page->create_open_tag('script', array('src'=>'/js/jquery.validate.js'));
-$page->add_head_tag($script_start_tag.$script_close_tag);
-
-    $page->body .= '
+$page->body .= '
 <div id="content">
     <form method="post" id="form">
         <fieldset id="group_data">

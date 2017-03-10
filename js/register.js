@@ -1,37 +1,58 @@
-function email_check_done(jqXHR)
+function flagInvalid(item, message)
 {
-    if(jqXHR.status != 200)
+    item.data('valid', false);
+    item.parents('.form-group').addClass('has-error');
+    item.parents('.form-group').removeClass('has-success');
+    if(message !== undefined)
     {
-        $(this).data('valid', false);
-        $(this).parents('.form-group').addClass('has-error');
+        item.parent().append('<div class="col-sm-10">'+message+'</div>');
+    }
+}
+
+function flagValid(item)
+{
+    item.data('valid', true);
+    item.parents('.form-group').removeClass('has-error');
+    item.parents('.form-group').addClass('has-success');
+    item.next('div').remove();
+}
+
+function responseIsInvalid(jqXHR)
+{
+    return (jqXHR.status !== 200 || jqXHR.responseJSON === undefined);
+}
+
+function getErrorMessage(text, pending)
+{
+    if(pending === true)
+    {
+        return 'The '+text+' is already registered, but the account is not yet active. Please check your email for a confirmation email.';
+    }
+    return 'The '+text+' is already used. Please go <a href="reset.php">here</a> to reset the password for that account.';
+}
+
+function backendCheckDone(jqXHR)
+{
+    if(responseIsInvalid(jqXHR))
+    {
+        flagInvalid($(this));
         return;
     }
-    else if(jqXHR.responseJSON !== undefined)
+    if(jqXHR.responseJSON === false || jqXHR.responseJSON.res === false)
     {
-        if(jqXHR.responseJSON === false || jqXHR.responseJSON.res === false)
+        var message = '';
+        if(jqXHR.responseJSON.uid !== undefined)
         {
-            $(this).data('valid', false);
-            $(this).parents('.form-group').addClass('has-error');
-            if(jqXHR.responseJSON.email !== undefined)
-            {
-               if(jqXHR.responseJSON.pending === true)
-               {
-                   $(this).parent().append('<div class="col-sm-10">The email address '+jqXHR.responseJSON.email+' is already registered, but the account is not yet active. Please check your email for a confirmation email.</div>');
-               }
-               else
-               {
-                   $(this).parent().append('<div class="col-sm-10">The email address '+jqXHR.responseJSON.email+' is already used. Please go <a href="reset.php">here</a> to reset the password for that account.</div>');
-               }
-            }
-            return;
+            message = getErrorMessage('username '+jqXHR.responseJSON.uid, jqXHR.responseJSON.pending);
         }
-        else
+        else if(jqXHR.responseJSON.email !== undefined)
         {
-            $(this).data('valid', true);
-            $(this).parents('.form-group').removeClass('has-error');
-            $(this).next('div').remove();
+            message = getErrorMessage('email address '+jqXHR.responseJSON.email, jqXHR.responseJSON.pending);
         }
+        flagInvalid($(this), message);
+        return;
     }
+    flagValid($(this));
 }
 
 function check_email(e)
@@ -42,8 +63,7 @@ function check_email(e)
         var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
         if(re.test(email) === false)
         {
-            $(control).data('valid', false);
-            $(control).parents('.form-group').addClass('has-error');
+            flagInvalid($(control));
             return;
         }
     }
@@ -53,44 +73,8 @@ function check_email(e)
         type: 'POST',
         dataType: 'json',
         context: control,
-        complete: email_check_done
+        complete: backendCheckDone
     });
-}
-
-function uid_check_done(jqXHR)
-{
-    if(jqXHR.status != 200)
-    {
-        $(this).data('valid', false);
-        $(this).parents('.form-group').addClass('has-error');
-        return;
-    }
-    else if(jqXHR.responseJSON !== undefined)
-    {
-        if(jqXHR.responseJSON === false || jqXHR.responseJSON.res === false)
-        {
-            $(this).data('valid', false);
-            $(this).parents('.form-group').addClass('has-error');
-            if(jqXHR.responseJSON.uid !== undefined)
-            {
-               if(jqXHR.responseJSON.pending === true)
-               {
-                   $(this).parent().append('<div class="col-sm-10">The username '+jqXHR.responseJSON.uid+' is already registered, but the account is not yet active. Please check your email for a confirmation email.</div>');
-               }
-               else
-               {
-                   $(this).parent().append('<div class="col-sm-10">The username '+jqXHR.responseJSON.uid+' is already used. Please go <a href="reset.php">here</a> to reset the password for that account.</div>');
-               }
-            }
-            return;
-        }
-        else
-        {
-            $(this).data('valid', true);
-            $(this).parents('.form-group').removeClass('has-error');
-            $(this).next('div').remove();
-        }
-    }
 }
 
 function check_uid(e)
@@ -98,14 +82,12 @@ function check_uid(e)
     var control = e.target;
     if(control.value.indexOf(',') > -1)
     {
-        $(control).data('valid', false);
-        $(control).parents('.form-group').addClass('has-error');
+        flagInvalid($(control));
         return;
     }
     if(control.value.indexOf('=') > -1)
     {
-        $(control).data('valid', false);
-        $(control).parents('.form-group').addClass('has-error');
+        flagInvalid($(control));
         return;
     }
     $.ajax({
@@ -114,7 +96,7 @@ function check_uid(e)
         type: 'POST',
         dataType: 'json',
         context: control,
-        complete: uid_check_done
+        complete: backendCheckDone
     });
 }
 
@@ -124,28 +106,25 @@ function check_pass(e)
     var value = control.value;
     if(value.length < 4)
     {
-        $(control).data('valid', false);
-        $(control).parents('.form-group').addClass('has-error');
+        flagInvalid($(control));
         return;
     }
     if(/[a-z]/.test(value) === false)
     {
-        $(control).data('valid', false);
-        $(control).parents('.form-group').addClass('has-error');
+        flagInvalid($(control));
         return;
     }
     if(/[A-Z]/.test(value) === false)
     {
-        $(control).data('valid', false);
-        $(control).parents('.form-group').addClass('has-error');
+        flagInvalid($(control));
         return;
     }
     if(/[0-9]/.test(value) === false)
     {
-        $(control).data('valid', false);
-        $(control).parents('.form-group').addClass('has-error');
+        flagInvalid($(control));
         return;
     }
+    flagValid($(control));
 }
 
 function validate_pass2(value, element, params)
@@ -165,14 +144,21 @@ function validate_pass2(value, element, params)
 function form_submit_done(jqXHR)
 {
     console.log(jqXHR);
-    if(data.error === undefined)
+    if(jqXHR.status === 200)
     {
-        window.location.replace('thanks.php');
+        if(jqXHR.responseJSON === undefined || jqXHR.responseJSON.message === undefined)
+        {
+            window.location.replace('thanks.php');
+        }
+        else
+        {
+            alert(jqXHR.responseJSON.message);
+        }
     }
     else
     {
-        alert(data.error);
-        console.log(data);
+        alert(jqXHR.responseJSON);
+        console.log(jqXHR);
     }
 }
 
@@ -192,23 +178,19 @@ function validate_fields(index, value)
 {
     if($(value).val().length === 0)
     {
-        $(value).parents('.form-group').addClass('has-error');
-        $(value).parents('.form-group').removeClass('has-success');
+        flagInvalid($(value));
     }
     else if(value.willValidate === true && value.checkValidity() === false)
     {
-        $(value).parents('.form-group').addClass('has-error');
-        $(value).parents('.form-group').removeClass('has-success');
+        flagInvalid($(value));
     }
     else if($(value).data('valid') === false)
     {
-        $(value).parents('.form-group').addClass('has-error');
-        $(value).parents('.form-group').removeClass('has-success');
+        flagInvalid($(value));
     }
     else
     {
-        $(value).parents('.form-group').removeClass('has-error');
-        $(value).parents('.form-group').addClass('has-success');
+        flagValid($(value));
     }
 }
 
@@ -220,13 +202,11 @@ function submit_click(e)
     var pass2 = $('#password2').val();
     if(pass !== pass2)
     {
-        $('#password2').parents('.form-group').addClass('has-error');
-        $('#password2').parents('.form-group').removeClass('has-success');
+        flagInvalid($('#password2'));
     }
     else
     {
-        $('#password2').parents('.form-group').removeClass('has-error');
-        $('#password2').parents('.form-group').addClass('has-success');
+        flagValid($('#password2'));
     }
     if($('#form .form-group.has-error').length === 0)
     {
