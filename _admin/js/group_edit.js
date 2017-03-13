@@ -33,8 +33,8 @@ function groupsDone(jqXHR)
 
 function draw_done()
 {
-    $('td.removeControl').html('<span class="glyphicon glyphicon-minus"></span>');
-    $('td.addControl').html('<span class="glyphicon glyphicon-plus"></span>');
+    $('td.removeControl').html('<span class="fa fa-minus"></span>');
+    $('td.addControl').html('<span class="fa fa-plus"></span>');
 }
 
 function add_clicked()
