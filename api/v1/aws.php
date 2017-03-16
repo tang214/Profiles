@@ -8,8 +8,8 @@ use Guzzle\Http\Client;
 function aws()
 {
     global $app;
-    $app->post('/snsEndpoint', 'snsEndpoint');
-    $app->post('/test', 'testX');
+    $app->post('/snsEndpoint(/)', 'snsEndpoint');
+    $app->post('/test(/)', 'testX');
 }
 
 function sendToBackend($function, $payload)

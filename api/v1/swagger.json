@@ -5,8 +5,8 @@
         "title": "Burning Flipside User API",
         "description": "This api allows access to basic user data including profiles",
         "contact": {
-            "name": "Problem",
-            "email": "problem@burningflipside.com"
+            "name": "Technology Team",
+            "email": "technology@burningflipside.com"
         }
     },
     "host": "profiles.burningflipside.com",
@@ -15,6 +15,722 @@
         "https"
     ],
     "paths": {
+        "/areas": {
+            "get": {
+                "summary": "return a list of areas",
+                "description": "return a list of areas",
+                "produces": [
+                    "application/json",
+                    "text/csv",
+                    "application/xml"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "title": "ArrayOfUsers",
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Area"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "apikey": []
+                    },
+                    {
+                        "flipside_auth": [
+                            "read:users"
+                        ]
+                    }
+                ]
+            },
+            "post": {
+                "summary": "create an area",
+                "description": "create an area",
+                "produces": [
+                    "application/json",
+                    "text/csv",
+                    "application/xml"
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "area",
+                        "in": "body",
+                        "description": "The area data to create",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Area"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "$ref": "#/definitions/Area"
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorReturn"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "apikey": []
+                    },
+                    {
+                        "flipside_auth": [
+                            "read:users"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/areas/{name}": {
+            "get": {
+                "summary": "return an area",
+                "description": "return an area",
+                "produces": [
+                    "application/json",
+                    "text/csv",
+                    "application/xml"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "name",
+                        "description": "Area name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "title": "array of areas",
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Area"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "apikey": []
+                    },
+                    {
+                        "flipside_auth": [
+                            "read:users"
+                        ]
+                    }
+                ]
+            },
+            "patch": {
+                "summary": "update area",
+                "description": "update area",
+                "produces": [
+                    "application/json",
+                    "text/csv",
+                    "application/xml"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "name",
+                        "description": "Area name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "area",
+                        "description": "Updated `Area` object",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Area"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                },
+                "security": [
+                    {
+                        "apikey": []
+                    },
+                    {
+                        "flipside_auth": [
+                            "read:users"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/areas/{name}/leads": {
+            "get": {
+                "summary": "return an area",
+                "description": "eturn an area",
+                "produces": [
+                    "application/json",
+                    "text/csv",
+                    "application/xml"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "name",
+                        "description": "Area name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "title": "array of positions",
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Position"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "apikey": []
+                    },
+                    {
+                        "flipside_auth": [
+                            "read:users"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/aws/snsEndpoint": {
+            "post": {
+                "summary": "idunno",
+                "description": "YOU, COMPLETE ME",
+                "responses": {
+                    "200": {
+                        "description": "idunno"
+                    }
+                }
+            }
+        },
+        "/aws/test": {
+            "post": {
+                "summary": "idunno",
+                "description": "YOU, COMPLETE ME",
+                "responses": {
+                    "200": {
+                        "description": "idunno"
+                    }
+                }
+            }
+        },
+        "/groups": {
+            "get": {
+                "summary": "Gets a list of all 'Group' objects",
+                "description": "Gets a list of all 'Group' objects the caller is authorized to see",
+                "produces": [
+                    "application/json",
+                    "text/csv",
+                    "application/xml"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "title": "array of groups",
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Group"
+                            }
+                        }
+                    },
+                    "303": {
+                        "description": "Not logged in"
+                    }
+                },
+                "security": [
+                    {
+                        "apikey": []
+                    },
+                    {
+                        "flipside_auth": [
+                            "read:users"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/groups/{name}": {
+            "get": {
+                "summary": "Gets a list of all 'Group' objects",
+                "description": "Gets a list of all 'Group' objects the caller is authorized to see",
+                "produces": [
+                    "application/json",
+                    "text/csv",
+                    "application/xml"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "name",
+                        "description": "Group name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "$ref": "#/definitions/Group"
+                        }
+                    },
+                    "303": {
+                        "description": "Not logged in"
+                    }
+                },
+                "security": [
+                    {
+                        "apikey": []
+                    },
+                    {
+                        "flipside_auth": [
+                            "read:users"
+                        ]
+                    }
+                ]
+            },
+            "patch": {
+                "summary": "Gets a list of all 'Group' objects",
+                "description": "Gets a list of all 'Group' objects the caller is authorized to see",
+                "produces": [
+                    "application/json",
+                    "text/csv",
+                    "application/xml"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "name",
+                        "description": "Group name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "group",
+                        "description": "Updated `Group` object",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Group"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "$ref": "#/definitions/Group"
+                        }
+                    },
+                    "303": {
+                        "description": "Not logged in"
+                    }
+                },
+                "security": [
+                    {
+                        "apikey": []
+                    },
+                    {
+                        "flipside_auth": [
+                            "read:users"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/groups/{name}/non-members": {
+            "get": {
+                "summary": "Gets a list of all 'User' objects",
+                "description": "Gets a list of all 'User' objects the caller is authorized to see",
+                "produces": [
+                    "application/json",
+                    "text/csv",
+                    "application/xml"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "name",
+                        "description": "Group name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "title": "ArrayOfUsers",
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/User"
+                            }
+                        }
+                    },
+                    "303": {
+                        "description": "Not logged in"
+                    }
+                },
+                "security": [
+                    {
+                        "apikey": []
+                    },
+                    {
+                        "flipside_auth": [
+                            "read:users"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/leads": {
+            "get": {
+                "summary": "list leads",
+                "description": "list leads",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                },
+                "security": [
+                    {
+                        "apikey": []
+                    },
+                    {
+                        "flipside_auth": [
+                            "read:users"
+                        ]
+                    }
+                ]
+            },
+            "post": {
+                "summary": "add lead",
+                "description": "add lead",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                },
+                "security": [
+                    {
+                        "apikey": []
+                    },
+                    {
+                        "flipside_auth": [
+                            "read:users"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/leads/{name}": {
+            "get": {
+                "summary": "Gets a list of all 'Position' objects",
+                "description": "Gets a list of all 'Position' objects the caller is authorized to see",
+                "produces": [
+                    "application/json",
+                    "text/csv",
+                    "application/xml"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "name",
+                        "description": "Position name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "$ref": "#/definitions/Position"
+                        }
+                    },
+                    "303": {
+                        "description": "Not logged in"
+                    }
+                },
+                "security": [
+                    {
+                        "apikey": []
+                    },
+                    {
+                        "flipside_auth": [
+                            "read:users"
+                        ]
+                    }
+                ]
+            },
+            "patch": {
+                "summary": "Gets a list of all 'Position' objects",
+                "description": "Gets a list of all 'Position' objects the caller is authorized to see",
+                "produces": [
+                    "application/json",
+                    "text/csv",
+                    "application/xml"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "name",
+                        "description": "Position name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "group",
+                        "description": "Updated `Position` object",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Position"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "$ref": "#/definitions/Position"
+                        }
+                    },
+                    "303": {
+                        "description": "Not logged in"
+                    }
+                },
+                "security": [
+                    {
+                        "apikey": []
+                    },
+                    {
+                        "flipside_auth": [
+                            "read:users"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/login": {
+            "post": {
+                "summary": "login",
+                "description": "start an authenticated session",
+                "parameters": [
+                    {
+                        "name": "username",
+                        "in": "formData",
+                        "description": "the username to authenticate",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "password",
+                        "in": "formData",
+                        "description": "the password to authenticate",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "post": {
+                "summary": "logout",
+                "description": "end an authenticated session",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/pending_users": {
+            "get": {
+                "summary": "list pending users",
+                "description": "list pending users",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                },
+                "security": [
+                    {
+                        "apikey": []
+                    },
+                    {
+                        "flipside_auth": [
+                            "read:users"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/pending_users/{uid}": {
+            "get": {
+                "summary": "find pending user",
+                "description": "find pending user",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "uid",
+                        "description": "uid",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                },
+                "security": [
+                    {
+                        "apikey": []
+                    },
+                    {
+                        "flipside_auth": [
+                            "read:users"
+                        ]
+                    }
+                ]
+            },
+            "delete": {
+                "summary": "destroy pending user",
+                "description": "destroy pending user",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "uid",
+                        "description": "uid",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                },
+                "security": [
+                    {
+                        "apikey": []
+                    },
+                    {
+                        "flipside_auth": [
+                            "read:users"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/pending_users/{uid}/Actions/activate": {
+            "get": {
+                "summary": "activate pending user",
+                "description": "activate pending user",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "uid",
+                        "description": "uid",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "post": {
+                "summary": "activate pending user",
+                "description": "activate pending user",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "uid",
+                        "description": "uid",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/sessions": {
+            "get": {
+                "summary": "list current sessions",
+                "description": "list current sessions",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/sessions/{id}": {
+            "delete": {
+                "summary": "destroy a session",
+                "description": "destroy a session",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "description": "id",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/users": {
             "get": {
                 "summary": "Gets a list of all 'User' objects",
@@ -160,24 +876,29 @@
                 ]
             }
         },
-        "/groups": {
+        "/users/{uid}/groups": {
             "get": {
-                "summary": "Gets a list of all 'Group' objects",
-                "description": "Gets a list of all 'Group' objects the caller is authorized to see",
+                "summary": "Gets a list of all 'Group' objects for the user",
+                "description": "Gets a list of all 'Group' objects the caller user is associated with",
                 "produces": [
                     "application/json",
                     "text/csv",
                     "application/xml"
                 ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "uid",
+                        "description": "User ID",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Successful response",
                         "schema": {
-                            "title": "ArrayOfGroups",
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/Group"
-                            }
+                            "$ref": "#/definitions/User"
                         }
                     },
                     "303": {
@@ -194,6 +915,81 @@
                         ]
                     }
                 ]
+            }
+        },
+        "/users/me/Actions/link": {
+            "post": {
+                "summary": "dunno",
+                "description": "dunno",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/users/{uid}/Actions/reset_pass": {
+            "post": {
+                "summary": "reset user password",
+                "description": "reset user password",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "uid",
+                        "description": "User ID",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/users/Actions/check_email_available": {
+            "post": {
+                "summary": "check that email is available",
+                "description": "check that email is available",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/users/Actions/check_uid_available": {
+            "post": {
+                "summary": "check that uid is available",
+                "description": "check that uid is available",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/users/Actions/remind_uid": {
+            "post": {
+                "summary": "forgot username?",
+                "description": "forgot username?",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/zip": {
+            "post": {
+                "summary": "validate postal code",
+                "description": "validate postal code",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
             }
         }
     },
@@ -214,6 +1010,61 @@
         }
     },
     "definitions": {
+        "Area": {
+            "properties": {
+                "short_name": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "ErrorReturn": {
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "file": {
+                    "type": "string"
+                },
+                "line": {
+                    "type": "integer"
+                }
+            }
+        },
+        "Group": {
+            "properties": {
+                "member": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "cn": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                }
+            }
+        },
+        "Position": {
+            "properties": {
+                "short_name": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "area": {
+                    "type": "string"
+                }
+            }
+        },
         "User": {
             "properties": {
                 "displayName": {
@@ -262,22 +1113,6 @@
                     "type": "string"
                 },
                 "ou": {
-                    "type": "string"
-                }
-            }
-        },
-        "Group": {
-            "properties": {
-                "member": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "cn": {
-                    "type": "string"
-                },
-                "description": {
                     "type": "string"
                 }
             }

@@ -3,8 +3,8 @@
 function sessions()
 {
     global $app;
-    $app->get('', 'get_sessions');
-    $app->delete('/:id', 'end_session');
+    $app->get('(/)', 'get_sessions');
+    $app->delete('/:id(/)', 'end_session');
 }
 
 function get_sessions()

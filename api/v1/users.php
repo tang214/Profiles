@@ -6,20 +6,20 @@ require('class.PasswordHasBeenResetEmail.php');
 function users()
 {
     global $app;
-    $app->get('', 'list_users');
-    $app->post('', 'create_user');
-    $app->get('/me', 'show_user');
-    $app->get('/:uid', 'show_user');
-    $app->patch('/:uid', 'editUser');
-    $app->delete('/:uid', 'deleteUser');
-    $app->get('/me/groups', 'list_groups_for_user');
-    $app->get('/:uid/groups', 'list_groups_for_user');
-    $app->post('/me/Actions/link', 'link_user');
-    $app->post('/:uid/Actions/link', 'link_user');
-    $app->post('/:uid/Actions/reset_pass', 'reset_pass');
-    $app->post('/Actions/check_email_available', 'check_email_available');
-    $app->post('/Actions/check_uid_available', 'check_uid_available');
-    $app->post('/Actions/remind_uid', 'remind_uid');
+    $app->get('(/)', 'list_users');
+    $app->post('(/)', 'create_user');
+    $app->get('/me(/)', 'show_user');
+    $app->get('/:uid(/)', 'show_user');
+    $app->patch('/:uid(/)', 'editUser');
+    $app->delete('/:uid(/)', 'deleteUser');
+    $app->get('/me/groups(/)', 'list_groups_for_user');
+    $app->get('/:uid/groups(/)', 'list_groups_for_user');
+    $app->post('/me/Actions/link(/)', 'link_user');
+    $app->post('/:uid/Actions/link(/)', 'link_user');
+    $app->post('/:uid/Actions/reset_pass(/)', 'reset_pass');
+    $app->post('/Actions/check_email_available(/)', 'check_email_available');
+    $app->post('/Actions/check_uid_available(/)', 'check_uid_available');
+    $app->post('/Actions/remind_uid(/)', 'remind_uid');
 }
 
 function list_users()

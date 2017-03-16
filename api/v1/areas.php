@@ -3,11 +3,11 @@
 function areas()
 {
     global $app;
-    $app->get('', 'list_areas');
-    $app->post('', 'create_area');
-    $app->get('/:name', 'get_area');
-    $app->patch('/:name', 'update_area');
-    $app->get('/:name/leads', 'get_area_leads');
+    $app->get('(/)', 'list_areas');
+    $app->post('(/)', 'create_area');
+    $app->get('/:name(/)', 'get_area');
+    $app->patch('/:name(/)', 'update_area');
+    $app->get('/:name/leads(/)', 'get_area_leads');
 }
 
 function list_areas()

@@ -3,11 +3,11 @@
 function pending_users()
 {
     global $app;
-    $app->get('', 'list_pending_users');
-    $app->get('/:uid', 'show_pending_user');
-    $app->delete('/:uid', 'delete_pending_user');
-    $app->get('/:uid/Actions/activate', 'activate_user');
-    $app->post('/:uid/Actions/activate', 'activate_user');
+    $app->get('(/)', 'list_pending_users');
+    $app->get('/:uid(/)', 'show_pending_user');
+    $app->delete('/:uid(/)', 'delete_pending_user');
+    $app->get('/:uid/Actions/activate(/)', 'activate_user');
+    $app->post('/:uid/Actions/activate(/)', 'activate_user');
 }
 
 function list_pending_users()
