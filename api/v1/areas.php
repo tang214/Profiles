@@ -74,7 +74,7 @@ function update_area($name)
     $obj  = json_decode($body);
     $data_set = DataSetFactory::getDataSetByName('profiles');
     $data_table = $data_set['area'];
-    $ret = $data_table->update(new \Data\Filter("short_name eq $name"), $obj);
+    $ret = $data_table->update(new \Data\Filter("short_name eq '$name'"), $obj);
     echo json_encode($ret);
 }
 
