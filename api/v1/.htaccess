@@ -4,11 +4,3 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ index.php [QSA,L]
 
 php_value include_path ".:../..:/var/www/common:/usr/share/pear"
-
-Header Unset Expires
-SetEnvIf Origin ^(https?://.+\.burningflipside.com(?::\d{1,5})?)$   CORS_ALLOW_ORIGIN=$1
-Header append Access-Control-Allow-Origin  %{CORS_ALLOW_ORIGIN}e   env=CORS_ALLOW_ORIGIN
-Header merge  Vary "Origin"
-Header set Access-Control-Allow-Credentials "true"
-Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, PATCH"
-Header set Access-Control-Allow-Headers "Authorization,Cookie,apikey"
