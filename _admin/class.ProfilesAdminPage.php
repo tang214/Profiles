@@ -20,11 +20,11 @@ class ProfilesAdminPage extends FlipAdminPage
             'Areas' => 'areas.php',
             'Leads' => 'leads.php'
         );
-        $this->add_link('<i class="fa fa-tachometer"></i> Dashboard', 'index.php');
-        $this->add_link('<i class="fa fa-user"></i> Users', '#', $users_menu);
-        $this->add_link('<i class="fa fa-users"></i> Groups', 'groups.php');
-        $this->add_link('<i class="fa fa-briefcase"></i> Positions', '#', $pos_menu);
-        $this->add_link('<i class="fa fa-cloud"></i> Sessions', 'sessions.php');
+        $this->addLink('<i class="fa fa-tachometer"></i> Dashboard', 'index.php');
+        $this->addLink('<i class="fa fa-user"></i> Users', '#', $users_menu);
+        $this->addLink('<i class="fa fa-users"></i> Groups', 'groups.php');
+        $this->addLink('<i class="fa fa-briefcase"></i> Positions', '#', $pos_menu);
+        $this->addLink('<i class="fa fa-cloud"></i> Sessions', 'sessions.php');
     }
 }
 ?>
