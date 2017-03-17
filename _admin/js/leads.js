@@ -13,14 +13,18 @@ function lead_change(control)
     if(val != '')
     {
         $('#lead_details').show();
+        $('#submit').unbind('click');
+
         if(val == '_new')
         {
+            $('#submit').on('click', add_lead);
             $('#lead_name').html("New Lead");
             $('#short_name').val('');
             $('#name').val('');
         }
         else
         {
+            $('#submit').on('click', update_lead);
             $('#lead_name').html(val);
             var lead = $('#lead_select :selected').data('lead');
             $('#short_name').val(lead.short_name);
@@ -71,16 +75,31 @@ function leads_post_done(data)
     }
 }
 
-function submit_lead()
+function form_vars(){
+    return {
+        short_name: $('#short_name').val(),
+        name: $('#name').val(),
+        area: $('#area_select').val()
+    };
+}
+
+function add_lead()
 {
-    var obj = {};
-    obj.short_name = $('#short_name').val();
-    obj.name = $('#name').val();
-    obj.area = $('#area_select').val();
     $.ajax({
         url: '../api/v1/leads',
-        data: JSON.stringify(obj),
+        data: JSON.stringify(form_vars()),
         type: 'POST',
+        processData: false,
+        dataType: 'json',
+        success: leads_post_done});
+}
+
+function update_lead()
+{
+    $.ajax({
+        url: '../api/v1/leads/'+$('#lead_name').html(),
+        data: JSON.stringify(form_vars()),
+        type: 'PATCH',
         processData: false,
         dataType: 'json',
         success: leads_post_done});
@@ -88,7 +107,6 @@ function submit_lead()
 
 function init_page()
 {
-    $('#submit').on('click', submit_lead);
     $.ajax({
         url: '../api/v1/areas',
         type: 'get',
