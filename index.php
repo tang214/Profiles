@@ -30,8 +30,7 @@ else
     <p>You can sign up for an account <a href="'.$page->registerUrl.'">here</a>.
     <h1>Forgot your username or password?</h1>
     <p>You can lookup a forgotten username or reset your password <a href="'.$page->resetUrl.'">here.</a></p>
-</div>
-<script async src="js/index.min.js"></script>';
+</div>';
 }
 
 $page->printPage();

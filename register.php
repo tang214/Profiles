@@ -30,7 +30,7 @@ if(FlipSession::isLoggedIn())
     $page->addNotification('You are currently logged in to the system. Are you sure you want to register another account?');
 }
 
-$page->body = '
+$page->body .= '
 <div id="content">
     <form name="form" id="form" role="form">
         <fieldset>

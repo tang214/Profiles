@@ -43,7 +43,7 @@ for($i = 0; $i < $count; $i++)
     $auth_links_str .= $auth_links[$i];
 }
 
-$page->body = '
+$page->body .= '
 <div id="content" class="container">
     <div class="login-container">
     <h3>Burning Flipside Profile Login</h3>
