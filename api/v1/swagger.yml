@@ -138,20 +138,6 @@ paths:
         - apikey: []
         - flipside_auth:
             - 'read:users'
-  /aws/snsEndpoint:
-    post:
-      summary: idunno
-      description: YOU, COMPLETE ME
-      responses:
-        200:
-          description: idunno
-  /aws/test:
-    post:
-      summary: idunno
-      description: YOU, COMPLETE ME
-      responses:
-        200:
-          description: idunno
   /groups:
     get:
       summary: Gets a list of all 'Group' objects
