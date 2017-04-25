@@ -33,7 +33,6 @@ if($_SERVER['REQUEST_URI'][0] == '/' && $_SERVER['REQUEST_URI'][1] == '/')
 }
 
 require('areas.php');
-require('aws.php');
 require('groups.php');
 require('leads.php');
 require('login.php');
@@ -43,7 +42,6 @@ require('users.php');
 
 $app = new FlipREST();
 $app->group('/areas(/)', 'areas');
-$app->group('/aws(/)', 'aws');
 $app->group('/groups(/)', 'groups');
 $app->group('/leads(/)', 'leads');
 $app->post('/login(/)', 'login');
