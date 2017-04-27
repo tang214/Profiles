@@ -4,12 +4,16 @@ function area_change(control)
     if(val != '')
     {
         $('#area_details').show();
+        $('#submit').unbind('click');
+
         if(val == '_new')
         {
+            $('#submit').on('click', add_area);
             $('#area_name').html("New Area");
         }
         else
         {
+            $('#submit').on('click', update_area);
             $('#area_name').html(val);
             var area = $('#area_select :selected').data('area');
             $('#short_name').val(area.short_name);
@@ -33,37 +37,38 @@ function areas_post_done()
     location.reload();
 }
 
-function submit_areas()
+function form_vars()
 {
-    var obj = {};
-    var old_name = $('#area_name').html();
-    obj.short_name = $('#short_name').val();
-    obj.name = $('#name').val();
-    if(old_name == obj.short_name)
-    {
-        $.ajax({
-            url: '../api/v1/areas/'+obj.short_name,
-            data: JSON.stringify(obj),
-            type: 'PATCH',
-            processData: false,
-            dataType: 'json',
-            success: areas_post_done});
-    }
-    else
-    {
-        $.ajax({
-            url: '../api/v1/areas',
-            data: JSON.stringify(obj),
-            type: 'POST',
-            processData: false,
-            dataType: 'json',
-            success: areas_post_done});
-    }
+    return {
+        short_name: $('#short_name').val(),
+        name: $('#name').val()
+    };
+}
+
+function add_area()
+{
+    $.ajax({
+        url: '../api/v1/areas',
+        data: JSON.stringify(form_vars()),
+        type: 'POST',
+        processData: false,
+        dataType: 'json',
+        success: areas_post_done});
+}
+
+function update_area()
+{
+    $.ajax({
+        url: '../api/v1/areas/'+$('#area_name').html(),
+        data: JSON.stringify(form_vars()),
+        type: 'PATCH',
+        processData: false,
+        dataType: 'json',
+        success: areas_post_done});
 }
 
 function init_page()
 {
-    $('#submit').on('click', submit_areas);
     $.ajax({
         url: '../api/v1/areas',
         type: 'get',
