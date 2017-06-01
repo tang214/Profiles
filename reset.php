@@ -39,7 +39,7 @@ if($page->user !== false && $page->user !== null)
 }
 else
 {
-    $page->body = '
+    $page->body .= '
         <div id="content">
             <h3>Burning Flipside Login Reset/Recover</h3>
             <div class="radio">

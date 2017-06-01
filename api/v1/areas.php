@@ -3,11 +3,11 @@
 function areas()
 {
     global $app;
-    $app->get('', 'list_areas');
-    $app->post('', 'create_area');
-    $app->get('/:name', 'get_area');
-    $app->patch('/:name', 'update_area');
-    $app->get('/:name/leads', 'get_area_leads');
+    $app->get('(/)', 'list_areas');
+    $app->post('(/)', 'create_area');
+    $app->get('/:name(/)', 'get_area');
+    $app->patch('/:name(/)', 'update_area');
+    $app->get('/:name/leads(/)', 'get_area_leads');
 }
 
 function list_areas()
@@ -74,7 +74,7 @@ function update_area($name)
     $obj  = json_decode($body);
     $data_set = DataSetFactory::getDataSetByName('profiles');
     $data_table = $data_set['area'];
-    $ret = $data_table->update(new \Data\Filter("short_name eq $name"), $obj);
+    $ret = $data_table->update(new \Data\Filter("short_name eq '$name'"), $obj);
     echo json_encode($ret);
 }
 

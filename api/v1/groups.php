@@ -3,10 +3,10 @@
 function groups()
 {
     global $app;
-    $app->get('', 'listGroups');
-    $app->get('/:name', 'getGroup');
-    $app->patch('/:name', 'updateGroup');
-    $app->get('/:name/non-members', 'getNonGroupMembers');
+    $app->get('(/)', 'listGroups');
+    $app->get('/:name(/)', 'getGroup');
+    $app->patch('/:name(/)', 'updateGroup');
+    $app->get('/:name/non-members(/)', 'getNonGroupMembers');
 }
 
 function listGroups()
@@ -20,8 +20,8 @@ function listGroups()
     if($app->user->isInGroupNamed("LDAPAdmins"))
     {
         $auth = AuthProvider::getInstance();
-        $users = $auth->getGroupsByFilter($app->odata->filter, $app->odata->select, $app->odata->top, $app->odata->skip, $app->odata->orderby);
-        echo json_encode($users);
+        $groups = $auth->getGroupsByFilter($app->odata->filter, $app->odata->select, $app->odata->top, $app->odata->skip, $app->odata->orderby);
+        echo json_encode($groups);
     }
     else
     {

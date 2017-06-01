@@ -25,7 +25,7 @@ $page->body = '
         <table>
             <tr>
                 <td>
-                    <span class="glyphicon glyphicon-fire" style="font-size: 5em;"></span>
+                    <span class="fa fa-fire" style="font-size: 5em;"></span>
                 </td>
                 <td>
         Please note: This operation is <strong>irreversible</strong>! Once your account is deleted you will no longer have access to 
