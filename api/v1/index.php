@@ -19,5 +19,5 @@ $site->registerAPI('/leads', new LeadsAPI());
 $site->registerAPI('/pending_users', new PendingUserAPI());
 $site->registerAPI('/users', new UsersAPI());
 $site->registerAPI('/sessions', new SessionsAPI());
-$site->registerAPI('/', new ProfilesAPI());
+$site->registerAPI('', new ProfilesAPI());
 $site->run();

@@ -125,7 +125,7 @@ class UsersAPI extends Http\Rest\RestAPI
         {
             return $response->withJson(array('res'=>false, 'message'=>'Failed to save user registration!'), 500);
         }
-        return $response->withJson($ret;
+        return $response->withJson($ret);
     }
 
     protected function userIsMe($request, $uid)
@@ -174,6 +174,7 @@ class UsersAPI extends Http\Rest\RestAPI
 
     public function showUser($request, $response, $args)
     {
+        $uid = $args['uid'];
         $user = $request->getAttribute('user');
         if($user === false)
         {
@@ -197,9 +198,9 @@ class UsersAPI extends Http\Rest\RestAPI
         {
             $user = $user[0];
         }
-        if($request->getAttribute('fmt') === 'vcard')
+        if($request->getAttribute('format') === 'vcard')
         {
-            $response = $response->withHeaders('Content-Type', 'text/x-vCard');
+            $response = $response->withHeader('Content-Type', 'text/x-vCard');
             $response->getBody()->write($user->getVcard());
             return $response;
         }

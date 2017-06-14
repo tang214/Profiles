@@ -10,27 +10,27 @@ class ProfilesAPI extends Http\Rest\RestAPI
 
     public function login($request, $response, $args)
     {
-        $params = $request->getQueryParams();
+        $params = $request->getParams();
         if(!isset($params['username']) || !isset($params['password']))
         {
-            return $request->withStatus(400);
+            return $response->withStatus(400);
         }
         $auth = AuthProvider::getInstance();
         $res = $auth->login($params['username'], $params['password']);
         if($res === false)
         {
-            return $request->withStatus(403);
+            return $response->withStatus(403);
         }
         else
         {
-            return $request->withJson($res);
+            return $response->withJson($res);
         }
     }
 
     public function logout($request, $response, $args)
     {
         FlipSession::end();
-        return $request->withJson(true);
+        return $response->withJson(true);
     }
 
     public function validateZip($request, $response, $args)

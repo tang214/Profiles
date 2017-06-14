@@ -83,6 +83,5 @@ class PendingUserAPI extends Http\Rest\RestAPI
             return $response->withJson($res);
         }
     }
-    }
 }
 /* vim: set tabstop=4 shiftwidth=4 expandtab: */

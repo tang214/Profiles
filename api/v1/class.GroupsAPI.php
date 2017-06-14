@@ -44,7 +44,7 @@ class GroupsAPI extends Http\Rest\RestAPI
         }
         $auth = AuthProvider::getInstance();
         $odata = $request->getAttribute('odata', new \ODataParams(array()));
-        $groups = $auth->getGroupsByFilter($odata->filter, $odata->select, $odata->top, $data->skip, 
+        $groups = $auth->getGroupsByFilter($odata->filter, $odata->select, $odata->top, $odata->skip, 
                                            $odata->orderby);
         return $response->withJson($groups);
     }
