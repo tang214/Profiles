@@ -1,5 +1,5 @@
 <?php
-require_once('class.FlipREST.php');
+require_once('vendor/autoload.php');
 require_once('class.AuthProvider.php');
 
 if($_SERVER['REQUEST_URI'][0] == '/' && $_SERVER['REQUEST_URI'][1] == '/')
@@ -7,47 +7,33 @@ if($_SERVER['REQUEST_URI'][0] == '/' && $_SERVER['REQUEST_URI'][1] == '/')
     $_SERVER['REQUEST_URI'] = substr($_SERVER['REQUEST_URI'], 1);
 }
 
-$app = new FlipREST();
-$app->get('/authorize', 'oauth_login');
-$app->post('/access_token', 'oauth_token');
-$app->get('/callbacks/:host', 'oauth_callback');
+$app = new \Slim\App();
+$app->get('/callbacks/{host}', 'oauthCallback');
 
-function oauth_login()
+function oauthCallback($request, $response, $args)
 {
-    global $app;
-    echo 'Unimplemented!';
-}
-
-function oauth_token()
-{
-    global $app;
-    echo 'Unimplemented!';
-}
-
-function oauth_callback($host)
-{
-    global $app;
+    $host = $args['host'];
     $auth = AuthProvider::getInstance();
     $provider = $auth->getSuplementalProviderByHost($host);
     if($provider === false)
     {
-        $app->notFound();
-        return; 
+        return $response->withStatus(404);
     }
     $res = $provider->authenticate($app->request->get(), $currentUser);
     switch($res)
     {
         case \Auth\Authenticator::SUCCESS:
-            $app->redirect('/');
+            $response = $response->withHeader('Location', '/');
             break;
         default:
         case \Auth\Authenticator::LOGIN_FAILED:
-            $app->redirect('/login.php?failed=1');
+            $response = $response->withHeader('Location', '/login.php?failed=1');
             break;
         case \Auth\Authenticator::ALREADY_PRESENT:
-            $app->redirect('/user_exists.php?src='.$host.'&uid='.$currentUser->getUID());
+            $response = $response->withHeader('Location', '/user_exists.php?src='.$host.'&uid='.$currentUser->getUID());
             break;
     }
+    return $response->withStatus(302);
 }
 
 $app->run();
