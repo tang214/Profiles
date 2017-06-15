@@ -89,7 +89,23 @@ class GroupsAPI extends Http\Rest\RestAPI
         $odata = $request->getAttribute('odata', new \ODataParams(array()));
         $group = false;
         $expand = false;
-        if($this->validateIsAdmin($request, true) === false)
+        $user = $request->getAttribute('user');
+        if($user === false)
+        {
+            $local = $request->getServerParam('SERVER_ADDR');
+            $remote = $request->getServerParam('REMOTE_ADDR');
+            if($local === $remote)
+            {
+                $auth = AuthProvider::getInstance();
+                $group = $auth->getGroupByName($args['name']);
+                $expand = true;
+            }
+            else
+            {
+                return $response->withStatus(401);
+            }
+        }
+        else if($this->validateIsAdmin($request, true) === false)
         {
             $group = $this->getGroupForUserByName($args['name']);
         }
