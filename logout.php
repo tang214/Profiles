@@ -1,5 +1,7 @@
 <?php
 require_once("class.FlipSession.php");
+$cookieParams = session_get_cookie_params();
+setcookie('Flipside_JWT', '', time()-3600, '/', $cookieParams['domain'], true);
 FlipSession::end();
 require_once('class.ProfilesPage.php');
 $page = new ProfilesPage('Burning Flipside Profiles');
