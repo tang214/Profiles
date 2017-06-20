@@ -1,6 +1,8 @@
 <?php
 class UsersAPI extends Http\Rest\RestAPI
 {
+    protected $user;
+
     public function setup($app)
     {
         $app->get('[/]', array($this, 'listUsers'));
@@ -80,7 +82,7 @@ class UsersAPI extends Http\Rest\RestAPI
         {
             return false;
         }
-        $domain = substr($email, $pos+1);
+        $domain = substr($email, $pos + 1);
         if(checkdnsrr($domain, 'MX') === false)
         {
             return false;
@@ -272,7 +274,7 @@ class UsersAPI extends Http\Rest\RestAPI
         {
             return $response->withJson($e, exceptionCodeToHttpCode($e));
         }
-        if($this->userIsMe($app, $uid))
+        if($this->userIsMe($request, $uid))
         {
             \FlipSession::setUser($user);
         }
@@ -349,7 +351,7 @@ class UsersAPI extends Http\Rest\RestAPI
         if($this->userIsMe($request, $uid))
         {
             $this->user->addLoginProvider($obj->provider);
-            AuthProvider::getInstance()->impersonateUser($app->user);
+            AuthProvider::getInstance()->impersonateUser($this->user);
         }
         else if($this->user->isInGroupNamed("LDAPAdmins"))
         {
@@ -471,7 +473,7 @@ class UsersAPI extends Http\Rest\RestAPI
         return $response->withJson(true);
     }
 
-    public function remindUid()
+    public function remindUid($request, $response, $args)
     {
         $params = $request->getQueryParams();
         $email = false;

@@ -66,7 +66,7 @@ class PendingUserAPI extends Http\Rest\RestAPI
         $user = $auth->getPendingUsersByFilter(new \Data\Filter("hash eq '$hash'"));
         if($user === false || !isset($user[0]))
         {
-            return $app->withStatus(404);
+            return $response->withStatus(404);
         }
         $res = $auth->activatePendingUser($user[0]);
         if($request->isGet())

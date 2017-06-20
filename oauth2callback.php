@@ -98,9 +98,9 @@ switch($src)
                     die();
             }
         }
-    //Generic OAuth...
+        //Generic OAuth...
     default:
         print_r($_SERVER);
         break;
 }
-?>
+/* vim: set tabstop=4 shiftwidth=4 expandtab: */

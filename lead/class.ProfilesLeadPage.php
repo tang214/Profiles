@@ -42,24 +42,24 @@ class ProfilesLeadPage extends FlipAdminPage
 
     public function add_links()
     {
-         $dirMenu = array(
-             'All' => 'directory.php',
-             'AAR' => 'directory.php?filter=aar',
-             'AFs' => 'directory.php?filter=af',
-             'CC'  => 'directory.php?filter=cc',
-             '360/24/7 Department' => 'directory.php?filter=360',
-             'Art' => 'directory.php?filter=Art',
-             'City Planning' => 'directory.php?filter=CityPlanning',
-             'Communications' => 'directory.php?filter=Comm',
-             'Genesis' => 'directory.php?filter=Genesis',
-             'Safety' => 'directory.php?filter=Safety',
-             'Site-Ops' => 'directory.php?filter=site-ops',
-             'Site Prep' => 'directory.php?filter=siteprep',
-             'Site Sign-Off' => 'directory.php?filter=sign-off',
-             'Volunteer Coordinator' => 'directory.php?filter=vc'
-         );
-         $this->addLink('<span class="fa fa-dashboard"></span> Dashboard', 'index.php');
-         $this->addLink('<span class="fa fa-th-list"></span> Directory', false, $dirMenu);
+        $dirMenu = array(
+                'All' => 'directory.php',
+                'AAR' => 'directory.php?filter=aar',
+                'AFs' => 'directory.php?filter=af',
+                'CC'  => 'directory.php?filter=cc',
+                '360/24/7 Department' => 'directory.php?filter=360',
+                'Art' => 'directory.php?filter=Art',
+                'City Planning' => 'directory.php?filter=CityPlanning',
+                'Communications' => 'directory.php?filter=Comm',
+                'Genesis' => 'directory.php?filter=Genesis',
+                'Safety' => 'directory.php?filter=Safety',
+                'Site-Ops' => 'directory.php?filter=site-ops',
+                'Site Prep' => 'directory.php?filter=siteprep',
+                'Site Sign-Off' => 'directory.php?filter=sign-off',
+                'Volunteer Coordinator' => 'directory.php?filter=vc'
+                );
+        $this->addLink('<span class="fa fa-dashboard"></span> Dashboard', 'index.php');
+        $this->addLink('<span class="fa fa-th-list"></span> Directory', false, $dirMenu);
     }
     
     public function isAdmin()

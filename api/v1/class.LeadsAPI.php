@@ -90,7 +90,6 @@ class LeadsAPI extends Http\Rest\DataTableAPI
         {
             return $response->withStatus(401);
         }
-        $dataTable = $this->getDataTable();
         $odata = $request->getAttribute('odata', new \ODataParams(array()));
         $leads = $this->getPositionsWithParams($request->getQueryParams());
         $leads = $odata->filterArrayPerSelect($leads);

@@ -1,6 +1,8 @@
 <?php
 class GroupsAPI extends Http\Rest\RestAPI
 {
+    protected $user;
+
     public function setup($app)
     {
         $app->get('[/]', array($this, 'getGroups'));
