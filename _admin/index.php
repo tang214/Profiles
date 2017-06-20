@@ -34,5 +34,5 @@ $page->add_card('fa-cloud', $session_count, 'Sessions', 'sessions.php', $page::C
 
 $page->body .= '</div>';
 
-$page->print_page();
-?>
+$page->printPage();
+/* vim: set tabstop=4 shiftwidth=4 expandtab: */

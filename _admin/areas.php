@@ -43,5 +43,5 @@ $page->addJSByURI('js/areas.js');
     </fieldset>
 </div>';
 
-$page->print_page();
-?>
+$page->printPage();
+/* vim: set tabstop=4 shiftwidth=4 expandtab: */

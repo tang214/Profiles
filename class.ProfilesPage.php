@@ -5,7 +5,7 @@ class ProfilesPage extends FlipPage
 {
     public $profiles_root;
 
-    function __construct($title)
+    public function __construct($title)
     {
         parent::__construct($title, true);
         $root = $_SERVER['DOCUMENT_ROOT'];
@@ -24,17 +24,17 @@ class ProfilesPage extends FlipPage
         $this->body_tags = 'data-login-url="'.$this->profiles_root.'/api/v1/login"';
     }
 
-    function add_profiles_css()
+    protected function add_profiles_css()
     {
         $this->addCSSByURI($this->profiles_root.'/css/profiles.css');
     }
 
-    function add_profiles_script()
+    protected function add_profiles_script()
     {
         $this->addWellKnownJS(JS_LOGIN);
     }
 
-    function add_links()
+    public function add_links()
     {
         if($this->user !== false && $this->user !== null)
         {
@@ -50,4 +50,4 @@ class ProfilesPage extends FlipPage
         }
     }
 }
-?>
+/* vim: set tabstop=4 shiftwidth=4 expandtab: */
