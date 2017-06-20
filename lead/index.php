@@ -30,5 +30,5 @@ $page->add_card('fa-fire', $aar_count, 'Board Members', 'directory.php?filter=aa
 
 $page->body .= '</div>';
 
-$page->print_page();
-?>
+$page->printPage();
+/* vim: set tabstop=4 shiftwidth=4 expandtab: */

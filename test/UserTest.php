@@ -12,7 +12,7 @@ function validEmail($email)
     {
         return false;
     }
-    $domain = substr($email, $pos+1);
+    $domain = substr($email, $pos + 1);
     if(checkdnsrr($domain, 'MX') === false)
     {
         return false;

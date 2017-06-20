@@ -5,7 +5,7 @@ class ProfilesLeadPage extends FlipAdminPage
 {
     private $is_lead;
 
-    function __construct($title)
+    public function __construct($title)
     {
         parent::__construct($title);
         if($this->user == false)
@@ -33,14 +33,14 @@ class ProfilesLeadPage extends FlipAdminPage
         $this->addWellKnownJS(JS_LOGIN);
     }
 
-    function add_leads_css()
+    protected function add_leads_css()
     {
         $this->addWellKnownCSS(CSS_DATATABLE);
         $this->addCSSByURI('../css/profiles.css');
         $this->addCSSByURI('css/lead.css');
     }
 
-    function add_links()
+    public function add_links()
     {
          $dirMenu = array(
              'All' => 'directory.php',
@@ -67,4 +67,4 @@ class ProfilesLeadPage extends FlipAdminPage
         return $this->is_lead;
     }
 }
-?>
+/* vim: set tabstop=4 shiftwidth=4 expandtab: */
