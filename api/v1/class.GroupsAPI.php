@@ -9,7 +9,7 @@ class GroupsAPI extends ProfilesAdminAPI
         $app->get('/{name}/non-members', array($this, 'getNonMembers'));
     }
 
-    public function getGroups($request, $response, $args)
+    public function getGroups($request, $response)
     {
         if($this->validateIsAdmin($request, true) === false)
         {

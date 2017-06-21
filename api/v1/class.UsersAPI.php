@@ -16,7 +16,7 @@ class UsersAPI extends ProfilesAdminAPI
         $app->post('/Actions/remind_uid[/]', array($this, 'remindUid'));
     }
 
-    public function listUsers($request, $response, $args)
+    public function listUsers($request, $response)
     {
         $users = false;
         $odata = $request->getAttribute('odata', new \ODataParams(array()));
@@ -70,7 +70,7 @@ class UsersAPI extends ProfilesAdminAPI
         return true;
     }
 
-    public function createUser($request, $response, $args)
+    public function createUser($request, $response)
     {
         $this->user = $request->getAttribute('user');
         //This one is different. If they are logged in fail...
@@ -367,7 +367,7 @@ class UsersAPI extends ProfilesAdminAPI
         return false;
     }
 
-    public function checkEmailAvailable($request, $response, $args)
+    public function checkEmailAvailable($request, $response)
     {
         $params = $request->getQueryParams();
         $email = false;
@@ -401,7 +401,7 @@ class UsersAPI extends ProfilesAdminAPI
         return $response->withJson(array('res'=>false, 'email'=>$user->mail, 'pending'=>$pending));
     }
 
-    public function checkUidAvailable($request, $response, $args)
+    public function checkUidAvailable($request, $response)
     {
         $params = $request->getQueryParams();
         $uid = false;
@@ -453,7 +453,7 @@ class UsersAPI extends ProfilesAdminAPI
         return $response->withJson(true);
     }
 
-    public function remindUid($request, $response, $args)
+    public function remindUid($request, $response)
     {
         $params = $request->getQueryParams();
         $email = false;

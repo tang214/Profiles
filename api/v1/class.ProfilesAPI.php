@@ -8,7 +8,7 @@ class ProfilesAPI extends Http\Rest\RestAPI
         $app->post('/zip[/]', array($this, 'validateZip'));
     }
 
-    public function login($request, $response, $args)
+    public function login($request, $response)
     {
         $params = $request->getParams();
         if(!isset($params['username']) || !isset($params['password']))
@@ -25,7 +25,6 @@ class ProfilesAPI extends Http\Rest\RestAPI
         {
             $user = \FlipSession::getUser();
             $privateKey = file_get_contents('/var/www/secure_settings/jwtRS256.key');
-            $key = "example_key";
             $groups = $user->getGroups();
             if($groups === false)
             {
@@ -55,7 +54,7 @@ class ProfilesAPI extends Http\Rest\RestAPI
         }
     }
 
-    public function logout($request, $response, $args)
+    public function logout($request, $response)
     {
         FlipSession::end();
         $cookieParams = session_get_cookie_params();
@@ -95,7 +94,7 @@ class ProfilesAPI extends Http\Rest\RestAPI
         {
             $ret = true;
         }
-        return $request->withJson($ret);
+        return $response->withJson($ret);
     }
 }
 /* vim: set tabstop=4 shiftwidth=4 expandtab: */

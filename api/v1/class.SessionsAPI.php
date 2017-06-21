@@ -7,7 +7,7 @@ class SessionsAPI extends ProfilesAdminAPI
         $app->delete('/{id}', array($this, 'endSession'));
     }
 
-    public function getSessions($request, $response, $args)
+    public function getSessions($request, $response)
     {
         $this->validateIsAdmin($request);
         $sessions = FlipSession::getAllSessions();

@@ -9,7 +9,7 @@ class PendingUserAPI extends ProfilesAdminAPI
         $app->map(['GET', 'POST'], '/{hash}/Actions/activate[/]', array($this, 'activatePendingUser'));
     }
 
-    public function listPendingUsers($request, $response, $args)
+    public function listPendingUsers($request, $response)
     {
         $this->validateIsAdmin($request);
         $odata = $request->getAttribute('odata', new \ODataParams(array()));
@@ -44,6 +44,7 @@ class PendingUserAPI extends ProfilesAdminAPI
 
     public function activatePendingUser($request, $response, $args)
     {
+        $hash = $args['hash'];
         $user = $request->getAttribute('user');
         if($user === false)
         {
