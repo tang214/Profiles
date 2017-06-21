@@ -18,7 +18,6 @@ class UsersAPI extends ProfilesAdminAPI
 
     public function listUsers($request, $response)
     {
-        $users = false;
         $odata = $request->getAttribute('odata', new \ODataParams(array()));
         if($this->validateIsAdmin($request, true) === false)
         {
@@ -70,6 +69,11 @@ class UsersAPI extends ProfilesAdminAPI
         return true;
     }
 
+    protected function getFailArray($message)
+    {
+        return array('res'=>false, 'message'=>$message);
+    }
+
     public function createUser($request, $response)
     {
         $this->user = $request->getAttribute('user');
@@ -90,22 +94,22 @@ class UsersAPI extends ProfilesAdminAPI
         }
         if(!$captcha->is_answer_right($obj->captcha))
         {
-            return $response->withJson(array('res'=>false, 'message'=>'Incorrect answer to CAPTCHA!'), 412);
+            return $response->withJson($this->getFailArray('Incorrect answer to CAPTCHA!'), 412);
         }
         $auth = AuthProvider::getInstance();
         $message = false;
         if($this->validateCanCreateUser($obj, $auth, $message) === false)
         {
-            return $response->withJson(array('res'=>false, 'message'=>$message), 412);
+            return $response->withJson($this->getFailArray($message), 412);
         }
         else if($this->validEmail($obj->mail) === false)
         {
-            return $response->withJson(array('res'=>false, 'message'=>'Invalid Email Address!'));
+            return $response->withJson($this->getFailArray('Invalid Email Address!'));
         }
         $ret = $auth->createPendingUser($obj);
         if($ret == false)
         {
-            return $response->withJson(array('res'=>false, 'message'=>'Failed to save user registration!'), 500);
+            return $response->withJson($this->getFailArray('Failed to save user registration!'), 500);
         }
         return $response->withJson($ret);
     }
