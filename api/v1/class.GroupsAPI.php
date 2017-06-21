@@ -1,41 +1,12 @@
 <?php
-class GroupsAPI extends Http\Rest\RestAPI
+class GroupsAPI extends ProfilesAdminAPI
 {
-    protected $user;
-
     public function setup($app)
     {
         $app->get('[/]', array($this, 'getGroups'));
         $app->get('/{name}[/]', array($this, 'getGroup'));
         $app->patch('/{name}[/]', array($this, 'updateGroup'));
         $app->get('/{name}/non-members', array($this, 'getNonMembers'));
-    }
-
-    public function validateLoggedIn($request)
-    {
-        $this->user = $request->getAttribute('user');
-        if($this->user === false)
-        {
-            throw new Exception('Must be logged in', \Http\Rest\ACCESS_DENIED);
-        }
-    }
-
-    public function validateIsAdmin($request, $nonFatal = false)
-    {
-        $this->user = $request->getAttribute('user');
-        if($this->user === false)
-        {
-            throw new Exception('Must be logged in', \Http\Rest\ACCESS_DENIED);
-        }
-        if(!$this->user->isInGroupNamed('LDAPAdmins'))
-        {
-            if($nonFatal)
-            {
-                return false;
-            }
-            throw new Exception('Must be Admin', \Http\Rest\ACCESS_DENIED);
-        }
-        return true;
     }
 
     public function getGroups($request, $response, $args)

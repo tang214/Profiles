@@ -1,8 +1,6 @@
 <?php
-class UsersAPI extends Http\Rest\RestAPI
+class UsersAPI extends ProfilesAdminAPI
 {
-    protected $user;
-
     public function setup($app)
     {
         $app->get('[/]', array($this, 'listUsers'));
@@ -16,24 +14,6 @@ class UsersAPI extends Http\Rest\RestAPI
         $app->post('/Actions/check_email_available[/]', array($this, 'checkEmailAvailable'));
         $app->post('/Actions/check_uid_available[/]', array($this, 'checkUidAvailable'));
         $app->post('/Actions/remind_uid[/]', array($this, 'remindUid'));
-    }
-
-    public function validateIsAdmin($request, $nonFatal = false)
-    {
-        $this->user = $request->getAttribute('user');
-        if($this->user === false)
-        {
-            throw new Exception('Must be logged in', \Http\Rest\ACCESS_DENIED);
-        }
-        if(!$this->user->isInGroupNamed('LDAPAdmins'))
-        {
-            if($nonFatal)
-            {
-                return false;
-            }
-            throw new Exception('Must be Admin', \Http\Rest\ACCESS_DENIED);
-        }
-        return true;
     }
 
     public function listUsers($request, $response, $args)
