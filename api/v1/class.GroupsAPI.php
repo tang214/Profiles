@@ -104,7 +104,7 @@ class GroupsAPI extends ProfilesAdminAPI
         return $response->withJson($group);
     }
 
-    protected function serializeArray(&$res, $array, $type=false)
+    protected function serializeArray(&$res, $array, $keys, $type=false)
     {
         $count = count($array);
         for($i = 0; $i < $count; $i++)
@@ -131,9 +131,9 @@ class GroupsAPI extends ProfilesAdminAPI
         $auth = AuthProvider::getInstance();
         $groups = $auth->getGroupsByFilter(false);
         $res = array();
-        $this->serializeArray($res, $groups, 'Group');
+        $this->serializeArray($res, $groups, $keys, 'Group');
         $users  = $auth->getUsersByFilter(false);
-        $this->serializeArray($res, $users, 'User');
+        $this->serializeArray($res, $users, $keys, 'User');
         return $res;
     }
 
@@ -154,7 +154,7 @@ class GroupsAPI extends ProfilesAdminAPI
         if($keys !== false)
         {
             $res = array();
-            $this->serializeArray($res, $nonMembers);
+            $this->serializeArray($res, $nonMembers, $keys);
             return $res;
         }
         return $nonMembers;
