@@ -1,8 +1,9 @@
 <?php
 require('Autoload.php');
 
-function doAuthByType($type, $src)
+function doAuthByType($type, $src, $auth, $ref)
 {
+    $currentUser = false;
     $google = $auth->getMethodByName($type);
     if(!isset($_GET['code']))
     {
@@ -11,7 +12,7 @@ function doAuthByType($type, $src)
     }
     else
     {
-        $res = $google->authenticate($_GET['code'], $current_user);
+        $res = $google->authenticate($_GET['code'], $currentUser);
         switch($res)
         {
             case \Auth\Authenticator::SUCCESS:
@@ -22,7 +23,7 @@ function doAuthByType($type, $src)
                 header('Location: login.php');
                 die();
             case \Auth\Authenticator::ALREADY_PRESENT:
-                header('Location: user_exists.php?src='.$src.'&uid='.$current_user->uid);
+                header('Location: user_exists.php?src='.$src.'&uid='.$currentUser->uid);
                 die();
         }
     }
@@ -52,7 +53,7 @@ if(isset($_SERVER['HTTP_REFERER']) && strstr($_SERVER['HTTP_REFERER'], 'google.c
 switch($src)
 {
     case 'google':
-        doAuthByType('Auth\GoogleAuthenticator', $src);
+        doAuthByType('Auth\GoogleAuthenticator', $src, $auth, $ref);
         break;
     case 'twitter':
         $twitter = $auth->getMethodByName('Auth\TwitterAuthenticator');
@@ -80,7 +81,7 @@ switch($src)
         }
         break;
     case 'gitlab':
-        doAuthByType('Auth\OAuth2\GitLabAuthenticator', $src);
+        doAuthByType('Auth\OAuth2\GitLabAuthenticator', $src, $auth, $ref);
         break;
         //Generic OAuth...
     default:
