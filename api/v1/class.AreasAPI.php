@@ -1,5 +1,5 @@
 <?php
-class AreasAPI extends Http\Rest\DataTableAPI
+class AreasAPI extends ProfilesAdminDataAPI
 {
     public function __construct()
     {
@@ -10,19 +10,6 @@ class AreasAPI extends Http\Rest\DataTableAPI
     {
         parent::setup($app);
         $app->get('/{name}/leads', array($this, 'getLeads'));
-    }
-
-    protected function validateIsAdmin($request)
-    {
-        $user = $request->getAttribute('user');
-        if($user === false)
-        {
-            throw new Exception('Must be logged in', \Http\Rest\ACCESS_DENIED);
-        }
-        if(!$user->isInGroupNamed('LDAPAdmins'))
-        {
-            throw new Exception('Must be Admin', \Http\Rest\ACCESS_DENIED);
-        }
     }
 
     protected function canCreate($request)

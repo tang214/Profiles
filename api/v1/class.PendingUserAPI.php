@@ -1,5 +1,5 @@
 <?php
-class PendingUserAPI extends Http\Rest\RestAPI
+class PendingUserAPI extends ProfilesAdminAPI
 {
     public function setup($app)
     {
@@ -7,19 +7,6 @@ class PendingUserAPI extends Http\Rest\RestAPI
         $app->get('/{hash}[/]', array($this, 'showPendingUser'));
         $app->delete('/{hash}[/]', array($this, 'deletePendingUser'));
         $app->map(['GET', 'POST'], '/{hash}/Actions/activate[/]', array($this, 'activatePendingUser'));
-    }
-
-    protected function validateIsAdmin($request)
-    {
-        $user = $request->getAttribute('user');
-        if($user === false)
-        {
-            throw new Exception('Must be logged in', \Http\Rest\ACCESS_DENIED);
-        }
-        if(!$user->isInGroupNamed('LDAPAdmins'))
-        {
-            throw new Exception('Must be Admin', \Http\Rest\ACCESS_DENIED);
-        }
     }
 
     public function listPendingUsers($request, $response, $args)
