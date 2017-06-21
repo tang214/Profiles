@@ -36,13 +36,13 @@ class UsersAPI extends ProfilesAdminAPI
     protected function validateCanCreateUser($proposedUser, $auth, &$message)
     {
         $user = $auth->getUsersByFilter(new \Data\Filter('mail eq '.$proposedUser->mail));
-        if($user !== false && isset($user[0]))
+        if(!empty($user))
         {
             $message = 'Email already exists!';
             return false;
         }
         $user = $auth->getUsersByFilter(new \Data\Filter('uid eq '.$proposedUser->uid));
-        if($user !== false && isset($user[0]))
+        if(!empty($user))
         {
             $message = 'Username already exists!';
             return false;
@@ -120,6 +120,11 @@ class UsersAPI extends ProfilesAdminAPI
         return ($uid === 'me' || ($this->user !== false && $uid === $this->user->uid));
     }
 
+    protected function hasLeadAccess()
+    {
+        return ($this->user->isInGroupNamed('Leads') || $this->user->isInGroupNamed('CC') || $this->user->isInGroupNamed('AFs'));
+    }
+
     protected function getUserByUIDReadOnly($request, $uid)
     {
         if($this->userIsMe($request, $uid))
@@ -131,7 +136,7 @@ class UsersAPI extends ProfilesAdminAPI
             $auth = \AuthProvider::getInstance();
             $filter = new \Data\Filter("uid eq $uid");
             $users = $auth->getUsersByFilter($filter);
-            if($users !== false && isset($users[0]))
+            if(!empty($users))
             {
                 return $users[0];
             }
@@ -150,7 +155,7 @@ class UsersAPI extends ProfilesAdminAPI
             $auth = \AuthProvider::getInstance();
             $filter = new \Data\Filter("uid eq $uid");
             $users = $auth->getUsersByFilter($filter);
-            if($users !== false && isset($users[0]))
+            if(!empty($users))
             {
                 return $users[0];
             }
@@ -357,13 +362,13 @@ class UsersAPI extends ProfilesAdminAPI
     {
         $auth = AuthProvider::getInstance();
         $user = $auth->getUsersByFilter($filter);
-        if($user !== false && isset($user[0]))
+        if(!empty($user))
         {
             $pending = false;
             return $user[0];
         }
         $user = $auth->getPendingUsersByFilter($filter);
-        if($user !== false && isset($user[0]))
+        if(!empty($user))
         {
             $pending = true;
             return $user[0];
@@ -444,7 +449,7 @@ class UsersAPI extends ProfilesAdminAPI
         }
         $auth = AuthProvider::getInstance();
         $users = $auth->getUsersByFilter(new \Data\Filter('uid eq '.$uid));
-        if($users === false || !isset($users[0]))
+        if(empty($users))
         {
             return $response->withStatus(404);
         }
@@ -475,7 +480,7 @@ class UsersAPI extends ProfilesAdminAPI
         }
         $auth = AuthProvider::getInstance();
         $users = $auth->getUsersByFilter(new \Data\Filter('mail eq '.$email));
-        if($users === false || !isset($users[0]))
+        if(empty($users))
         {
             return $response->withStatus(404);
         }
