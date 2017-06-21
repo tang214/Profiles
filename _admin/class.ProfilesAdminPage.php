@@ -4,13 +4,13 @@ require_once('class.FlipSession.php');
 
 class ProfilesAdminPage extends FlipAdminPage
 {
-    function __construct($title)
+    public function __construct($title)
     {
         parent::__construct($title, 'LDAPAdmins');
         $this->addJSByURI('js/admin.js');
     }
 
-    function add_links()
+    public function add_links()
     {
         $users_menu = array(
             'Current' => 'users_current.php',
@@ -27,4 +27,4 @@ class ProfilesAdminPage extends FlipAdminPage
         $this->addLink('<i class="fa fa-cloud"></i> Sessions', 'sessions.php');
     }
 }
-?>
+/* vim: set tabstop=4 shiftwidth=4 expandtab: */

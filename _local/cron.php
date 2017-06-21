@@ -14,3 +14,4 @@ for($i = 0; $i < $count; $i++)
 {
     $users[$i]->delete();
 }
+/* vim: set tabstop=4 shiftwidth=4 expandtab: */
