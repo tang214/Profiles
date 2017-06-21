@@ -131,7 +131,7 @@ class UsersAPI extends ProfilesAdminAPI
         {
             return $this->user;
         }
-        if($this->user->isInGroupNamed('LDAPAdmins') || $this->hasLeadAccess($request))
+        if($this->user->isInGroupNamed('LDAPAdmins') || $this->hasLeadAccess())
         {
             $auth = \AuthProvider::getInstance();
             $filter = new \Data\Filter("uid eq $uid");
@@ -172,7 +172,7 @@ class UsersAPI extends ProfilesAdminAPI
             if($_SERVER['SERVER_ADDR'] === $_SERVER['REMOTE_ADDR'])
             {
                 $user = \AuthProvider::getInstance()->getUsersByFilter(new \Data\Filter("uid eq $uid"));
-                if($user === false || !isset($user[0]))
+                if(empty($user))
                 {
                     return $response->withStatus(404);
                 }

@@ -60,7 +60,6 @@ class GroupsAPI extends ProfilesAdminAPI
     public function getGroup($request, $response, $args)
     {
         $odata = $request->getAttribute('odata', new \ODataParams(array()));
-        $group = false;
         $expand = false;
         $user = $request->getAttribute('user');
         if($user === false)
@@ -105,34 +104,36 @@ class GroupsAPI extends ProfilesAdminAPI
         return $response->withJson($group);
     }
 
+    protected function serializeArray(&$res, $array, $type=false)
+    {
+        $count = count($array);
+        for($i = 0; $i < $count; $i++)
+        {
+            $tmp = json_decode(json_encode($array[$i]), true);
+            if($type === false)
+            {
+                $tmp['type'] = $this->getTypeOfEntity($array[$i]);
+            }
+            else
+            {
+                $tmp['type'] = $type;
+            }
+            if($keys !== false)
+            {
+                $tmp = array_intersect_key($tmp, $keys);
+            }
+            $res[] = $tmp;
+        }
+    }
+
     public function getAllGroupsAndUsers($keys)
     {
         $auth = AuthProvider::getInstance();
         $groups = $auth->getGroupsByFilter(false);
-        $count  = count($groups);
         $res = array();
-        for($i = 0; $i < $count; $i++)
-        {
-            $tmp = json_decode(json_encode($groups[$i]), true);
-            $tmp['type'] = 'Group';
-            if($keys !== false)
-            {
-                $tmp = array_intersect_key($tmp, $keys);
-            }
-            $res[] = $tmp;
-        }
+        $this->serializeArray($res, $groups, 'Group');
         $users  = $auth->getUsersByFilter(false);
-        $count  = count($users);
-        for($i = 0; $i < $count; $i++)
-        {
-            $tmp = json_decode(json_encode($users[$i]), true);
-            $tmp['type'] = 'User';
-            if($keys !== false)
-            {
-                $tmp = array_intersect_key($tmp, $keys);
-            }
-            $res[] = $tmp;
-        }
+        $this->serializeArray($res, $users, 'User');
         return $res;
     }
 
@@ -152,13 +153,9 @@ class GroupsAPI extends ProfilesAdminAPI
     {
         if($keys !== false)
         {
-            $count = count($nonMembers);
-            for($i = 0; $i < $count; $i++)
-            {
-                $tmp = json_decode(json_encode($nonMembers[$i]), true);
-                $tmp['type'] = $this->getTypeOfEntity($nonMembers[$i]);
-                $nonMembers[$i] = array_intersect_key($tmp, $keys);
-            }
+            $res = array();
+            $this->serializeArray($res, $nonMembers);
+            return $res;
         }
         return $nonMembers;
     }
