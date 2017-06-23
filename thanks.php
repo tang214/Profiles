@@ -9,4 +9,4 @@ $page->body .= '
 </div>';
 
 $page->printPage();
-?>
+/* vim: set tabstop=4 shiftwidth=4 expandtab: */

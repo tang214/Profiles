@@ -33,5 +33,5 @@ $page->body .= '
 Export: <a href="../api/v1/leads'.$query.'"><img src="../images/csv.svg"/></a>
 </div>';
 
-$page->print_page();
-?>
+$page->printPage();
+/* vim: set tabstop=4 shiftwidth=4 expandtab: */

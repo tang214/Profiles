@@ -16,4 +16,4 @@ class FlipsideProfileEmail extends \Email\Email
         return 'Burning Flipside Profile System <webmaster@burningflipside.com>';
     }
 }
-?>
+/* vim: set tabstop=4 shiftwidth=4 expandtab: */

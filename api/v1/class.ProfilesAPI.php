@@ -8,7 +8,7 @@ class ProfilesAPI extends Http\Rest\RestAPI
         $app->post('/zip[/]', array($this, 'validateZip'));
     }
 
-    public function login($request, $response, $args)
+    public function login($request, $response)
     {
         $params = $request->getParams();
         if(!isset($params['username']) || !isset($params['password']))
@@ -23,13 +23,42 @@ class ProfilesAPI extends Http\Rest\RestAPI
         }
         else
         {
+            $user = \FlipSession::getUser();
+            $privateKey = file_get_contents('/var/www/secure_settings/jwtRS256.key');
+            $groups = $user->getGroups();
+            if($groups === false)
+            {
+                $groups = array();
+            }
+            $count = count($groups);
+            for($i = 0; $i < $count; $i++)
+            {
+                $groups[$i] = $groups[$i]->getGroupName();
+            }
+            $token = array(
+                'iss' => $request->getUri()->getHost(),
+                'sub' => $user->uid,
+                'private' => array('Flipside'=>array(
+                    'email'=>$user->mail,
+                    'groups'=>$groups,
+                    'sessionIDs'=> array(
+                        'php'=>session_id()
+                        )
+                    )      
+                )
+            );
+            $cookieParams = session_get_cookie_params();
+            $jwt = \Firebase\JWT\JWT::encode($token, $privateKey, 'RS256');
+            $response = $response->withHeader('Set-Cookie', 'Flipside_JWT='.$jwt.'; path=/; domain='.$cookieParams['domain'].'; secure');
             return $response->withJson($res);
         }
     }
 
-    public function logout($request, $response, $args)
+    public function logout($request, $response)
     {
         FlipSession::end();
+        $cookieParams = session_get_cookie_params();
+        $response = $response->withHeader('Set-Cookie', 'Flipside_JWT=deleted; expires=Thu, 01-Jan-1970 00:00:01 GMT; Max-Age=0; path=/; domain='.$cookieParams['domain'].'; secure');
         return $response->withJson(true);
     }
 
@@ -65,7 +94,7 @@ class ProfilesAPI extends Http\Rest\RestAPI
         {
             $ret = true;
         }
-        return $request->withJson($ret);
+        return $response->withJson($ret);
     }
 }
 /* vim: set tabstop=4 shiftwidth=4 expandtab: */
