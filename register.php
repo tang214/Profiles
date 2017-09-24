@@ -7,6 +7,12 @@ if($_SERVER["HTTPS"] != "on")
     header("Location: https://".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"]);
     exit();
 }
+if(strpos($_SERVER['REQUEST_URI'], '//') !== false)
+{
+    $uri = str_replace('//', '/', $_SERVER['REQUEST_URI']);
+    header("Location: https://".$_SERVER["HTTP_HOST"].$uri);
+    exit();
+}
 require_once('class.FlipsideCAPTCHA.php');
 require_once('class.ProfilesPage.php');
 $page = new ProfilesPage('Burning Flipside Profiles Registration');

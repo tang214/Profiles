@@ -395,7 +395,15 @@ class UsersAPI extends Http\Rest\RestAPI
         }
         if($email === false)
         {
-            return $response->withStatus(400);
+            $params = $request->getParsedBody();
+            if(isset($params['email']))
+            {
+                $email = $params['email'];
+            }
+            if($email === false)
+            {
+                return $response->withStatus(400);
+            }
         }
         if(filter_var($email, FILTER_VALIDATE_EMAIL) === false || strpos($email, '@') === false)
         {
