@@ -262,17 +262,18 @@ class UsersAPI extends Http\Rest\RestAPI
         }
         try
         {
-            if(isset($obj->old_uid))
+            if(isset($obj['old_uid']))
             {
-                unset($obj->old_uid);
+                unset($obj['old_uid']);
             }
+            unset($obj['uid']);
             $user->editUser($obj);
         }
         catch(\Exception $e)
         {
-            return $response->withJson($e, exceptionCodeToHttpCode($e));
+            return $response->withJson(array('error'=>array('msg'=>$e->getMessage(), 'stack'=>$e->getTraceAsString())), $this->exceptionCodeToHttpCode($e));
         }
-        if($this->userIsMe($app, $uid))
+        if($this->userIsMe($request, $uid))
         {
             \FlipSession::setUser($user);
         }
