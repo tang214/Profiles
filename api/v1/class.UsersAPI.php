@@ -1,5 +1,7 @@
 <?php
-class UsersAPI extends ProfilesAdminAPI
+require_once('class.UIDForgotEmail.php');
+
+class UsersAPI extends Http\Rest\RestAPI
 {
     public function setup($app)
     {
@@ -35,14 +37,14 @@ class UsersAPI extends ProfilesAdminAPI
 
     protected function validateCanCreateUser($proposedUser, $auth, &$message)
     {
-        $user = $auth->getUsersByFilter(new \Data\Filter('mail eq '.$proposedUser->mail));
-        if(!empty($user))
+        $user = $auth->getUsersByFilter(new \Data\Filter('mail eq '.$proposedUser['mail']));
+        if($user !== false && isset($user[0]))
         {
             $message = 'Email already exists!';
             return false;
         }
-        $user = $auth->getUsersByFilter(new \Data\Filter('uid eq '.$proposedUser->uid));
-        if(!empty($user))
+        $user = $auth->getUsersByFilter(new \Data\Filter('uid eq '.$proposedUser['uid']));
+        if($user !== false && isset($user[0]))
         {
             $message = 'Username already exists!';
             return false;
@@ -83,7 +85,7 @@ class UsersAPI extends ProfilesAdminAPI
             return $response->withStatus(404);
         }
         $obj = $request->getParsedBody();
-        if(!isset($obj->captcha))
+        if(!isset($obj['captcha']))
         {
             return $response->withStatus(401);
         }
@@ -92,7 +94,7 @@ class UsersAPI extends ProfilesAdminAPI
         {
             return $response->withStatus(401);
         }
-        if(!$captcha->is_answer_right($obj->captcha))
+        if(!$captcha->is_answer_right($obj['captcha']))
         {
             return $response->withJson($this->getFailArray('Incorrect answer to CAPTCHA!'), 412);
         }
@@ -102,7 +104,7 @@ class UsersAPI extends ProfilesAdminAPI
         {
             return $response->withJson($this->getFailArray($message), 412);
         }
-        else if($this->validEmail($obj->mail) === false)
+        else if($this->validEmail($obj['mail']) === false)
         {
             return $response->withJson($this->getFailArray('Invalid Email Address!'));
         }
@@ -253,15 +255,16 @@ class UsersAPI extends ProfilesAdminAPI
         }
         try
         {
-            if(isset($obj->old_uid))
+            if(isset($obj['old_uid']))
             {
-                unset($obj->old_uid);
+                unset($obj['old_uid']);
             }
+            unset($obj['uid']);
             $user->editUser($obj);
         }
         catch(\Exception $e)
         {
-            return $response->withJson($e, exceptionCodeToHttpCode($e));
+            return $response->withJson(array('error'=>array('msg'=>$e->getMessage(), 'stack'=>$e->getTraceAsString())), $this->exceptionCodeToHttpCode($e));
         }
         if($this->userIsMe($request, $uid))
         {
@@ -386,7 +389,15 @@ class UsersAPI extends ProfilesAdminAPI
         }
         if($email === false)
         {
-            return $response->withStatus(400);
+            $params = $request->getParsedBody();
+            if(isset($params['email']))
+            {
+                $email = $params['email'];
+            }
+            if($email === false)
+            {
+                return $response->withStatus(400);
+            }
         }
         if(filter_var($email, FILTER_VALIDATE_EMAIL) === false || strpos($email, '@') === false)
         {
@@ -420,7 +431,15 @@ class UsersAPI extends ProfilesAdminAPI
         }
         if($uid === false)
         {
-            return $response->withStatus(400);
+            $params = $request->getParsedBody();
+            if(isset($params['uid']))
+            {
+                $uid = $params['uid'];
+            }
+            if($uid === false)
+            {
+                return $response->withStatus(400);
+            }
         }
         if(strpos($uid, '=') !== false || strpos($uid, ',') !== false)
         {
@@ -462,7 +481,7 @@ class UsersAPI extends ProfilesAdminAPI
         return $response->withJson(true);
     }
 
-    public function remindUid($request, $response)
+    public function remindUid($request, $response, $args)
     {
         $params = $request->getQueryParams();
         $email = false;
@@ -472,7 +491,15 @@ class UsersAPI extends ProfilesAdminAPI
         }
         if($email === false)
         {
-            return $response->withStatus(400);
+            $params = $request->getParsedBody();
+            if(isset($params['email']))
+            {
+                $email = $params['email'];
+            }
+            if($email === false)
+            {
+                return $response->withStatus(400);
+            }
         }
         if(filter_var($email, FILTER_VALIDATE_EMAIL) === false)
         {

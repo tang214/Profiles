@@ -1,4 +1,10 @@
 <?php
+if(strpos($_SERVER['REQUEST_URI'], '//') !== false)
+{
+    $uri = str_replace('//', '/', $_SERVER['REQUEST_URI']);
+    header("Location: https://".$_SERVER["HTTP_HOST"].$uri);
+    exit();
+}
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 require_once('class.ProfilesPage.php');

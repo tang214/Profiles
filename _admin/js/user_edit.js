@@ -186,6 +186,7 @@ function userDataSubmitted(e)
     $.ajax({
         url: '../api/v1/users/'+getUID(),
         data: JSON.stringify(obj),
+        contentType: 'application/json',
         type: 'PATCH',
         dataType: 'json',
         processData: false,

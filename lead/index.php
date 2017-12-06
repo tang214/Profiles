@@ -25,7 +25,7 @@ $page->body .= '
 
 $page->add_card('fa-user', $lead_count, 'Leads', 'directory.php?filter=lead');
 $page->add_card('fa-bullhorn', $af_count, 'AFs', 'directory.php?filter=af', $page::CARD_GREEN);
-$page->add_card('fa-cc', $cc_count, 'Combustion Chamger', 'directory.php?filter=cc', $page::CARD_YELLOW);
+$page->add_card('fa-cc', $cc_count, 'Combustion Chamber', 'directory.php?filter=cc', $page::CARD_YELLOW);
 $page->add_card('fa-fire', $aar_count, 'Board Members', 'directory.php?filter=aar', $page::CARD_RED);
 
 $page->body .= '</div>';
