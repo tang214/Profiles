@@ -174,6 +174,7 @@ function groupDataSubmitted(e)
         url: '../api/v1/groups/'+getGID(),
         data: JSON.stringify(group),
         type: 'PATCH',
+        contentType: 'application/json',
         dataType: 'json',
         processData: false,
         complete: groupSubmitDone});

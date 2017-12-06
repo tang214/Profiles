@@ -167,6 +167,7 @@ function submit_registration_form(form)
     var obj = form.serializeObject();
     $.ajax({
         url: '/api/v1/users',
+        contentType: 'application/json',
         data: JSON.stringify(obj),
         type: 'POST',
         dataType: 'json',

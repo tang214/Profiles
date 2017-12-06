@@ -56,13 +56,13 @@ class UsersAPI extends Http\Rest\RestAPI
 
     protected function validateCanCreateUser($proposedUser, $auth, &$message)
     {
-        $user = $auth->getUsersByFilter(new \Data\Filter('mail eq '.$proposedUser->mail));
+        $user = $auth->getUsersByFilter(new \Data\Filter('mail eq '.$proposedUser['mail']));
         if($user !== false && isset($user[0]))
         {
             $message = 'Email already exists!';
             return false;
         }
-        $user = $auth->getUsersByFilter(new \Data\Filter('uid eq '.$proposedUser->uid));
+        $user = $auth->getUsersByFilter(new \Data\Filter('uid eq '.$proposedUser['uid']));
         if($user !== false && isset($user[0]))
         {
             $message = 'Username already exists!';
@@ -99,7 +99,7 @@ class UsersAPI extends Http\Rest\RestAPI
             return $response->withStatus(404);
         }
         $obj = $request->getParsedBody();
-        if(!isset($obj->captcha))
+        if(!isset($obj['captcha']))
         {
             return $response->withStatus(401);
         }
@@ -108,7 +108,7 @@ class UsersAPI extends Http\Rest\RestAPI
         {
             return $response->withStatus(401);
         }
-        if(!$captcha->is_answer_right($obj->captcha))
+        if(!$captcha->is_answer_right($obj['captcha']))
         {
             return $response->withJson(array('res'=>false, 'message'=>'Incorrect answer to CAPTCHA!'), 412);
         }
@@ -118,7 +118,7 @@ class UsersAPI extends Http\Rest\RestAPI
         {
             return $response->withJson(array('res'=>false, 'message'=>$message), 412);
         }
-        else if($this->validEmail($obj->mail) === false)
+        else if($this->validEmail($obj['mail']) === false)
         {
             return $response->withJson(array('res'=>false, 'message'=>'Invalid Email Address!'));
         }
@@ -440,7 +440,15 @@ class UsersAPI extends Http\Rest\RestAPI
         }
         if($uid === false)
         {
-            return $response->withStatus(400);
+            $params = $request->getParsedBody();
+            if(isset($params['uid']))
+            {
+                $uid = $params['uid'];
+            }
+            if($uid === false)
+            {
+                return $response->withStatus(400);
+            }
         }
         if(strpos($uid, '=') !== false || strpos($uid, ',') !== false)
         {
