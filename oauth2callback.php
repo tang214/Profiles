@@ -1,6 +1,34 @@
 <?php
 require('Autoload.php');
 
+function doAuthByType($type, $src, $auth, $ref)
+{
+    $currentUser = false;
+    $google = $auth->getMethodByName($type);
+    if(!isset($_GET['code']))
+    {
+        $google->redirect();
+        die();
+    }
+    else
+    {
+        $res = $google->authenticate($_GET['code'], $currentUser);
+        switch($res)
+        {
+            case \Auth\Authenticator::SUCCESS:
+                header('Location: '.$ref);
+                die();
+            default:
+            case \Auth\Authenticator::LOGIN_FAILED:
+                header('Location: login.php');
+                die();
+            case \Auth\Authenticator::ALREADY_PRESENT:
+                header('Location: user_exists.php?src='.$src.'&uid='.$currentUser->uid);
+                die();
+        }
+    }
+}
+
 $auth = AuthProvider::getInstance();
 $src  = false;
 if(isset($_GET['src']))
@@ -25,29 +53,7 @@ if(isset($_SERVER['HTTP_REFERER']) && strstr($_SERVER['HTTP_REFERER'], 'google.c
 switch($src)
 {
     case 'google':
-        $google = $auth->getMethodByName('Auth\GoogleAuthenticator');
-        if(!isset($_GET['code']))
-        {
-            $google->redirect();
-            die();
-        }
-        else
-        {
-            $res = $google->authenticate($_GET['code'], $current_user);
-            switch($res)
-            {
-                case \Auth\Authenticator::SUCCESS:
-                    header('Location: '.$ref);
-                    die();
-                default:
-                case \Auth\Authenticator::LOGIN_FAILED:
-                    header('Location: login.php');
-                    die();
-                case \Auth\Authenticator::ALREADY_PRESENT:
-                    header('Location: user_exists.php?src=google&uid='.$current_user->uid);
-                    die();
-            }
-        }
+        doAuthByType('Auth\GoogleAuthenticator', $src, $auth, $ref);
         break;
     case 'twitter':
         $twitter = $auth->getMethodByName('Auth\TwitterAuthenticator');
@@ -75,32 +81,11 @@ switch($src)
         }
         break;
     case 'gitlab':
-        $gitlab = $auth->getMethodByName('Auth\OAuth2\GitLabAuthenticator');
-        if(!isset($_GET['code']))
-        {
-            $google->redirect();
-            die();
-        }
-        else
-        {
-            $res = $gitlab->authenticate($_GET['code'], $current_user);
-            switch($res)
-            {
-                case \Auth\Authenticator::SUCCESS:
-                    header('Location: '.$ref);
-                    die();
-                default:
-                case \Auth\Authenticator::LOGIN_FAILED:
-                    header('Location: login.php');
-                    die();
-                case \Auth\Authenticator::ALREADY_PRESENT:
-                    header('Location: user_exists.php?src=gitlab&uid='.$current_user->uid);
-                    die();
-            }
-        }
-    //Generic OAuth...
+        doAuthByType('Auth\OAuth2\GitLabAuthenticator', $src, $auth, $ref);
+        break;
+        //Generic OAuth...
     default:
         print_r($_SERVER);
         break;
 }
-?>
+/* vim: set tabstop=4 shiftwidth=4 expandtab: */

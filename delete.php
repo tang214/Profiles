@@ -1,12 +1,6 @@
 <?php
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
-//Redirect users to https
-if($_SERVER["HTTPS"] != "on")
-{
-    header("Location: https://".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"]);
-    exit();
-}
 require_once("class.FlipSession.php");
 if(!FlipSession::isLoggedIn())
 {
@@ -41,4 +35,3 @@ $page->body = '
 
 $page->printPage();
 /* vim: set tabstop=4 shiftwidth=4 expandtab:*/
-?>
