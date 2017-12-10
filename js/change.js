@@ -78,6 +78,7 @@ function change_password(e)
     }
     $.ajax({
         url: 'api/v1/users/me',
+        contentType: 'application/json',
         type: 'PATCH',
         data: JSON.stringify(obj),
         processData: false,
