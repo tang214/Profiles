@@ -49,6 +49,7 @@ function add_area()
 {
     $.ajax({
         url: '../api/v1/areas',
+        contentType: 'application/json',
         data: JSON.stringify(form_vars()),
         type: 'POST',
         processData: false,
@@ -60,6 +61,7 @@ function update_area()
 {
     $.ajax({
         url: '../api/v1/areas/'+$('#area_name').html(),
+        contentType: 'application/json',
         data: JSON.stringify(form_vars()),
         type: 'PATCH',
         processData: false,
