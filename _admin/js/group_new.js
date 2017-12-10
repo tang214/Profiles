@@ -103,6 +103,7 @@ function groupDataSubmitted(e)
     }
     $.ajax({
         url: '../api/v1/groups',
+        contentType: 'application/json',
         data: JSON.stringify(group),
         type: 'POST',
         dataType: 'json',

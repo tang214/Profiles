@@ -87,6 +87,7 @@ function add_lead()
 {
     $.ajax({
         url: '../api/v1/leads',
+        contentType: 'application/json',
         data: JSON.stringify(form_vars()),
         type: 'POST',
         processData: false,
@@ -98,6 +99,7 @@ function update_lead()
 {
     $.ajax({
         url: '../api/v1/leads/'+$('#lead_name').html(),
+        contentType: 'application/json',
         data: JSON.stringify(form_vars()),
         type: 'PATCH',
         processData: false,
