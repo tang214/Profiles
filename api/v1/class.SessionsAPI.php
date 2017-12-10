@@ -1,5 +1,5 @@
 <?php
-class SessionsAPI extends Http\Rest\RestAPI
+class SessionsAPI extends ProfilesAdminAPI
 {
     public function setup($app)
     {
@@ -7,20 +7,7 @@ class SessionsAPI extends Http\Rest\RestAPI
         $app->delete('/{id}', array($this, 'endSession'));
     }
 
-    protected function validateIsAdmin($request)
-    {
-        $user = $request->getAttribute('user');
-        if($user === false)
-        {
-            throw new Exception('Must be logged in', \Http\Rest\ACCESS_DENIED);
-        }
-        if(!$user->isInGroupNamed('LDAPAdmins'))
-        {
-            throw new Exception('Must be Admin', \Http\Rest\ACCESS_DENIED);
-        }
-    }
-
-    public function getSessions($request, $response, $args)
+    public function getSessions($request, $response)
     {
         $this->validateIsAdmin($request);
         $sessions = FlipSession::getAllSessions();

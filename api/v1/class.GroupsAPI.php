@@ -1,5 +1,5 @@
 <?php
-class GroupsAPI extends Http\Rest\RestAPI
+class GroupsAPI extends ProfilesAdminAPI
 {
     public function setup($app)
     {
@@ -9,34 +9,7 @@ class GroupsAPI extends Http\Rest\RestAPI
         $app->get('/{name}/non-members', array($this, 'getNonMembers'));
     }
 
-    public function validateLoggedIn($request)
-    {
-        $this->user = $request->getAttribute('user');
-        if($this->user === false)
-        {
-            throw new Exception('Must be logged in', \Http\Rest\ACCESS_DENIED);
-        }
-    }
-
-    public function validateIsAdmin($request, $nonFatal = false)
-    {
-        $this->user = $request->getAttribute('user');
-        if($this->user === false)
-        {
-            throw new Exception('Must be logged in', \Http\Rest\ACCESS_DENIED);
-        }
-        if(!$this->user->isInGroupNamed('LDAPAdmins'))
-        {
-            if($nonFatal)
-            {
-                return false;
-            }
-            throw new Exception('Must be Admin', \Http\Rest\ACCESS_DENIED);
-        }
-        return true;
-    }
-
-    public function getGroups($request, $response, $args)
+    public function getGroups($request, $response)
     {
         if($this->validateIsAdmin($request, true) === false)
         {
@@ -87,7 +60,6 @@ class GroupsAPI extends Http\Rest\RestAPI
     public function getGroup($request, $response, $args)
     {
         $odata = $request->getAttribute('odata', new \ODataParams(array()));
-        $group = false;
         $expand = false;
         $user = $request->getAttribute('user');
         if($user === false)
@@ -132,34 +104,36 @@ class GroupsAPI extends Http\Rest\RestAPI
         return $response->withJson($group);
     }
 
+    protected function serializeArray(&$res, $array, $keys, $type=false)
+    {
+        $count = count($array);
+        for($i = 0; $i < $count; $i++)
+        {
+            $tmp = json_decode(json_encode($array[$i]), true);
+            if($type === false)
+            {
+                $tmp['type'] = $this->getTypeOfEntity($array[$i]);
+            }
+            else
+            {
+                $tmp['type'] = $type;
+            }
+            if($keys !== false)
+            {
+                $tmp = array_intersect_key($tmp, $keys);
+            }
+            $res[] = $tmp;
+        }
+    }
+
     public function getAllGroupsAndUsers($keys)
     {
         $auth = AuthProvider::getInstance();
         $groups = $auth->getGroupsByFilter(false);
-        $count  = count($groups);
         $res = array();
-        for($i = 0; $i < $count; $i++)
-        {
-            $tmp = json_decode(json_encode($groups[$i]), true);
-            $tmp['type'] = 'Group';
-            if($keys !== false)
-            {
-                $tmp = array_intersect_key($tmp, $keys);
-            }
-            $res[] = $tmp;
-        }
+        $this->serializeArray($res, $groups, $keys, 'Group');
         $users  = $auth->getUsersByFilter(false);
-        $count  = count($users);
-        for($i = 0; $i < $count; $i++)
-        {
-            $tmp = json_decode(json_encode($users[$i]), true);
-            $tmp['type'] = 'User';
-            if($keys !== false)
-            {
-                $tmp = array_intersect_key($tmp, $keys);
-            }
-            $res[] = $tmp;
-        }
+        $this->serializeArray($res, $users, $keys, 'User');
         return $res;
     }
 
@@ -179,13 +153,9 @@ class GroupsAPI extends Http\Rest\RestAPI
     {
         if($keys !== false)
         {
-            $count = count($nonMembers);
-            for($i = 0; $i < $count; $i++)
-            {
-                $tmp = json_decode(json_encode($nonMembers[$i]), true);
-                $tmp['type'] = $this->getTypeOfEntity($nonMembers[$i]);
-                $nonMembers[$i] = array_intersect_key($tmp, $keys);
-            }
+            $res = array();
+            $this->serializeArray($res, $nonMembers, $keys);
+            return $res;
         }
         return $nonMembers;
     }

@@ -1,6 +1,7 @@
 <?php
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
+
 //Redirect users to https
 if($_SERVER["HTTPS"] != "on")
 {
@@ -13,6 +14,7 @@ if(strpos($_SERVER['REQUEST_URI'], '//') !== false)
     header("Location: https://".$_SERVER["HTTP_HOST"].$uri);
     exit();
 }
+
 require_once('class.FlipsideCAPTCHA.php');
 require_once('class.ProfilesPage.php');
 $page = new ProfilesPage('Burning Flipside Profiles Registration');
@@ -89,6 +91,3 @@ $page->body .= '
 
 $page->printPage();
 // vim: set tabstop=4 shiftwidth=4 expandtab:
-?>
-
-

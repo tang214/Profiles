@@ -18,27 +18,8 @@ class UsersAPI extends Http\Rest\RestAPI
         $app->post('/Actions/remind_uid[/]', array($this, 'remindUid'));
     }
 
-    public function validateIsAdmin($request, $nonFatal = false)
+    public function listUsers($request, $response)
     {
-        $this->user = $request->getAttribute('user');
-        if($this->user === false)
-        {
-            throw new Exception('Must be logged in', \Http\Rest\ACCESS_DENIED);
-        }
-        if(!$this->user->isInGroupNamed('LDAPAdmins'))
-        {
-            if($nonFatal)
-            {
-                return false;
-            }
-            throw new Exception('Must be Admin', \Http\Rest\ACCESS_DENIED);
-        }
-        return true;
-    }
-
-    public function listUsers($request, $response, $args)
-    {
-        $users = false;
         $odata = $request->getAttribute('odata', new \ODataParams(array()));
         if($this->validateIsAdmin($request, true) === false)
         {
@@ -82,7 +63,7 @@ class UsersAPI extends Http\Rest\RestAPI
         {
             return false;
         }
-        $domain = substr($email, $pos+1);
+        $domain = substr($email, $pos + 1);
         if(checkdnsrr($domain, 'MX') === false)
         {
             return false;
@@ -90,7 +71,12 @@ class UsersAPI extends Http\Rest\RestAPI
         return true;
     }
 
-    public function createUser($request, $response, $args)
+    protected function getFailArray($message)
+    {
+        return array('res'=>false, 'message'=>$message);
+    }
+
+    public function createUser($request, $response)
     {
         $this->user = $request->getAttribute('user');
         //This one is different. If they are logged in fail...
@@ -110,22 +96,22 @@ class UsersAPI extends Http\Rest\RestAPI
         }
         if(!$captcha->is_answer_right($obj['captcha']))
         {
-            return $response->withJson(array('res'=>false, 'message'=>'Incorrect answer to CAPTCHA!'), 412);
+            return $response->withJson($this->getFailArray('Incorrect answer to CAPTCHA!'), 412);
         }
         $auth = AuthProvider::getInstance();
         $message = false;
         if($this->validateCanCreateUser($obj, $auth, $message) === false)
         {
-            return $response->withJson(array('res'=>false, 'message'=>$message), 412);
+            return $response->withJson($this->getFailArray($message), 412);
         }
         else if($this->validEmail($obj['mail']) === false)
         {
-            return $response->withJson(array('res'=>false, 'message'=>'Invalid Email Address!'));
+            return $response->withJson($this->getFailArray('Invalid Email Address!'));
         }
         $ret = $auth->createPendingUser($obj);
         if($ret == false)
         {
-            return $response->withJson(array('res'=>false, 'message'=>'Failed to save user registration!'), 500);
+            return $response->withJson($this->getFailArray('Failed to save user registration!'), 500);
         }
         return $response->withJson($ret);
     }
@@ -136,18 +122,23 @@ class UsersAPI extends Http\Rest\RestAPI
         return ($uid === 'me' || ($this->user !== false && $uid === $this->user->uid));
     }
 
+    protected function hasLeadAccess()
+    {
+        return ($this->user->isInGroupNamed('Leads') || $this->user->isInGroupNamed('CC') || $this->user->isInGroupNamed('AFs'));
+    }
+
     protected function getUserByUIDReadOnly($request, $uid)
     {
         if($this->userIsMe($request, $uid))
         {
             return $this->user;
         }
-        if($this->user->isInGroupNamed('LDAPAdmins') || $this->hasLeadAccess($request))
+        if($this->user->isInGroupNamed('LDAPAdmins') || $this->hasLeadAccess())
         {
             $auth = \AuthProvider::getInstance();
             $filter = new \Data\Filter("uid eq $uid");
             $users = $auth->getUsersByFilter($filter);
-            if($users !== false && isset($users[0]))
+            if(!empty($users))
             {
                 return $users[0];
             }
@@ -166,7 +157,7 @@ class UsersAPI extends Http\Rest\RestAPI
             $auth = \AuthProvider::getInstance();
             $filter = new \Data\Filter("uid eq $uid");
             $users = $auth->getUsersByFilter($filter);
-            if($users !== false && isset($users[0]))
+            if(!empty($users))
             {
                 return $users[0];
             }
@@ -183,7 +174,7 @@ class UsersAPI extends Http\Rest\RestAPI
             if($_SERVER['SERVER_ADDR'] === $_SERVER['REMOTE_ADDR'])
             {
                 $user = \AuthProvider::getInstance()->getUsersByFilter(new \Data\Filter("uid eq $uid"));
-                if($user === false || !isset($user[0]))
+                if(empty($user))
                 {
                     return $response->withStatus(404);
                 }
@@ -352,7 +343,7 @@ class UsersAPI extends Http\Rest\RestAPI
         if($this->userIsMe($request, $uid))
         {
             $this->user->addLoginProvider($obj->provider);
-            AuthProvider::getInstance()->impersonateUser($app->user);
+            AuthProvider::getInstance()->impersonateUser($this->user);
         }
         else if($this->user->isInGroupNamed("LDAPAdmins"))
         {
@@ -374,13 +365,13 @@ class UsersAPI extends Http\Rest\RestAPI
     {
         $auth = AuthProvider::getInstance();
         $user = $auth->getUsersByFilter($filter);
-        if($user !== false && isset($user[0]))
+        if(!empty($user))
         {
             $pending = false;
             return $user[0];
         }
         $user = $auth->getPendingUsersByFilter($filter);
-        if($user !== false && isset($user[0]))
+        if(!empty($user))
         {
             $pending = true;
             return $user[0];
@@ -388,7 +379,7 @@ class UsersAPI extends Http\Rest\RestAPI
         return false;
     }
 
-    public function checkEmailAvailable($request, $response, $args)
+    public function checkEmailAvailable($request, $response)
     {
         $params = $request->getQueryParams();
         $email = false;
@@ -430,7 +421,7 @@ class UsersAPI extends Http\Rest\RestAPI
         return $response->withJson(array('res'=>false, 'email'=>$user->mail, 'pending'=>$pending));
     }
 
-    public function checkUidAvailable($request, $response, $args)
+    public function checkUidAvailable($request, $response)
     {
         $params = $request->getQueryParams();
         $uid = false;
@@ -477,7 +468,7 @@ class UsersAPI extends Http\Rest\RestAPI
         }
         $auth = AuthProvider::getInstance();
         $users = $auth->getUsersByFilter(new \Data\Filter('uid eq '.$uid));
-        if($users === false || !isset($users[0]))
+        if(empty($users))
         {
             return $response->withStatus(404);
         }
@@ -516,7 +507,7 @@ class UsersAPI extends Http\Rest\RestAPI
         }
         $auth = AuthProvider::getInstance();
         $users = $auth->getUsersByFilter(new \Data\Filter('mail eq '.$email));
-        if($users === false || !isset($users[0]))
+        if(empty($users))
         {
             return $response->withStatus(404);
         }

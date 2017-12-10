@@ -1,5 +1,5 @@
 <?php
-class PendingUserAPI extends Http\Rest\RestAPI
+class PendingUserAPI extends ProfilesAdminAPI
 {
     public function setup($app)
     {
@@ -9,20 +9,7 @@ class PendingUserAPI extends Http\Rest\RestAPI
         $app->map(['GET', 'POST'], '/{hash}/Actions/activate[/]', array($this, 'activatePendingUser'));
     }
 
-    protected function validateIsAdmin($request)
-    {
-        $user = $request->getAttribute('user');
-        if($user === false)
-        {
-            throw new Exception('Must be logged in', \Http\Rest\ACCESS_DENIED);
-        }
-        if(!$user->isInGroupNamed('LDAPAdmins'))
-        {
-            throw new Exception('Must be Admin', \Http\Rest\ACCESS_DENIED);
-        }
-    }
-
-    public function listPendingUsers($request, $response, $args)
+    public function listPendingUsers($request, $response)
     {
         $this->validateIsAdmin($request);
         $odata = $request->getAttribute('odata', new \ODataParams(array()));
@@ -57,6 +44,7 @@ class PendingUserAPI extends Http\Rest\RestAPI
 
     public function activatePendingUser($request, $response, $args)
     {
+        $hash = $args['hash'];
         $user = $request->getAttribute('user');
         if($user === false)
         {
@@ -66,7 +54,7 @@ class PendingUserAPI extends Http\Rest\RestAPI
         $user = $auth->getPendingUsersByFilter(new \Data\Filter("hash eq '$hash'"));
         if($user === false || !isset($user[0]))
         {
-            return $app->withStatus(404);
+            return $response->withStatus(404);
         }
         $res = $auth->activatePendingUser($user[0]);
         if($request->isGet())
