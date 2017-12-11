@@ -1,7 +1,7 @@
 <?php
 require_once('class.UIDForgotEmail.php');
 
-class UsersAPI extends Http\Rest\RestAPI
+class UsersAPI extends ProfilesAdminAPI
 {
     public function setup($app)
     {
