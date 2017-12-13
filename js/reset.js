@@ -85,6 +85,7 @@ function change_password()
         obj.password = $('#newpass').val();
         $.ajax({
             url: 'api/v1/users/me',
+            contentType: 'application/json',
             type: 'PATCH',
             data: JSON.stringify(obj),
             processData: false,
