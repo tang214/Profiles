@@ -157,7 +157,14 @@ function form_submit_done(jqXHR)
     }
     else
     {
-        alert(jqXHR.responseJSON);
+        if(jqXHR.responseJSON !== undefined && jqXHR.responseJSON.message !== undefined)
+        {
+            alert(jqXHR.responseJSON.message);
+        }
+        else
+        {
+            alert(jqXHR.responseJSON);
+        }
         console.log(jqXHR);
     }
 }
